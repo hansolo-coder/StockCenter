@@ -1,0 +1,6 @@
+Installation
+
+1. Upload the files in the web folder to your web server
+2. Open a web browser & navigate to the URL where you uploaded the files
+3. An initial user will be created with the login and password of admin
+4. Change the admin's password and add users as desired
