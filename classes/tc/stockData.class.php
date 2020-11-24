@@ -124,7 +124,7 @@
 		public function insert()
 		{
 			# get the stock data from yahoo
-			include_once './classes/yahoo.class.php';
+			include_once './classes/yahoo.MOCK.class.php';
 			
 			$stock = new yahoo();
 			$stock->symbol = strtoupper($this->symbol);
