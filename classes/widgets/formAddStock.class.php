@@ -45,13 +45,13 @@
 		/**
 		 * validates the form
 		 */
-		function check()
+		function check($symbol)
 		{
 			# symbol
-			if(isset($_REQUEST['symbol']))
+			if(isset($symbol))
 			{
 				# if symbol is not alpha/numeric only...
-				if(!ctype_alnum(trim($_REQUEST['symbol'])))
+				if(!ctype_alnum(trim($symbol)))
 				{
 					# invalid characters error
 					$this->errors .= "Invalid characters in stock symbol<br>";
@@ -70,7 +70,19 @@
 		 */
 		function process()
 		{
-			$this->check();
+			$symbol = NULL;
+			$ISIN = NULL;
+			$name = NULL;
+
+			$arr = explode("/", $_REQUEST['symbol']);
+			if (count($arr) == 3) {
+				$symbol = trim($arr[0]);
+				$ISIN = trim($arr[1]);
+				$name = trim($arr[2]);
+                        } else {
+				$symbol = $_REQUEST['symbol'];
+			}
+			$this->check($symbol);
 			
 			# if there are no errors...
 			if($this->errors == "")
@@ -79,14 +91,16 @@
 				
 				# add the stock symbol
 				$stock = new stocks();
-				$stock->symbol = $_REQUEST['symbol'];
+				$stock->symbol = $symbol;
+				$stock->ISIN = $ISIN;
+				$stock->name = $name;
 				$stock->insert();
 				
 				# get data for symbol from yahoo
-				getData($_REQUEST['symbol']);
+				getData($symbol);
 				
 				# display a success message and the home page
-				message("success", "Stock symbol (" . trim(strtoupper($_REQUEST['symbol'])) . ") added");
+				message("success", "Stock symbol (" . trim(strtoupper($symbol)) . ") added");
 				homePage();
 			}
 			else

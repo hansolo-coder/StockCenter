@@ -68,11 +68,11 @@
         	if(isset($_REQUEST['symbol']))
 			{
 				# if symbol is not alpha/numeric only...
-				if(!ctype_alnum(trim($_REQUEST['symbol'])))
-				{
-					# invalid characters error
-					$this->errors .= "Invalid characters in stock symbol<br>";
-				}
+				# if(!ctype_alnum(trim($_REQUEST['symbol'])))
+				# {
+				#	# invalid characters error
+				#	$this->errors .= "Invalid characters in stock symbol<br>";
+				# }
 			}
 			else 
 			{
