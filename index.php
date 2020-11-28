@@ -1,5 +1,9 @@
 <?php
     session_start();
+
+# error_reporting(E_ALL);
+# ini_set("display_errors", 1);
+
     # -------------------------------------------------------------------------
     # stockcenter: a personal stock portfolio management tool
     # -------------------------------------------------------------------------
@@ -94,6 +98,18 @@
                 
                 $log->symbol = $_REQUEST['symbol'];
                 $log->showLog();
+            }
+            elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "accounts")
+            {
+                include_once 'classes/widgets/listAccounts.class.php';
+                $log = new listAccounts();
+                $log->show();
+            }
+            elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "addAccount")
+            {
+                include_once 'classes/widgets/listAccounts.class.php';
+                $log = new listAccounts();
+                $log->addAccount();
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "dividendReport")
             {

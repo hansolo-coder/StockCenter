@@ -9,13 +9,18 @@
 		 */
 		function start()
 		{
-			if ($_SESSION['debug'] == "on"){print "<span class='debug'>startPage()</span><br>";}
-			
+			if ($_SESSION['debug'] == "on"){ print "<span class='debug'>startPage()</span><br>"; }
+			print "<!DOCTYPE html>\n";
 			print "<html>\n";
 			print "    <head>\n";
-			print "        <title>\n";
-			print "            Stock Center\n";
-			print "        </title>\n";
+			print "        <title>Stock Center</title>\n";
+			print "        <meta charset='UTF-8'>\n";
+			print "        <meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
+			print "        <meta http-equiv='Cache-Control' content='no-cache, must-revalidate'>\n";
+			print "        <meta http-equiv='Pragma' content='no-cache'>\n";
+			print "        <meta http-equiv='Expires' content='0'>\n";
+			print "        <link rel='stylesheet' type='text/css' href='assets/style.css'>\n";
+			print "\n";
 			print "        <link rel='stylesheet' href='./javascript/jquery-ui/jquery-ui.min.css'>\n";
 			print "        <script src='./javascript/jquery-ui/external/jquery/jquery.js'></script>\n";
 			print "        <script src='./javascript/jquery-ui/jquery-ui.min.js'></script>\n";
@@ -24,7 +29,7 @@
 			print "    </head>\n";
 			print "    <body>\n";
 			print "        <div class='loader'></div>\n";
-			print "        <style>\n";
+			print " <!--     <style>\n";
 			print "            body{font-family: arial; font-size: 10pt;}\n";
 			print "            div.page{width: 1024px; min-height: 600px; border: 0px solid #cfcfcf; margin: auto;}\n";
 			print "            div.centered{width: 100%; margin: auto;}\n";
@@ -46,7 +51,7 @@
 			print "            legend{font-size: 10pt;}\n";
 			print "            span.debug{color: red;}\n";
 			print "            .loader {position: fixed;left: 0px;top: 0px;width: 100%;height: 100%;z-index: 9999;background: url('images/page-loader.gif') 50% 50% no-repeat rgb(249,249,249);}\n";
-			print "        </style>\n";
+			print "        </style> -->\n";
 			print "        <script>\n";
 			print "            $(window).load(function() {\n";
 			print "                $('.loader').fadeOut('slow');\n";
@@ -73,7 +78,7 @@
 			print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=conversionStep1'>Conversion Analysis</a>\n";
 			print "        </td>\n";
 			print "        <td class='menu'>\n";
-			print "            &nbsp;\n";
+			print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=settingsForm'>Settings</a>\n";
 			print "        </td>\n";
 			print "        <td class='menu'>\n";
 			print "            &nbsp;\n";
@@ -84,7 +89,7 @@
 	        print "    </tr>\n";
 	        print "    <tr>\n";
 			print "        <td class='menu'>\n";
-			print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=settingsForm'>Settings</a>\n";
+			print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=accounts'>Accounts</a>\n";
 			print "        </td>\n";
 			print "        <td class='menu'>\n";
 			print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=changePasswordForm'>Change Password</a>\n";
