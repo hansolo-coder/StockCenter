@@ -1,6 +1,6 @@
 <?php
 	/**
-	 * fetches mock data for a symbol
+	 * fetches available data from the yahoo csv web service
 	 */
 	class stockdataapi
 	{
@@ -610,8 +610,8 @@
 		
 		function __construct()
 		{
-			$this->url                                    = "http://finance.yahoo.com/d/quotes.csv?s=";
-			$this->codes                                  = "&f=ab2bb3poydr1qc1cc6k2p2c8c3ghk1ll1t8m5m6m7m8m3m4w1w4p1mm2g1g3g4g5g6kjj5k4j6k5wvj1j3f6nn4ss1xj2ee7e8e9b4j4p5p6rr2r5r6r7s7t7t6s6";
+			$this->url                                    = "https://query2.finance.yahoo.com/v10/finance/quoteSummary/";
+			$this->codes                                  = "?modules=price";
 			$this->symbol                                 = NULL;
 			$this->ask                                    = NULL;
 			$this->askRealtime                            = NULL;
@@ -696,231 +696,232 @@
 		 */
 		function getData()
 		{
-
 			if ($this->symbol != NULL)
 			{
+				$yData = file_get_contents($this->url . $this->symbol . $this->codes);
+				$sData = json_decode($yData, true);
 	
 				# ask
-				$this->ask = "1.00";
+				$this->ask = 0.01;
 	
 				# ask realtime
-				$this->askRealtime = "1.01";
+				# $this->askRealtime = $this->removeQuotes(trim($sData[1]));
 	
 				# bid
-				$this->bid = "1.02";
+				#$this->bid = $this->removeQuotes(trim($sData[2]));
 	
 				# bid realtime
-				$this->bidRealtime = "1.03";
-	
+				# $this->bidRealtime = $this->removeQuotes(trim($sData[3]));
+
 				# previous close
-				$this->previousClose = "1.04";
+				$this->previousClose = $sData["quoteSummary"]["result"][0]["price"]["regularMarketPreviousClose"]["raw"];
 	
 				# open
-				$this->open = "1.05";
+				#$this->open = $this->removeQuotes(trim($sData[5]));
 	
 				# dividend yield
-				$this->dividendYield = "1.06";
+				$this->dividendYield = 0.04;
 					
 				# dps
-				$this->dps = "2020-11-20";
+				$this->dps = 0.05;
 	
 				# dividend pay date
-				$this->dividendPayDate = "2020-11-19";
+				$this->dividendPayDate = "2020-01-01";
 	
 				# ex dividend date
-				$this->exDividendDate = "1.07";
+				$this->exDividendDate = "2020-01-02";
 	
 				# change
-				$this->change = "10";
+				#$this->change = $this->removeQuotes(trim($sData[10]));
 	
 				# change and percent
-				$this->changeAndPercent = "10%";
+				#$this->changeAndPercent = str_replace('"', '', $sData[11]);
 	
 				# change realtime
-				$this->change = "10%";
+				#$this->change = $this->removeQuotes(trim($sData[12]));
 	
 				# change percent realtime
-				$this->change = "10%";
+				#$this->change = $this->removeQuotes(trim($sData[13]));
 					
 				# change in percent
-				$this->changeInPercent = "10%";
+				#$this->changeInPercent = $this->removeQuotes(trim($sData[14]));
 					
 				# after hours change realtime
-				$this->afterHoursChangeRealtime = "2020-11-20 17:43:00";
+				#$this->afterHoursChangeRealtime = $this->removeQuotes(trim($sData[15]));
 					
 				# commission
-				$this->commission = "0.01";
+				#$this->commission = $this->removeQuotes(trim($sData[16]));
 					
-				$this->daysLow = "0.50";
+				$this->daysLow = $sData["quoteSummary"]["result"][0]["price"]["regularMarketDayLow"]["raw"];
 					
 				# days high
-				$this->daysHigh = "0.6";
+				$this->daysHigh = $sData["quoteSummary"]["result"][0]["price"]["regularMarketDayHigh"]["raw"];
 					
 				# last trade with time realtime
-				$this->lastTradeWithTimeRealtime = "2020-11-20 17:45:00";
+				#$this->lastTradeWithTimeRealtime = $this->removeQuotes(trim($sData[19]));
 					
 				# last trade with time
-				$this->lastTradeWithTime = "2020-11-20 17:46:00";
+				#$this->lastTradeWithTime = $this->removeQuotes(trim($sData[20]));
 					
 				# last trade price only
-				$this->lastTradePriceOnly = "0.21";
+				$this->lastTradePriceOnly = $sData["quoteSummary"]["result"][0]["price"]["regularMarketPrice"]["raw"];
 				
 				# 1 year target price
-				$this->oneYearTargetPrice = "100.71";
+				#$this->oneYearTargetPrice = $this->removeQuotes(trim($sData[22]));
 					
 				# change from 200 day moving average
-				$this->changeFrom200DayMovingAverage = "0.6";
+				#$this->changeFrom200DayMovingAverage = $this->removeQuotes(trim($sData[23]));
 					
 				# change from 200 day moving average in percent
-				$this->changeFrom200DayMovingAverageInPercent = "0.70";
+				#$this->changeFrom200DayMovingAverageInPercent = $this->removeQuotes(trim($sData[24]));
 				
 				# change from 50 day moving average
-				$this->changeFrom50DayMovingAverage = "0.80";
+				#$this->changeFrom50DayMovingAverage = $this->removeQuotes(trim($sData[25]));
 					
 				# change from 50 day moving average in percent
-				$this->changeFrom50DayMovingAverageInPercent = "10%";
+				#$this->changeFrom50DayMovingAverageInPercent = $this->removeQuotes(trim($sData[26]));
 					
 				# 50 day moving average
-				$this->fiftyDayMovingAverage = "0.50";
+				#$this->fiftyDayMovingAverage = $this->removeQuotes(trim($sData[27]));
 					
 				# 200 day moving average
-				$this->twoHundredDayMovingAverage = "0.99";
+				#$this->twoHundredDayMovingAverage = $this->removeQuotes(trim($sData[28]));
 					
 				# the days value change
-				$this->theDaysValueChange = "0.20";
+				$this->theDaysValueChange = $sData["quoteSummary"]["result"][0]["price"]["regularMarketChange"]["raw"];
 					
 				# the days value change realtime
-				$this->theDaysValueChangeRealtime = "2020-11-20 16:45:00";
+				#$this->theDaysValueChangeRealtime = $this->removeQuotes(trim($sData[30]));
 					
 				# price paid
-				$this->pricePaid = "2.30";
+				$this->pricePaid = $sData["quoteSummary"]["result"][0]["price"]["regularMarketPrice"]["raw"];
 					
 				# the days range
-				$this->theDaysRange = "2.20 - 2.40";
+				#$this->theDaysRange = $this->removeQuotes(trim($sData[32]));
 					
 				# the days range realtime
-				$this->theDaysRangeRealtime = "2020-11-20 16:46:00";
+				#$this->theDaysRangeRealtime = $this->removeQuotes(trim($sData[33]));
 					
 				# holdings gain percent
-				$this->holdingsGainPercent = "11%";
+				#$this->holdingsGainPercent = $this->removeQuotes(trim($sData[34]));
 					
 				# annualized gain
-				$this->annualizedGain = "12%";
+				#$this->annualizedGain = $this->removeQuotes(trim($sData[35]));
 					
 				# holdings gain
-				$this->holdingsGain = "13%";
+				#$this->holdingsGain = $this->removeQuotes(trim($sData[36]));
 					
 				# holdings gain percent realtime
-				$this->holdingsGainPercentRealtime = "14%";
+				#$this->holdingsGainPercentRealtime = $this->removeQuotes(trim($sData[37]));
 				
 				# holdings gain realtime
-				$this->holdingsGainRealtime = "0.77";
+				#$this->holdingsGainRealtime = $this->removeQuotes(trim($sData[38]));
 					
 				# 52 week high
-				$this->fiftyTwoWeekHigh = "12.50";
+				$this->fiftyTwoWeekHigh = 0.02;
 					
 				# 52 week low
-				$this->fiftyTwoWeekLow = "0.77";
+				$this->fiftyTwoWeekLow = 0.03;
 					
 				# change from 52 week low
-				$this->changeFrom52WeekLow = "2.30";
+				#$this->changeFrom52WeekLow = $this->removeQuotes(trim($sData[41]));
 					
 				# change from 52 week high
-				$this->changeFrom52WeekHigh = "-11.55";
+				#$this->changeFrom52WeekHigh = $this->removeQuotes(trim($sData[42]));
 					
 				# change from 52 week low in percent
-				$this->changeFrom52WeekLowInPercent = "713%";
+				#$this->changeFrom52WeekLowInPercent = $this->removeQuotes(trim($sData[43]));
 				
 				# change from 52 week high in percent
-				$this->changeFrom52WeekHighInPercent = "-71%";
+				#$this->changeFrom52WeekHighInPercent = $this->removeQuotes(trim($sData[44]));
 					
 				# 52 week range
-				$this->fiftyTwoWeekRange = "0.77 - 12.25";
+				#$this->fiftyTwoWeekRange = $this->removeQuotes(trim($sData[45]));
 					
 				# volume
-				$this->volume = "5721";
+				$this->volume = $sData["quoteSummary"]["result"][0]["price"]["regularMarketVolume"]["raw"];
 					
 				# market capitalization
-				$this->marketCapitalization = "21";
+				#$this->marketCapitalization = $this->removeQuotes(trim($sData[47]));
 					
 				# market capitalization realtime
-				$this->marketCapitalizationRealtime = "22";
+				#$this->marketCapitalizationRealtime = $this->removeQuotes(trim($sData[48]));
 					
 				# float shares
-				$this->floatShares = "27";
+				#$this->floatShares = $this->removeQuotes(trim($sData[49]));
 					
 				# name
-				$this->name = "MockMockMock";
+				$this->name = $sData["quoteSummary"]["result"][0]["price"]["longName"];
 					
 				# notes
-				$this->notes = "MockNotes";
+				#$this->notes = $this->removeQuotes(trim($sData[51]));
 					
 				# shares owned
 				#if(!is_numeric($sData[53]))
 				#{
-					$this->sharesOwned = '0';
+				#	$this->sharesOwned = '0';
 				#}
 				#else
 				#{
-				#	$this->sharesOwned = '1';
+				#	$this->sharesOwned = $this->removeQuotes(trim($sData[53]));
 				#}
 					
 				# stock exchange
-				$this->stockExchange = "MOCK";
+				$this->stockExchange = $sData["quoteSummary"]["result"][0]["price"]["exchangeName"];
 					
 				# shares outstanding
-				$this->sharesOutstanding = "11";
+				#$this->sharesOutstanding = $this->removeQuotes(trim($sData[55]));
 				
 				# earnings per share
-				$this->earningsPerShare = "3";
+				$this->earningsPerShare = 0.06;
 					
 				# earnings per share estimate current year
-				$this->earningsPerShareEstimateCurrentYear = "4";
+				#$this->earningsPerShareEstimateCurrentYear = $this->removeQuotes(trim($sData[57]));
 					
 				# earnings per share estimate next year
-				$this->earningsPerShareEstimateNextYear = "5";
+				#$this->earningsPerShareEstimateNextYear = $this->removeQuotes(trim($sData[58]));
 					
 				# earnings per share estimate next quarter
-				$this->earningsPerShareEstimateNextQuarter = "6";
+				#$this->earningsPerShareEstimateNextQuarter = $this->removeQuotes(trim($sData[59]));
 					
 				# book value
-				$this->bookValue = "71";
+				#$this->bookValue = $this->removeQuotes(trim($sData[60]));
 					
 				# EBITDA
-				$this->ebitda = "72";
+				#$this->ebitda = $this->removeQuotes(trim($sData[61]));
 					
 				# price/sales
-				$this->priceToSales = "73";
+				#$this->priceToSales = $this->removeQuotes(trim($sData[62]));
 					
 				# price/book
-				$this->priceToBook = "74";
+				#$this->priceToBook = $this->removeQuotes(trim($sData[63]));
 					
 				# p/e ratio
-				$this->peRatio = "2.00";
+				#$this->peRatio = $this->removeQuotes(trim($sData[64]));
 					
 				# p/e ratio realtime
-				$this->peRatioRealtime = "2.01";
+				#$this->peRatioRealtime = $this->removeQuotes(trim($sData[65]));
 					
 				# peg ratio
-				$this->pegRatio = "2.02";
+				#$this->pegRatio = $this->removeQuotes(trim($sData[66]));
 					
 				# price/eps estimate current year
-				$this->priceToEpsEstimateCurrentYear = "2.03";
+				#$this->priceToEpsEstimateCurrentYear = $this->removeQuotes(trim($sData[67]));
 					
 				# price/eps estimate next year
-				$this->priceToEpsEstimateNextYear = "2.04";
+				#$this->priceToEpsEstimateNextYear = $this->removeQuotes(trim($sData[68]));
 					
 				# short ratio
-				$this->shortRatio = "1";
+				#$this->shortRatio = $this->removeQuotes(trim($sData[69]));
 					
 				# ticker trend
-				$this->tickerTrend = "2";
+				#$this->tickerTrend = $this->removeQuotes(trim($sData[70]));
 					
 				# trade links
-				$this->tradeLinks = "3";
+				#$this->tradeLinks = $this->removeQuotes(trim($sData[71]));
 					
 				# revenue
-				$this->revenue = "5218";
+				#$this->revenue = $this->removeQuotes(trim($sData[72]));
 			}
 		}
 

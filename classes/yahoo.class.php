@@ -2,7 +2,7 @@
 	/**
 	 * fetches available data from the yahoo csv web service
 	 */
-	class yahoo
+	class stockdataapi
 	{
 		/*
 		 Yahoo Codes and array locations:
