@@ -12,6 +12,8 @@
 		function __construct()
 		{
 			$this->symbol = '';
+			$this->ISIN = '';
+			$this->name = '';
 			$this->errors = 'none';
 		}
 
@@ -36,7 +38,9 @@
 			$rs->bindValue(':symbol', $this->symbol);
 			$rs->execute();
 			$row = $rs->fetch();
-			$this->symbol = $row['symbol'];
+			$this->symbol = trim($row['symbol']);
+			$this->ISIN = trim($row['ISIN']);
+			$this->name = trim($row['name']);
 
 			if ($_SESSION['debug'] == "on"){
 				print "<span class='debug'>dbDisconnectonnect: stocks.class.php " . __LINE__ . "</span><br>";
@@ -73,9 +77,11 @@
 
 			if($row['theCount'] == 0)
 			{
-				$sql = "INSERT INTO stocks (symbol) VALUES(:symbol)";
+				$sql = "INSERT INTO stocks (symbol, ISIN, name) VALUES(:symbol, :ISIN, :name)";
 				$rs = $db->prepare($sql);
 				$rs->bindValue(':symbol', trim(strtoupper($this->symbol)));
+				$rs->bindValue(':ISIN', trim(strtoupper($this->ISIN)));
+				$rs->bindValue(':name', trim(strtoupper($this->name)));
 				$rs->execute();
 			}
 			else
