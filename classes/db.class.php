@@ -60,7 +60,7 @@
 
 			# stock data table
 			$sql = "CREATE TABLE [stockData] (";
-			$sql .= "[symbol] VARCHAR(10),";
+			$sql .= "[symbol] VARCHAR(20),";
 			$sql .= "[market] VARCHAR(10),";
 			$sql .= "[attribute] VARCHAR(100),";
 			$sql .= "[value] VARCHAR(200),";
@@ -68,13 +68,24 @@
 			$rs = $db->prepare($sql);
 			$rs->execute();
 
+			# accounts table
+			$sql = "CREATE TABLE [accounts] (";
+			$sql .= "[accountId] INTEGER PRIMARY KEY,";
+			$sql .= "[accountNumber] varchar(20),";
+			$sql .= "[accountName] varchar(20),";
+			$sql .= "[financialInstitution] varchar(40),";
+			$sql .= "[aCreated] DATE,";
+			$sql .= "[aClosed] DATE)";
+			$rs = $db->prepare($sql);
+			$rs->execute();
+
 			# stocks table
-			$sql = "CREATE TABLE [stocks] ([symbol] varchar(5))";
+			$sql = "CREATE TABLE [stocks] ([symbolId] INTEGER PRIMARY KEY, [symbol] varchar(20), [ISIN] varchar(20), [name] varchar(50))";
 			$rs = $db->prepare($sql);
 			$rs->execute();
 
 			# transaction table
-			$sql = "CREATE TABLE [transactions] ([tDate] DATE,[symbol] VARCHAR(5),[activity] VARCHAR(10),[shares] INT,[cost] INT(0, 2))";
+			$sql = "CREATE TABLE [transactions] ([tDate] DATE,[symbol] VARCHAR(20),[activity] VARCHAR(10),[shares] INT,[cost] INT(0, 2), [tDateIsApprox] INTEGER, [accountId] INTEGER)";
 			$rs = $db->prepare($sql);
 			$rs->execute();
 
@@ -96,6 +107,14 @@
 			$rs->execute();
 
 			$sql = "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('databaseVersion', '2', 'Database schema version')";
+			$rs = $db->prepare($sql);
+			$rs->execute();
+
+			$sql = "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('stockdataclass', 'yahoo.class.php', 'PHP class to handle the stock API')";
+			$rs = $db->prepare($sql);
+			$rs->execute();
+
+			$sql = "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('currency', '$', 'currency symbol')";
 			$rs = $db->prepare($sql);
 			$rs->execute();
 		}
