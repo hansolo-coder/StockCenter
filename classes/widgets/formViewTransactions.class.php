@@ -50,9 +50,9 @@
     	    if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";}
     		
     	    $row = NULL;
-    		$rs = NULL;
-    		$db = null;
-    		$conn = null;
+    	    $rs = NULL;
+    	    $db = null;
+    	    $conn = null;
         }
     }
 ?>

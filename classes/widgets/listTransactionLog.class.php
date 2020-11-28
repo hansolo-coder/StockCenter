@@ -29,11 +29,18 @@
             if (isset($this->symbol) and trim($this->symbol) != '')
             {
                 // get transactions for the stock
-                $sql = "SELECT * FROM transactions WHERE symbol=:symbol ORDER BY tDate DESC";
+                $sql = "SELECT accounts.accountNumber, transactions.* FROM transactions LEFT OUTER JOIN accounts ON transactions.accountId = accounts.accountId WHERE symbol=:symbol ORDER BY tDate DESC";
                 $rs = $db->prepare($sql);
                 $rs->bindValue(':symbol', $this->symbol);
                 $rs->execute();
                 $rows = $rs->fetchAll();
+
+                // get accounts
+                $sql = "SELECT accountId, accountNumber FROM accounts ORDER BY aCreated DESC";
+                $rs = $db->prepare($sql);
+                $rs->execute();
+                $accounts = $rs->fetchAll();
+
     
                 if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: transaction.class.php " . __LINE__ . "</span><br>";}
                 
@@ -59,27 +66,26 @@
                 print "    </legend>\n";
                 print "<table class='data'>\n";
                 print "    <tr>\n";
-                print "        <th class='data'>\n";
-                print "            Date\n";
-                print "        </th>\n";
-                print "        <th class='data'>\n";
-                print "            Activity\n";
-                print "        </th>\n";
-                print "        <th class='data'>\n";
-                print "            Shares\n";
-                print "        </th>\n";
-                print "        <th class='data'>\n";
-                print "            Cost\n";
-                print "        </th>\n";
-                print "        <th class='data'>\n";
-                print "            Total\n";
-                print "        </th>\n";
+                print "        <th class='data'>Account</th>\n";
+                print "        <th class='data'>Date</th>\n";
+                print "        <th class='data'>Activity</th>\n";
+                print "        <th class='data'>Shares</th>\n";
+                print "        <th class='data'>Cost</th>\n";
+                print "        <th class='data'>Total</th>\n";
                 print "        <th class='data'>\n";
                 print "            &nbsp;\n";
                 print "        </th>\n";
                 print "    </tr>\n";
                 print "    <form action='" . htmlentities($_SERVER['PHP_SELF']) . "?action=addTransaction&symbol=" . $this->symbol . "' method='post'>\n";
                 print "    <tr>\n";
+                print "        <td class='data'>\n";
+                print "            <select name='accountId'>\n";
+                foreach($accounts as $row)
+                {
+                  print "                <option value='" . $row['accountId'] . "'>" . $row['accountNumber'] . "</option>\n";
+		}
+                print "            </select>\n";
+                print "        </td>\n";
                 print "        <td class='data'>\n";
                 print "            <input type='text' name='date' id='date'>\n";
                 print "            <script>\n";
@@ -97,13 +103,15 @@
                 print "                <option value='SELL'>SELL</option>\n";
                 print "                <option value='DIVIDEND'>DIVIDEND</option>\n";
                 print "                <option value='FEE'>FEE</option>\n";
+                print "                <option value='BONUS'>BONUS</option>\n";
+                print "                <option value='SPLIT'>SPLIT</option>\n";
                 print "            </select>\n";
                 print "        </td>\n";
                 print "        <td class='data'>\n";
                 print "            <input type='text' name='shares'>\n";
                 print "        </td>\n";
                 print "        <td class='data'>\n";
-                print "            $ <input type='text' name='cost'>\n";
+                print "            $&nbsp;<input type='text' name='cost'>\n";
                 print "        </td>\n";
                 print "        <td class='data'>\n";
                 print "            -\n";
@@ -133,32 +141,39 @@
                     {
                         $css = "style='background-color: #FFB6AB;'";
                     }
+                    elseif($row['activity'] == "BONUS") # Bonus Shares
+                    {
+                        $css = "style='background-color: #8BD9FF;'";
+                    }
+                    elseif($row['activity'] == "SPLIT") # Stock Split
+                    {
+                        $css = "style='background-color: #69D9FF;'";
+                    }
     
                     print "    <tr $css>\n";
-                    print "        <td class='data'>\n";
-                    print "            " . $row['tDate'];
-                    print "        </td>\n";
-                    print "        <td class='data'>\n";
-                    print "            " . $row['activity'];
-                    print "        </td>\n";
-                    print "        <td class='data'>\n";
-                    print "            " . $row['shares'];
-                    print "        </td>\n";
-                    print "        <td class='data' style='text-align: right;'>\n";
-                    print "            $ " . toCash($row['cost']);
-                    print "        </td>\n";
-                    print "        <td class='data' style='text-align: right;'>\n";
+                    print "        <td class='data'>" . $row['accountNumber'] . "</td>\n";
+		    if ($row['tDateIsApprox'] != 0) {
+                      print "        <td class='data'>Approx. " . $row['tDate']         . "</td>\n";
+		    } else {
+                      print "        <td class='data'>" . $row['tDate']         . "</td>\n";
+		    }
+                    print "        <td class='data'>" . $row['activity']      . "</td>\n";
+                    print "        <td class='data'>" . $row['shares']        . "</td>\n";
+                    print "        <td class='data' style='text-align: right;'>";
+                    print formatCash($row['cost']);
+                    print "</td>\n";
+                    print "        <td class='data' style='text-align: right;'>";
     
                     if($row['activity'] == 'DIVIDEND' OR $row['activity'] == 'FEE')
                     {
-                        print "$ " . toCash($row['cost']);
+                        print formatCash($row['cost']);
                     }
                     else
                     {
-                        print "           $ " . toCash(($row['cost'] * $row['shares']));
+                        print formatCash(($row['cost'] * $row['shares']));
                     }
     
-                    print "        </td>\n";
+                    print         "</td>\n";
                     print "        <td class='data'>\n";
                     print "            <a class='delete' href='index.php?action=deleteTransaction&date=" . $row['tDate'] . "&activity=" . $row['activity'] . "&shares=" . $row['shares'] . "&cost=" . $row['cost'] . "&symbol=" . $row['symbol'] . "'>Delete</a>\n";
                     print "        </td>\n";
@@ -183,7 +198,29 @@
     	{
             if ($_SESSION['debug'] == "on"){print "<span class='debug'>transactionLog-> addTransaction()</span><br>";}
     
-            if(isset($_REQUEST['date']) and trim($_REQUEST['date']) != '')
+            if(isset($_REQUEST['date']) and trim($_REQUEST['date']) == '')
+            {
+                # no date provided
+                message("error", "No Date Provided");
+    
+                include_once './classes/widgets/listTransactionLog.class.php';
+                
+                $log = new listTransactionLog();
+                $log->symbol = $_REQUEST['symbol'];
+                $log->showLog();
+            }
+            elseif (isset($_REQUEST['accountId']) and trim($_REQUEST['accountId']) == '')
+            {
+                # no account provided
+                message("error", "No Account Provided");
+    
+                include_once './classes/widgets/listTransactionLog.class.php';
+                
+                $log = new listTransactionLog();
+                $log->symbol = $_REQUEST['symbol'];
+                $log->showLog();
+            }
+            else
             {
                 if(!isset($_REQUEST['shares']) OR trim($_REQUEST['shares']) == '')
                 {
@@ -199,6 +236,7 @@
                 	include_once './classes/tc/transaction.class.php';
     
                 	$trans = new transaction();
+                	$trans->accountId = trim($_REQUEST['accountId']);
                 	$trans->activity = trim($_REQUEST['activity']);
                 	$trans->cost = trim($_REQUEST['cost']);
                 	$trans->shares = $shares;
@@ -209,9 +247,9 @@
     
                     message("success", "Transaction Added");
                     
-                    include_once './classes/transactionLog.class.php';
+                    include_once './classes/widgets/listTransactionLog.class.php';
                     
-                    $log = new transactionLog();
+                    $log = new listTransactionLog();
                     $log->symbol = $_REQUEST['symbol'];
                     $log->showLog();
                 }
@@ -220,23 +258,12 @@
                     # no cost provided
                     message("error", "No Cost Provided");
                     
-                    include_once './classes/transactionLog.class.php';
+                    include_once './classes/widgets/listTransactionLog.class.php';
                     
-                    $log = new transactionLog();
+                    $log = new listTransactionLog();
                     $log->symbol = $_REQUEST['symbol'];
                     $log->showLog();
                 }
-            }
-            else
-            {
-                # no date provided
-                message("error", "No Date Provided");
-    
-                include_once './classes/transactionLog.class.php';
-                
-                $log = new transactionLog();
-                $log->symbol = $_REQUEST['symbol'];
-                $log->showLog();
             }
     	}    
     
@@ -252,6 +279,7 @@
             include_once './classes/tc/transaction.class.php';
     
             $trans = new transaction();
+            $trans->accountId = trim($_REQUEST['accountId']);
             $trans->activity = trim($_REQUEST['activity']);
             $trans->cost = trim($_REQUEST['cost']);
             $trans->shares = trim($_REQUEST['shares']);
