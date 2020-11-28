@@ -4,6 +4,7 @@
 	 */
 	class transaction
 	{
+		public $accountId;
 		public $tDate;
 		public $symbol;
 		public $activity;
@@ -15,6 +16,7 @@
 		
 		function __construct()
 		{
+			$this->accountId = 'none';
 			$this->tDate = 'none';
 			$this->symbol = 'none';
 			$this->activity = 'none';
@@ -45,6 +47,7 @@
 			$rs->execute();
 			$row = $rs->fetch();
 
+			$this->accountId = $row['accountId'];
 			$this->tDate = $row['tDate'];
 			$this->symbol = $row['symbol'];
 			$this->activity = $row['activity'];
@@ -78,8 +81,9 @@
 			$conn->fileName = $_SESSION['userId'];
 			$db = $conn->connect();
 
-			$sql = "INSERT INTO transactions (tDate, symbol, activity, shares, cost) VALUES(:tDate, :symbol, :activity, :shares, :cost)";
+			$sql = "INSERT INTO transactions (accountId, tDate, symbol, activity, shares, cost) VALUES(:accountId, :tDate, :symbol, :activity, :shares, :cost)";
 			$rs = $db->prepare($sql);
+			$rs->bindValue(':accountId', $this->accountId);
 			$rs->bindValue(':tDate', $this->tDate);
 			$rs->bindValue(':symbol', trim(strtoupper($this->symbol)));
 			$rs->bindValue(':activity', $this->activity);
