@@ -31,7 +31,7 @@
     	    
     	    # display the form
     		print "<div class='spacer'></div>";
-    		print "<div style='width: 550px; color: white; padding: 10px; margin: auto; text-align: center;'>";
+    		print "<div style='width: 550px; color: black; padding: 10px; margin: auto; text-align: center;'>";
     		print "    <form action='" . $_SERVER['PHP_SELF'] . "' method='post'>";
             print "        <table class='data'>";
             print "            <tr>";
@@ -90,6 +90,14 @@
             	$set->settingName = 'sellTrigger';
                 $set->settingValue = trim($_REQUEST['sellTrigger']);
                 $set->update();
+            	$set = new setting();
+            	$set->settingName = 'stockdataclass';
+                $set->settingValue = trim($_REQUEST['stockdataclass']);
+                $set->update();
+            	$set = new setting();
+            	$set->settingName = 'currency';
+                $set->settingValue = trim($_REQUEST['currency']);
+                $set->update();
     
                 message("success", "Settings Saved");
                 
@@ -97,7 +105,7 @@
                 $header = new pageHeader();
                 $header->display();
 
-                include_once './classes/settingsForm.class.php';
+                include_once './classes/widgets/formSettings.class.php';
                 $this->display();
             }
             else
