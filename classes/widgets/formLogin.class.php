@@ -23,23 +23,39 @@
 		 */
 		function display()
 		{
+			print "<!DOCTYPE html>\n";
 			print "<html>\n";
 			print "    <head>\n";
-			print "        <title>\n";
-			print "            Stock Center: Login\n";
-			print "        </title>\n";
+			print "        <title>Stock Center: Login</title>\n";
+			print "        <meta charset='UTF-8'>\n";
+			// https://stackoverflow.com/questions/356809/best-way-to-center-a-div-on-a-page-vertically-and-horizontally
+			print "        <style>\n";
+			print "          div.center {\n";
+			print "          	width: 260px;\n";
+			print "          	height: 260px;\n";
+			print "\n";
+			print "          	position: absolute;\n";
+			print "          	top:0;\n";
+			print "          	bottom: 0;\n";
+			print "          	left: 0;\n";
+			print "          	right: 0;\n";
+			print "\n";
+			print "          	margin: auto;\n";
+			print "          }\n";
+			print "        </style>\n";
 			print "    </head>\n";
 			print "    <body>\n";
-			print "        <div style='height: 25%;'></div>\n";
-			print "        <div style='width: 250px; background-color: #E6E6E6; padding: 10px; margin: auto; text-align: center; font-size: 12pt; font-weight: bold;'>\n";
+//			print "        <div style='height: 25%;'></div>\n";
+			print "       <div class='center'>\n";
+			print "        <div style='width: 260px; background-color: #E6E6E6; padding: 10px; margin: auto; text-align: center; font-size: 12pt; font-weight: bold;'>\n";
 			print "        Stock Center\n";
 			print "        </div>\n";
-			print "        <div style='width: 250px; background-color: #E6E6E6; padding: 10px; margin: auto;'>\n";
+			print "        <div style='width: 260px; background-color: #E6E6E6; padding: 10px; margin: auto;'>\n";
 			print "            <form action='" . $_SERVER['PHP_SELF'] . "' method='post'>\n";
 			print "                User ID<br>\n";
-			print "                <input type='text' name='userId' style='width: 100%;'><br>\n";
+			print "                <input type='text' name='userId' style='width: 90%;'><br>\n";
 			print "                Password<br>\n";
-			print "                <input type='password' name='pass' style='width: 100%;'><br>\n";
+			print "                <input type='password' name='pass' style='width: 90%;'><br>\n";
 			print "                <input type='hidden' name='action' value='" . $this->action . "'>\n";
 			print "                <br>\n";
 			print "                <div style='text-align: right;'>\n";
@@ -55,12 +71,14 @@
 				print "        </div>\n";
 			}
 
-			print "<div style='height: 30px;'></div>\n";
-			print "<div style='border: 1px dotted; width: 550px; margin: auto; text-align: center; font-family: arial; font-size: 10pt;'>\n";
-			print "<p>\n";
+			print "       </div>\n";
+
+			print "        <div style='height: 30px;'></div>\n";
+			print "        <div style='border: 1px dotted; width: 550px; margin: auto; text-align: center; font-family: arial; font-size: 10pt;'>\n";
+			print "           <p>\n";
 			print "Stock Center is open source and licensed under the <a href='http://opensource.org/licenses/MIT'>MIT License</a>\n";
-			print "</p>\n";
-			print "</div>\n";
+			print "           </p>\n";
+			print "        </div>\n";
 			print "    </body>\n";
 			print "</html>\n";
 		}
