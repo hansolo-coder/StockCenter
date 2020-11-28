@@ -123,20 +123,27 @@
 		 */
 		public function insert()
 		{
-			# get the stock data from yahoo
-			include_once './classes/yahoo.MOCK.class.php';
-			
-			$stock = new yahoo();
-			$stock->symbol = strtoupper($this->symbol);
-			$stock->getData();
-			
 			# connect to the database
 			include_once './classes/db.class.php';
 			 
 			$conn = new db();
 			$conn->fileName = $_SESSION['userId'];
 			$db=$conn->connect();
+		
+			$sqlSettings = "SELECT * FROM settings WHERE settingName='stockdataclass'";
+			$rsSettings  = $db->prepare($sqlSettings);
+			$rsSettings->execute();
+			$rowSettings = $rsSettings->fetch();
+			$stockdataclass = $rowSettings['settingValue'];
+
+			# get the stock data from yahoo
+			include_once $stockdataclass;
 			
+			$stock = new stockdataapi();
+			$stock->symbol = strtoupper($this->symbol);
+			$stock->getData();
+			
+
 			# load the new data in
 			foreach($stock as $key => $value)
 			{
