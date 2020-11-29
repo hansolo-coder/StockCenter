@@ -611,7 +611,8 @@
 		function __construct()
 		{
 			$this->url                                    = "https://query2.finance.yahoo.com/v10/finance/quoteSummary/";
-			$this->codes                                  = "?modules=price";
+			$this->codes1                                 = "?modules=price";
+			$this->codes2                                 = "?modules=summaryDetail";
 			$this->symbol                                 = NULL;
 			$this->ask                                    = NULL;
 			$this->askRealtime                            = NULL;
@@ -698,26 +699,48 @@
 		{
 			if ($this->symbol != NULL)
 			{
-				$yData = file_get_contents($this->url . $this->symbol . $this->codes);
+
+				$yData = file_get_contents($this->url . $this->symbol . $this->codes1);
+				$sData = json_decode($yData, true);
+
+				# last trade price only
+				$this->lastTradePriceOnly = $sData["quoteSummary"]["result"][0]["price"]["regularMarketPrice"]["raw"];
+				
+				# price paid
+				$this->pricePaid = $sData["quoteSummary"]["result"][0]["price"]["regularMarketPrice"]["raw"];
+					
+				# the days value change
+				$this->theDaysValueChange = $sData["quoteSummary"]["result"][0]["price"]["regularMarketChange"]["raw"];
+					
+				# name
+				$this->name = $sData["quoteSummary"]["result"][0]["price"]["longName"];
+					
+				# stock exchange
+				$this->stockExchange = $sData["quoteSummary"]["result"][0]["price"]["exchangeName"];
+					
+
+				usleep(200000);
+
+				$yData = file_get_contents($this->url . $this->symbol . $this->codes2);
 				$sData = json_decode($yData, true);
 	
 				# ask
-				$this->ask = 0.01;
+				$this->ask = $sData["quoteSummary"]["result"][0]["summaryDetail"]["ask"]["raw"];
 	
 				# ask realtime
 				# $this->askRealtime = $this->removeQuotes(trim($sData[1]));
 	
 				# bid
-				#$this->bid = $this->removeQuotes(trim($sData[2]));
+				$this->bid = $sData["quoteSummary"]["result"][0]["summaryDetail"]["bid"]["raw"];
 	
 				# bid realtime
 				# $this->bidRealtime = $this->removeQuotes(trim($sData[3]));
 
 				# previous close
-				$this->previousClose = $sData["quoteSummary"]["result"][0]["price"]["regularMarketPreviousClose"]["raw"];
+				$this->previousClose = $sData["quoteSummary"]["result"][0]["summaryDetail"]["previousClose"]["raw"];
 	
 				# open
-				#$this->open = $this->removeQuotes(trim($sData[5]));
+				$this->open = $sData["quoteSummary"]["result"][0]["summaryDetail"]["open"]["raw"];
 	
 				# dividend yield
 				$this->dividendYield = 0.04;
@@ -729,7 +752,7 @@
 				$this->dividendPayDate = "2020-01-01";
 	
 				# ex dividend date
-				$this->exDividendDate = "2020-01-02";
+				$this->exDividendDate = $sData["quoteSummary"]["result"][0]["summaryDetail"]["exDividendDate"]["fmt"];
 	
 				# change
 				#$this->change = $this->removeQuotes(trim($sData[10]));
@@ -752,10 +775,10 @@
 				# commission
 				#$this->commission = $this->removeQuotes(trim($sData[16]));
 					
-				$this->daysLow = $sData["quoteSummary"]["result"][0]["price"]["regularMarketDayLow"]["raw"];
+				$this->daysLow = $sData["quoteSummary"]["result"][0]["summaryDetail"]["dayLow"]["raw"];
 					
 				# days high
-				$this->daysHigh = $sData["quoteSummary"]["result"][0]["price"]["regularMarketDayHigh"]["raw"];
+				$this->daysHigh = $sData["quoteSummary"]["result"][0]["summaryDetail"]["dayHigh"]["raw"];
 					
 				# last trade with time realtime
 				#$this->lastTradeWithTimeRealtime = $this->removeQuotes(trim($sData[19]));
@@ -763,9 +786,6 @@
 				# last trade with time
 				#$this->lastTradeWithTime = $this->removeQuotes(trim($sData[20]));
 					
-				# last trade price only
-				$this->lastTradePriceOnly = $sData["quoteSummary"]["result"][0]["price"]["regularMarketPrice"]["raw"];
-				
 				# 1 year target price
 				#$this->oneYearTargetPrice = $this->removeQuotes(trim($sData[22]));
 					
@@ -787,14 +807,8 @@
 				# 200 day moving average
 				#$this->twoHundredDayMovingAverage = $this->removeQuotes(trim($sData[28]));
 					
-				# the days value change
-				$this->theDaysValueChange = $sData["quoteSummary"]["result"][0]["price"]["regularMarketChange"]["raw"];
-					
 				# the days value change realtime
 				#$this->theDaysValueChangeRealtime = $this->removeQuotes(trim($sData[30]));
-					
-				# price paid
-				$this->pricePaid = $sData["quoteSummary"]["result"][0]["price"]["regularMarketPrice"]["raw"];
 					
 				# the days range
 				#$this->theDaysRange = $this->removeQuotes(trim($sData[32]));
@@ -818,10 +832,10 @@
 				#$this->holdingsGainRealtime = $this->removeQuotes(trim($sData[38]));
 					
 				# 52 week high
-				$this->fiftyTwoWeekHigh = 0.02;
+				$this->fiftyTwoWeekHigh = $sData["quoteSummary"]["result"][0]["summaryDetail"]["fiftyTwoWeekHigh"]["raw"];
 					
 				# 52 week low
-				$this->fiftyTwoWeekLow = 0.03;
+				$this->fiftyTwoWeekLow = $sData["quoteSummary"]["result"][0]["summaryDetail"]["fiftyTwoWeekLow"]["raw"];
 					
 				# change from 52 week low
 				#$this->changeFrom52WeekLow = $this->removeQuotes(trim($sData[41]));
@@ -839,7 +853,7 @@
 				#$this->fiftyTwoWeekRange = $this->removeQuotes(trim($sData[45]));
 					
 				# volume
-				$this->volume = $sData["quoteSummary"]["result"][0]["price"]["regularMarketVolume"]["raw"];
+				$this->volume = $sData["quoteSummary"]["result"][0]["summaryDetail"]["volume"]["raw"];
 					
 				# market capitalization
 				#$this->marketCapitalization = $this->removeQuotes(trim($sData[47]));
@@ -849,9 +863,6 @@
 					
 				# float shares
 				#$this->floatShares = $this->removeQuotes(trim($sData[49]));
-					
-				# name
-				$this->name = $sData["quoteSummary"]["result"][0]["price"]["longName"];
 					
 				# notes
 				#$this->notes = $this->removeQuotes(trim($sData[51]));
@@ -865,9 +876,6 @@
 				#{
 				#	$this->sharesOwned = $this->removeQuotes(trim($sData[53]));
 				#}
-					
-				# stock exchange
-				$this->stockExchange = $sData["quoteSummary"]["result"][0]["price"]["exchangeName"];
 					
 				# shares outstanding
 				#$this->sharesOutstanding = $this->removeQuotes(trim($sData[55]));
