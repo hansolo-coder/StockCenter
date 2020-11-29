@@ -10,6 +10,9 @@
 		public $activity;
 		public $shares;
 		public $cost;
+		public $DateIsApprox;
+		public $currency;
+		public $tax;
 		public $errors;
 
 		
@@ -22,6 +25,9 @@
 			$this->activity = 'none';
 			$this->shares = 'none';
 			$this->cost = 'none';
+			$this->DateIsApprox = 0;
+			$this->currency = 'none';
+			$this->tax = 'none';
 			$this->errors = 'none';
 		}
 
@@ -53,6 +59,9 @@
 			$this->activity = $row['activity'];
 			$this->shares = $row['shares'];
 			$this->cost = $row['cost'];
+			$this->DateIsApprox = $row['tDateIsApprox'];
+			$this->currency = $row['currency'];
+			$this->tax = $row['tax'];
 
 			if ($_SESSION['debug'] == "on"){
 				print "<span class='debug'>dbDisconnect: transaction.class.php " . __LINE__ . "</span><br>";
@@ -81,7 +90,7 @@
 			$conn->fileName = $_SESSION['userId'];
 			$db = $conn->connect();
 
-			$sql = "INSERT INTO transactions (accountId, tDate, symbol, activity, shares, cost) VALUES(:accountId, :tDate, :symbol, :activity, :shares, :cost)";
+			$sql = "INSERT INTO transactions (accountId, tDate, symbol, activity, shares, cost, tDateIsApprox, currency, tax) VALUES(:accountId, :tDate, :symbol, :activity, :shares, :cost, :tDateIsApprox, :currency, :tax)";
 			$rs = $db->prepare($sql);
 			$rs->bindValue(':accountId', $this->accountId);
 			$rs->bindValue(':tDate', $this->tDate);
@@ -89,6 +98,9 @@
 			$rs->bindValue(':activity', $this->activity);
 			$rs->bindValue(':shares', $this->shares);
 			$rs->bindValue(':cost', $this->cost);
+			$rs->bindValue(':tDateIsApprox', $this->DateIsApprox);
+			$rs->bindValue(':currency', $this->currency);
+			$rs->bindValue(':tax', $this->tax);
 			$rs->execute();
 
 			if ($_SESSION['debug'] == "on"){

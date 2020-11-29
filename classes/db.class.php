@@ -85,7 +85,7 @@
 			$rs->execute();
 
 			# transaction table
-			$sql = "CREATE TABLE [transactions] ([tDate] DATE,[symbol] VARCHAR(20),[activity] VARCHAR(10),[shares] INT,[cost] INT(0, 2), [tDateIsApprox] INTEGER, [accountId] INTEGER)";
+			$sql = "CREATE TABLE [transactions] ([tDate] DATE NOT NULL,[symbol] VARCHAR(20) NOT NULL,[activity] VARCHAR(10) NOT NULL,[shares] INT,[cost] INT(0, 2), [tDateIsApprox] INTEGER, [accountId] INTEGER NOT NULL, [currency] VARCHAR(3) NOT NULL DEFAULT 'DKK', [tax] DECIMAL)";
 			$rs = $db->prepare($sql);
 			$rs->execute();
 
