@@ -105,6 +105,7 @@
                 print "                <option value='FEE'>FEE</option>\n";
                 print "                <option value='BONUS'>BONUS</option>\n";
                 print "                <option value='SPLIT'>SPLIT</option>\n";
+                print "                <option value='MOVE'>MOVE</option>\n";
                 print "            </select>\n";
                 print "        </td>\n";
                 print "        <td class='data'>\n";
