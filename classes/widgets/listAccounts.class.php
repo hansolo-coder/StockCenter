@@ -18,7 +18,7 @@
             $db=$conn->connect();
     
             // get accounts
-            $sql = "SELECT * FROM accounts ORDER BY accountNumber";
+            $sql = "SELECT * FROM accounts ORDER BY aCreated DESC";
             $rs = $db->prepare($sql);
             $rs->execute();
             $rows = $rs->fetchAll();
