@@ -9,9 +9,9 @@
 		 */
 		function display()
 		{
-		    include_once './classes/pageHeader.class.php';
-            $header = new pageHeader();
-            $header->display();
+			include_once './classes/pageHeader.class.php';
+			$header = new pageHeader();
+			$header->display();
 		    
 			print "<div class='spacer'></div>\n";
 			print "<div style='width: 400px; padding: 10px; margin: auto;'>\n";
@@ -31,7 +31,7 @@
 			print "                </td>\n";
 			print "            </tr>\n";
 			print "        </table>\n";
-			print "    	   <input type='hidden' name='action' value='restoreStep2'>\n";
+			print "        <input type='hidden' name='action' value='restoreStep2'>\n";
 			print "        <div style='text-align: right;'>\n";
 			print "            <input type='submit' value='Restore'>\n";
 			print "        </div>\n";
