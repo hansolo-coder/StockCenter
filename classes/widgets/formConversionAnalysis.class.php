@@ -112,7 +112,7 @@
             $db=$conn->connect();
             
             # get the number of shares bought
-            $sql = "SELECT sum(shares) as s FROM transactions where activity='BUY' AND symbol=:symbol";
+            $sql = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $_REQUEST['symbol']);
             $rs->execute();
