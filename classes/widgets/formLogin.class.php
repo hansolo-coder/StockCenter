@@ -176,6 +176,10 @@
 						{
 							$_SESSION['refreshTime'] = $rowSettings['settingValue'];
 						}
+						if ($rowSettings['settingName'] == "currency")
+						{
+							$_SESSION['DefaultCurrency'] = $rowSettings['settingValue'];
+						}
 					}
 	
 					# display the home page
