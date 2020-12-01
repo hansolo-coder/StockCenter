@@ -571,8 +571,14 @@
 		$sData->symbol = $symbol;
 		$sData->select();
 
+        	include_once './classes/tc/stocks.class.php';
+
+		$stData = new stocks();
+		$stData->symbol = $symbol;
+		$stData->select();
+
 		# update data if its been more than x minutes
-		if (time() - $sData->lastUpdated > (60 * $s->settingValue))
+		if ((time() - $sData->lastUpdated > (60 * $s->settingValue)) && $stData->skipLookup == 0)
 		{
 			pullFromYahoo($symbol);
 		}

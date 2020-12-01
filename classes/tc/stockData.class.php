@@ -5,14 +5,14 @@
 	class stockData
 	{
 		public $symbol;
-		public $currentPrice;
-		public $yearHigh;
-		public $yearLow;
-		public $yield;
-		public $dps;
+		public $currentPrice;	// 'ask' price
+		public $yearHigh;	// 52 week high
+		public $yearLow;	// 52 week low
+		public $yield;		// Divident yield
+		public $dps;		// Dividend payout per share
 		public $xDate;
-		public $pDate;
-		public $eps;
+		public $pDate;		// Dividend pay date
+ 		public $eps;		// Earning per share
 		public $name;
 		public $lastUpdated;
 		public $errors;

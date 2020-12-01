@@ -80,7 +80,7 @@
 			$rs->execute();
 
 			# stocks table
-			$sql = "CREATE TABLE [stocks] ([symbolId] INTEGER PRIMARY KEY, [symbol] varchar(20), [ISIN] varchar(20), [name] varchar(50))";
+			$sql = "CREATE TABLE [stocks] ([symbolId] INTEGER PRIMARY KEY, [symbol] varchar(20), [ISIN] varchar(20), [name] varchar(50), SkipLookup BIT NOT NULL DEFAULT 0)";
 			$rs = $db->prepare($sql);
 			$rs->execute();
 
@@ -106,7 +106,7 @@
 			$rs = $db->prepare($sql);
 			$rs->execute();
 
-			$sql = "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('databaseVersion', '2', 'Database schema version')";
+			$sql = "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('databaseVersion', '3', 'Database schema version')";
 			$rs = $db->prepare($sql);
 			$rs->execute();
 

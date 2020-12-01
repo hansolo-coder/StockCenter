@@ -14,6 +14,7 @@
 			$this->symbol = '';
 			$this->ISIN = '';
 			$this->name = '';
+			$this->skipLookup = 0; // 1 -> skip lookup in stock api - probably because it does not exist anymore
 			$this->errors = 'none';
 		}
 
@@ -41,9 +42,10 @@
 			$this->symbol = trim($row['symbol']);
 			$this->ISIN = trim($row['ISIN']);
 			$this->name = trim($row['name']);
+			$this->skipLookup = $row['SkipLookup'];
 
 			if ($_SESSION['debug'] == "on"){
-				print "<span class='debug'>dbDisconnectonnect: stocks.class.php " . __LINE__ . "</span><br>";
+				print "<span class='debug'>dbDisconnect: stocks.class.php " . __LINE__ . "</span><br>";
 			}
 			
 			$conn = NULL;
