@@ -189,6 +189,7 @@
 				}
 				else
 				{
+					usleep(1400000); // Delay for password-crackers
 					# login failed
 					$this->action = 'login';
 					$this->errors = 'Login Failed';
