@@ -34,7 +34,7 @@
 			$this->pDate = '';
 			$this->eps = '';
 			$this->name = '';
-			$this->lastUpdated = '';
+			$this->lastUpdated = 0;
 			$this->errors = 'none';
 		}
 
@@ -105,6 +105,12 @@
     
 				$this->lastUpdated = $row['lastUpdated'];
 				
+			}
+			if ($this->currentPrice == '') {
+				$this->currentPrice = 0; // Must NEVER return blank. Used for calculations
+			}
+			if ($this->lastUpdated == '') {
+				$this->lastUpdated = 0;  // Must NEVER return blank. Used for comparison
 			}
 
 			if ($_SESSION['debug'] == "on"){
