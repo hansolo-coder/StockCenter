@@ -1497,11 +1497,11 @@
 
         if(toCash(($totalSpent - $totalSales)) > 0)
         {
-            print formatCash(($totalSpent - $totalSales), $currency);
+            print formatCashWCur(($totalSpent - $totalSales), $currency);
         }
         else
         {
-            print formatCash("0.00", $currency);
+            print formatCashWCur("0.00", $currency);
         }
 
 		print "                        </td>";
@@ -1519,7 +1519,7 @@
 		print "                            Current Price";
 		print "                        </td>";
 		print "                        <td class='data'>";
-		print "                            " . formatCash($currentPrice, $currency);
+		print "                            " . formatCashWCur($currentPrice, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1527,7 +1527,7 @@
 		print "                            Current Value";
 		print "                        </td>";
 		print "                        <td class='data'>";
-		print "                            " . formatCash(($currentPrice * ($boughtShares - $soldShares)), $currency);
+		print "                            " . formatCashWCur(($currentPrice * ($boughtShares - $soldShares)), $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                </table>";
@@ -1538,7 +1538,7 @@
 		print "                			   Total Invested";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                			   " . formatCash($totalSpent, $currency);
+		print "                			   " . formatCashWCur($totalSpent, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1546,7 +1546,7 @@
 		print "                            Avg Paid Per Share";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCash($pps, $currency);
+		print "                            " . formatCashWCur($pps, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1554,7 +1554,7 @@
 		print "                            Total Realized";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCash($totalSales, $currency);
+		print "                            " . formatCashWCur($totalSales, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1562,7 +1562,7 @@
 		print "                            Dividends Earned";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCash($dividends, $currency);
+		print "                            " . formatCashWCur($dividends, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1570,7 +1570,7 @@
 		print "                            Total Income";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCash(($totalSales + $dividends), $currency);
+		print "                            " . formatCashWCur(($totalSales + $dividends), $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1578,7 +1578,7 @@
 		print "                            Total Fees";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCash($fees, $currency);
+		print "                            " . formatCashWCur($fees, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1608,11 +1608,11 @@
 
 		if($standing < 0)
 		{
-			print "<span class='red'>" . formatCash($standing, $currency) . "</span>";
+			print "<span class='red'>" . formatCashWCur($standing, $currency) . "</span>";
 		}
 		else
 		{
-			print formatCash($standing, $currency);
+			print formatCashWCur($standing, $currency);
 		}
 
 		print "                       </td>";
@@ -1626,7 +1626,7 @@
 		print "                			   52 High";
 		print "                        </td>";
 		print "                        <td width='50%' class='data'>";
-		print "                			   " . formatCash($yearHigh, $currency);
+		print "                			   " . formatCashWCur($yearHigh, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1634,7 +1634,7 @@
 		print "                        	   52 Low";
 		print "                        </td>";
 		print "                        <td width='50%' class='data'>";
-		print "                        	   " . formatCash($yearLow, $currency);
+		print "                        	   " . formatCashWCur($yearLow, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1714,7 +1714,7 @@
 	}
 
 	# formats a cash value including currency
-	function formatCash($value, $currency)
+	function formatCashWCur($value, $currency)
 	{
         # if ($_SESSION['debug'] == "on"){print "<span class='debug'>formatCash($value)</span><br>\n";}
 		if (strlen($currency) > 1)
