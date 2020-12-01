@@ -3,8 +3,6 @@
     $version = '1.8.0';
     $_SESSION['debug'] = "off";
 
-    $currencySymbol = "$";
-    
     # first run code
     if (!file_exists("./data"))
     {
@@ -30,16 +28,6 @@
 		$db->init();
 
 	        unset($db);
-	}
-
-	function currencySymbol($db) {
-		$sqlCheck = "select * from settings WHERE settingName = 'currency'";
-		$rs = $db->prepare($sqlCheck);
-		$rs->execute();
-	        $rows = $rs->fetch();
-		$currencySymbol = $rs['settingValue'];
-		$rs = null;
-		return $currencySymbol;
 	}
 
 	# db upgrade function
@@ -1379,7 +1367,7 @@
 	# displays summary bar
 	function summaryBar($symbol)
 	{
-		// getData($symbol);
+		getData($symbol);
 
 		include_once './classes/tc/stockData.class.php';
 
@@ -1407,6 +1395,13 @@
     	$conn = new db();
         $conn->fileName = $_SESSION['userId'];
         $db = $conn->connect();
+
+		$sql = "SELECT currency as s FROM transactions where symbol=:symbol GROUP BY currency";
+		$rs = $db->prepare($sql);
+        $rs->bindValue(':symbol', $symbol);
+		$rs->execute();
+		$row = $rs->fetch();
+		$currency = $row['s'];
 
 		$sql = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
 		$rs = $db->prepare($sql);
@@ -1502,11 +1497,11 @@
 
         if(toCash(($totalSpent - $totalSales)) > 0)
         {
-            print formatCash(($totalSpent - $totalSales));
+            print formatCash(($totalSpent - $totalSales), $currency);
         }
         else
         {
-            print formatCash("0.00");
+            print formatCash("0.00", $currency);
         }
 
 		print "                        </td>";
@@ -1524,7 +1519,7 @@
 		print "                            Current Price";
 		print "                        </td>";
 		print "                        <td class='data'>";
-		print "                            " . formatCash($currentPrice);
+		print "                            " . formatCash($currentPrice, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1532,7 +1527,7 @@
 		print "                            Current Value";
 		print "                        </td>";
 		print "                        <td class='data'>";
-		print "                            " . formatCash(($currentPrice * ($boughtShares - $soldShares)));
+		print "                            " . formatCash(($currentPrice * ($boughtShares - $soldShares)), $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                </table>";
@@ -1543,7 +1538,7 @@
 		print "                			   Total Invested";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                			   " . formatCash($totalSpent);
+		print "                			   " . formatCash($totalSpent, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1551,7 +1546,7 @@
 		print "                            Avg Paid Per Share";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCash($pps);
+		print "                            " . formatCash($pps, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1559,7 +1554,7 @@
 		print "                            Total Realized";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCash($totalSales);
+		print "                            " . formatCash($totalSales, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1567,7 +1562,7 @@
 		print "                            Dividends Earned";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCash($dividends);
+		print "                            " . formatCash($dividends, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1575,7 +1570,7 @@
 		print "                            Total Income";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCash(($totalSales + $dividends));
+		print "                            " . formatCash(($totalSales + $dividends), $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1583,7 +1578,7 @@
 		print "                            Total Fees";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCash($fees);
+		print "                            " . formatCash($fees, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1613,11 +1608,11 @@
 
 		if($standing < 0)
 		{
-			print "<span class='red'>" . formatCash($standing) . "</span>";
+			print "<span class='red'>" . formatCash($standing, $currency) . "</span>";
 		}
 		else
 		{
-			print formatCash($standing);
+			print formatCash($standing, $currency);
 		}
 
 		print "                       </td>";
@@ -1631,7 +1626,7 @@
 		print "                			   52 High";
 		print "                        </td>";
 		print "                        <td width='50%' class='data'>";
-		print "                			   " . formatCash($yearHigh);
+		print "                			   " . formatCash($yearHigh, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1639,7 +1634,7 @@
 		print "                        	   52 Low";
 		print "                        </td>";
 		print "                        <td width='50%' class='data'>";
-		print "                        	   " . formatCash($yearLow);
+		print "                        	   " . formatCash($yearLow, $currency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1711,11 +1706,21 @@
 	function formatCash($value)
 	{
         # if ($_SESSION['debug'] == "on"){print "<span class='debug'>formatCash($value)</span><br>\n";}
-		GLOBAL $currencySymbol;
-		if (strlen($currencySymbol) > 1)
-		  return toCash($value) . "&nbsp;" . $currencySymbol;
+		$currency = $_SESSION['DefaultCurrency'];
+		if (strlen($currency) > 1)
+		  return toCash($value) . "&nbsp;" . $currency;
 		else
-		  return $currencySymbol . "&nbsp;" . toCash($value);
+		  return $currency . "&nbsp;" . toCash($value);
+	}
+
+	# formats a cash value including currency
+	function formatCash($value, $currency)
+	{
+        # if ($_SESSION['debug'] == "on"){print "<span class='debug'>formatCash($value)</span><br>\n";}
+		if (strlen($currency) > 1)
+		  return toCash($value) . "&nbsp;" . $currency;
+		else
+		  return $currency . "&nbsp;" . toCash($value);
 	}
 	
 	
