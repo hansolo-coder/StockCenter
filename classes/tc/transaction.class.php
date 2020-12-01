@@ -26,8 +26,8 @@
 			$this->shares = 'none';
 			$this->cost = 'none';
 			$this->DateIsApprox = 0;
-			$this->currency = 'none';
-			$this->tax = 'none';
+			$this->currency = $_SESSION['DefaultCurrency'];
+			$this->tax = 0;
 			$this->errors = 'none';
 		}
 
