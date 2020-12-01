@@ -50,12 +50,13 @@
 			# symbol
 			if(isset($symbol))
 			{
+				// TODO Perhaps makes this optional by choosing between US and Europe setup
 				# if symbol is not alpha/numeric only...
-				if(!ctype_alnum(trim($symbol)))
-				{
-					# invalid characters error
-					$this->errors .= "Invalid characters in stock symbol<br>";
-				}
+				#if(!ctype_alnum(trim($symbol)))
+				#{
+				#	# invalid characters error
+				#	$this->errors .= "Invalid characters in stock symbol<br>";
+				#}
 			}
 			else 
 			{
@@ -75,10 +76,15 @@
 			$name = NULL;
 
 			$arr = explode("/", $_REQUEST['symbol']);
+			$arr2 = explode("\\", $_REQUEST['symbol']);
 			if (count($arr) == 3) {
 				$symbol = trim($arr[0]);
 				$ISIN = trim($arr[1]);
 				$name = trim($arr[2]);
+			} elseif (count($arr2) == 3) {
+				$symbol = trim($arr2[0]);
+				$ISIN = trim($arr2[1]);
+				$name = trim($arr2[2]);
                         } else {
 				$symbol = $_REQUEST['symbol'];
 			}
