@@ -98,6 +98,14 @@
             	$set->settingName = 'currency';
                 $set->settingValue = trim($_REQUEST['currency']);
                 $set->update();
+            	$set = new setting();
+            	$set->settingName = 'showTransactionTax';
+                $set->settingValue = trim($_REQUEST['showTransactionTax']);
+                $set->update();
+            	$set = new setting();
+            	$set->settingName = 'region';
+                $set->settingValue = trim($_REQUEST['region']);
+                $set->update();
     
                 message("success", "Settings Saved");
                 

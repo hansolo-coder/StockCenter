@@ -110,9 +110,9 @@
 			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('refreshTime', '15', 'Time between yahoo data refreshes')");
 			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('databaseVersion', '3', 'Database schema version')");
 			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('stockdataclass', 'yahoo.class.php', 'PHP class to handle the stock API')");
-			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('currency', '$', 'currency symbol')");
-			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('showTransactionTax', '0', '1 > Show tax on transactionlist')");
-			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('region', 'EUR', 'Adapt to region')");
+			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('currency', '$', 'Default currency symbol')");
+			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('showTransactionTax', '0', 'Yes/No > Show tax on transactionlist')");
+			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('region', 'EUR', 'US/EUR > Adapt to region')");
 
 		}
 	}

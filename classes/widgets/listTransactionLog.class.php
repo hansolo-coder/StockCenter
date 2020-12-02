@@ -71,6 +71,10 @@
                 print "        <th class='data'>Activity</th>\n";
                 print "        <th class='data'>Shares</th>\n";
                 print "        <th class='data'>Cost</th>\n";
+		if ($_SESSION['showTransactionTax'] == 'YES')
+		{
+	                print "        <th class='data'>Tax</th>\n";
+		}
                 print "        <th class='data'>Total</th>\n";
                 print "        <th class='data'>\n";
                 print "            &nbsp;\n";
@@ -86,6 +90,7 @@
 		}
                 print "            </select>\n";
                 print "        </td>\n";
+		/* TODO should be possible to mark an approximate date */
                 print "        <td class='data'>\n";
                 print "            <input type='text' name='date' id='date'>\n";
                 print "            <script>\n";
@@ -114,6 +119,12 @@
                 print "        <td class='data'>\n";
                 print "            $&nbsp;<input type='text' name='cost'>\n";
                 print "        </td>\n";
+		if ($_SESSION['showTransactionTax'] == 'YES')
+		{
+	                print "        <td class='data'>\n";
+                	print "            $&nbsp;<input type='text' name='tax'>\n";
+	                print "        </td>\n";
+		}
                 print "        <td class='data'>\n";
                 print "            -\n";
                 print "        </td>";
@@ -163,6 +174,12 @@
                     print "        <td class='data' style='text-align: right;'>";
                     print formatCash($row['cost']);
                     print "</td>\n";
+		if ($_SESSION['showTransactionTax'] == 'YES')
+		{
+                    print "        <td class='data' style='text-align: right;'>";
+                    print formatCash($row['tax']);
+                    print "</td>\n";
+		}
                     print "        <td class='data' style='text-align: right;'>";
     
                     if($row['activity'] == 'DIVIDEND' OR $row['activity'] == 'FEE')
@@ -243,6 +260,10 @@
                 	$trans->shares = $shares;
                 	$trans->symbol = trim($_REQUEST['symbol']);
                 	$trans->tDate = trim($_REQUEST['date']);
+			if (isset($_REQUEST['tax']))
+			{
+				$trans->tax = trim($_REQUEST['tax']);
+			}
     
                 	$trans->insert();
     

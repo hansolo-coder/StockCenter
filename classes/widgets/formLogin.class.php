@@ -182,11 +182,11 @@
 						}
 						if ($rowSettings['settingName'] == "showTransactionTax")
 						{
-							$_SESSION['showTransactionTax'] = $rowSettings['settingValue'];
+							$_SESSION['showTransactionTax'] = strtoupper(trim($rowSettings['settingValue']));
 						}
 						if ($rowSettings['settingName'] == "region")
 						{
-							$_SESSION['region'] = $rowSettings['settingValue'];
+							$_SESSION['region'] = strtoupper(trim($rowSettings['settingValue']));
 						}
 					}
 	

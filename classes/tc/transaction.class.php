@@ -26,6 +26,7 @@
 			$this->shares = 'none';
 			$this->cost = 'none';
 			$this->DateIsApprox = 0;
+			//TODO This should not be DefaultCurrency, but stocks currency....
 			$this->currency = $_SESSION['DefaultCurrency'];
 			$this->tax = 0;
 			$this->errors = 'none';
