@@ -53,7 +53,7 @@
 			print "        <div style='width: 260px; background-color: #E6E6E6; padding: 10px; margin: auto;'>\n";
 			print "            <form action='" . $_SERVER['PHP_SELF'] . "' method='post'>\n";
 			print "                User ID<br>\n";
-			print "                <input type='text' name='userId' style='width: 90%;'><br>\n";
+			print "                <input type='text' name='userId' autofocus style='width: 90%;'><br>\n";
 			print "                Password<br>\n";
 			print "                <input type='password' name='pass' style='width: 90%;'><br>\n";
 			print "                <input type='hidden' name='action' value='" . $this->action . "'>\n";
