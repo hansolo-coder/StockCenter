@@ -71,7 +71,7 @@
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "stocks")
             {
                 include_once 'classes/widgets/listStocks.class.php';
-                $log = new listAccounts();
+                $log = new listStocks();
                 $log->show();
             }
 			elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "addStock2")

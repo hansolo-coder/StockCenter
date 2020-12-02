@@ -103,6 +103,9 @@
 			print "        <td class='menu'>\n";
 			print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=restoreStep1'>Restore Datafile</a>\n";
 			print "        </td>\n";
+			print "        <td class='menu'>\n";
+			print "            &nbsp;\n";
+			print "        </td>\n";
 	
 	        if ($_SESSION['userId'] == "admin")
 	        {
@@ -114,7 +117,7 @@
 	        }
 	
 	        print "    </tr>\n";
-			print "</table>\n";
+		print "</table>\n";
     		print "        </td>\n";
     		print "    </tr>\n";
     		print "</table>\n";

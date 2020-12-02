@@ -42,7 +42,7 @@
 			$this->symbol = trim($row['symbol']);
 			$this->ISIN = trim($row['ISIN']);
 			$this->name = trim($row['name']);
-			$this->skipLookup = $row['SkipLookup'];
+			$this->skipLookup = (int)$row['SkipLookup'];
 
 			if ($_SESSION['debug'] == "on"){
 				print "<span class='debug'>dbDisconnect: stocks.class.php " . __LINE__ . "</span><br>";

@@ -90,7 +90,7 @@
             {
                 print "    <tr style='background-color: #ABD9FF;'>\n";
                 print "        <td class='data'>\n";
-                print "            " . $row['symbol'];
+                print "            <a href='index.php?action=activityLog&symbol=" . $row['symbol'] ."'>" . $row['symbol'] ."</a>";
                 print "        </td>\n";
                 print "        <td class='data'>\n";
                 print "            " . $row['ISIN'];
@@ -99,13 +99,13 @@
                 print "            " . $row['name'];
                 print "        </td>\n";
                 print "        <td class='data'>\n";
-                print "            " . $row['skipLookup'];
+                print "            " . (string)$row['SkipLookup'];
                 print "        </td>\n";
                 print "        <td class='data'>\n";
                 print "            <a class='delete' href='index.php?action=deleteStock2&id=" . $row['symbolId'] . "'>Delete</a>\n";
                 print "        </td>\n";
                 print "        <td class='data'>\n";
-                print "            <a class='delete' href='index.php?action=updateStock&id=" . $row['symbolId'] . "'>Update</a>\n";
+                print "            <a class='delete' href='index.php?action=updateStock2&id=" . $row['symbolId'] . "'>Update</a>\n";
                 print "        </td>\n";
                 print "    </tr>\n";
             } // foreach
@@ -123,7 +123,7 @@
     {
         if ($_SESSION['debug'] == "on"){print "<span class='debug'>listStocks-> addStock()</span><br>";}
     
-		$inError = false;
+	$inError = false;
         if(!(isset($_REQUEST['symbol']) and trim($_REQUEST['symbol']) != ''))
 		{
             message("error", "Symbol must be provided");
@@ -135,10 +135,10 @@
 		}
         if($inError)
 		{
-            $log = new listAccounts();
+            $log = new listStocks();
             $log->show();
 		}
-		else
+		else {
           	include_once './classes/tc/stocks.class.php';
     
            	$trans = new stock();
@@ -156,7 +156,7 @@
                     
             $log = new listStocks();
             $log->show();
-        } // financialinstitution exists
+		}
     } // addStock
     
 
@@ -170,7 +170,7 @@
     
             include_once './classes/tc/stocks.class.php';
     
-            $trans = new account();
+            $trans = new stock();
             $trans->symbolId = trim($_REQUEST['id']);
     
             $trans->delete();
