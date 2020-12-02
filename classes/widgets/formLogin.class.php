@@ -180,6 +180,14 @@
 						{
 							$_SESSION['DefaultCurrency'] = $rowSettings['settingValue'];
 						}
+						if ($rowSettings['settingName'] == "showTransactionTax")
+						{
+							$_SESSION['showTransactionTax'] = $rowSettings['settingValue'];
+						}
+						if ($rowSettings['settingName'] == "region")
+						{
+							$_SESSION['region'] = $rowSettings['settingValue'];
+						}
 					}
 	
 					# display the home page

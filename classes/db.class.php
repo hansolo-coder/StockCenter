@@ -39,6 +39,14 @@
 			return $db;
 		}
 
+		/**
+		 * Add a setting to the settings table
+		 */
+		function addSetting($db, $sql)
+		{
+			$rs = $db->prepare($sql);
+			$rs->execute();
+		}
 
 		/**
 		 * initializes a new database
@@ -98,25 +106,14 @@
 			$rs = $db->prepare($sql);
 			$rs->execute();
 
-			$sql = "INSERT INTO settings (settingName, settingValue) VALUES('password', '" . md5($this->password) . "')";
-			$rs = $db->prepare($sql);
-			$rs->execute();
+			addSetting($db, "INSERT INTO settings (settingName, settingValue) VALUES('password', '" . md5($this->password) . "')");
+			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('refreshTime', '15', 'Time between yahoo data refreshes')");
+			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('databaseVersion', '3', 'Database schema version')");
+			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('stockdataclass', 'yahoo.class.php', 'PHP class to handle the stock API')");
+			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('currency', '$', 'currency symbol')");
+			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('showTransactionTax', '0', '1 > Show tax on transactionlist')");
+			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('region', 'EUR', 'Adapt to region')");
 
-			$sql = "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('refreshTime', '15', 'Time between yahoo data refreshes')";
-			$rs = $db->prepare($sql);
-			$rs->execute();
-
-			$sql = "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('databaseVersion', '3', 'Database schema version')";
-			$rs = $db->prepare($sql);
-			$rs->execute();
-
-			$sql = "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('stockdataclass', 'yahoo.class.php', 'PHP class to handle the stock API')";
-			$rs = $db->prepare($sql);
-			$rs->execute();
-
-			$sql = "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('currency', '$', 'currency symbol')";
-			$rs = $db->prepare($sql);
-			$rs->execute();
 		}
 	}
 ?>
