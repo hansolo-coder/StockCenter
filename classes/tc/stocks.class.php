@@ -133,7 +133,7 @@
 			$rs->execute();
 
 			if ($_SESSION['debug'] == "on"){
-				print "<span class='debug'>dbDisconnectonnect: stocks.class.php " . __LINE__ . "</span><br>";
+				print "<span class='debug'>dbDisconnect: stocks.class.php " . __LINE__ . "</span><br>";
 			}
 			
 			$conn = NULL;
