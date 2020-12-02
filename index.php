@@ -68,6 +68,27 @@
                 $stock->deleteStock();
                 homePage();
             }
+            elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "stocks")
+            {
+                include_once 'classes/widgets/listStocks.class.php';
+                $log = new listAccounts();
+                $log->show();
+            }
+			elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "addStock2")
+            {
+            	include_once 'classes/widgets/listStocks.class.php';
+
+            	$form = new listStocks();
+            	$form->process();
+            }
+            elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "deleteStock2")
+            {
+                include_once 'classes/widgets/listStocks.class.php';
+                
+                $stock = new listStocks();
+                $stock->deleteStock();
+                homePage();
+            }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "overview")
             {
                 include_once './classes/pageHeader.class.php';

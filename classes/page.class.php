@@ -92,6 +92,9 @@
 			print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=accounts'>Accounts</a>\n";
 			print "        </td>\n";
 			print "        <td class='menu'>\n";
+			print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=stocks'>Stocks</a>\n";
+			print "        </td>\n";
+			print "        <td class='menu'>\n";
 			print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=changePasswordForm'>Change Password</a>\n";
 			print "        </td>\n";
 			print "        <td class='menu'>\n";
