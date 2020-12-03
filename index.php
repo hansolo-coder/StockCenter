@@ -110,6 +110,12 @@
                 $log = new listTransactionLog();
                 $log->addTransaction();
             }
+            elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "setStockPrice")
+            {
+                include_once 'classes/widgets/listTransactionLog.class.php';
+                $log = new listTransactionLog();
+                $log->setStockPrice();
+            }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "deleteTransaction")
             {
                 include_once 'classes/widgets/listTransactionLog.class.php';

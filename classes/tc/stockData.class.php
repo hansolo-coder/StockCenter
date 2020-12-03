@@ -143,7 +143,10 @@
 			$stockdataclass = $rowSettings['settingValue'];
 
 			# get the stock data from yahoo
-			include_once $stockdataclass;
+			if (strtoupper($stockdataclass) == 'MOCK')
+				include_once './classes/yahoo.MOCK.class.php';
+			else
+				include_once './classes/yahoo2020.class.php';
 			
 			$stock = new stockdataapi();
 			$stock->symbol = strtoupper($this->symbol);
@@ -165,6 +168,28 @@
 			$conn = null;
 		}
 
+		/**
+		 * insert the current stockprice directly in the stockData table
+		 */
+		public function insertSimple()
+		{
+			# connect to the database
+			include_once './classes/db.class.php';
+			 
+			$conn = new db();
+			$conn->fileName = $_SESSION['userId'];
+			$db=$conn->connect();
+
+			$sqlInsert = "INSERT INTO stockData (symbol, market, attribute, value, lastUpdated) ";
+			$sqlInsert .= "VALUES('" . $this->symbol . "','','ask','" . $this->currentPrice . "','" . time() . "')";
+			$rsInsert = $db->prepare($sqlInsert);
+			$rsInsert->execute();
+		
+			# disconnect from the database
+			$rsInsert = null;
+			$db = null;
+			$conn = null;
+		}
 		
 		/**
 		 * deletes a stock's data, requires symbol

@@ -11,7 +11,6 @@
         public $symbol;
         
         
-        
         /**
          * display the transaction log
          */
@@ -28,6 +27,13 @@
     		# if we have a symbol...
             if (isset($this->symbol) and trim($this->symbol) != '')
             {
+		// Check stock
+		include_once './classes/tc/stocks.class.php';
+		$stock = new stocks();
+		$stock->symbol = $this->symbol;
+		$stock->select();
+
+		
                 // get transactions for the stock
                 $sql = "SELECT accounts.accountNumber, transactions.* FROM transactions LEFT OUTER JOIN accounts ON transactions.accountId = accounts.accountId WHERE symbol=:symbol ORDER BY tDate DESC";
                 $rs = $db->prepare($sql);
@@ -55,6 +61,51 @@
                 summaryBar($_REQUEST['symbol']);
     
                 print "<div class='spacer'></div>\n";
+
+		// Show window to manually update current value of stock
+		if ($stock->skipLookup == 1) {
+		  include_once './classes/tc/stockData.class.php';
+		  $stockdata = new stockData();
+		  $stockdata->symbol = $this->symbol;
+		  $stockdata->select();
+
+                  print "<fieldset>\n";
+                  print "    <legend>\n";
+                  print "        Set current price of: ($stock->symbol \ $stock->name)\n";
+                  print "    </legend>\n";
+                  print "    <table>\n";
+                  print "      <tr>\n";
+                  print "        <th class='data'>Date</th>\n";
+                  print "        <th class='data'>Value</th>\n";
+                  print "        <th class='data'>&nbsp;</th>\n";
+                  print "      </tr>\n";
+		  print "      <form action='" . htmlentities($_SERVER['PHP_SELF']) . "?action=setStockPrice&symbol=" . $this->symbol . "' method='post'>\n";
+                  print "      <tr>\n";
+                  print "        <td class='data'>";
+                  print "            <input type='text' name='date' id='pricedate' value='";
+		  print date("Y-m-d", $stockdata->lastUpdated) . "'>\n";
+                  print "            <script>\n";
+                  print "                $(function(){\n";
+                  print "                    var opts = {\n";
+                  print "                        dateFormat:'yy-mm-dd'\n";
+                  print "                    };\n";
+                  print "                    $( '#pricedate' ).datepicker(opts);\n";
+                  print "                });\n";
+                  print "            </script>\n";
+		  print "        </td>\n";
+                  print "        <td class='data'>";
+                  print "            <input type='text' name='price' id='price' value='";
+		  print $stockdata->currentPrice;
+		  print "'></td>\n";
+                  print "        <td class='data'>";
+		  print "            <input type='submit' value='Save'>\n";
+		  print "        </td>\n";
+                  print "      </tr>\n";
+                  print "      </form>\n";
+                  print "    </table>\n";
+                  print "</fieldset>\n";
+                  print "<div class='spacer'></div>\n";
+		}
     
                 dividendEarningsChart($_REQUEST['symbol']);
     
@@ -147,7 +198,7 @@
                     }
                     elseif($row['activity'] == "DIVIDEND")
                     {
-                        $css = "style='background-color: #AFFFAB;'";
+                        $css = "style='background-color: #AFFF8B;'";
                     }
                     elseif($row['activity'] == "FEE")
                     {
@@ -310,5 +361,24 @@
     
             $trans->delete();
     	}
+
+	/**
+	 * Set a fixed stockprice (because it cannot be looked up automatically
+	 */
+	function setStockPrice()
+	{
+            if ($_SESSION['debug'] == "on"){print "<span class='debug'>setStockPrice()</span><br>";}
+    
+            include_once './classes/tc/stockData.class.php';
+    
+            $sd = new stockData();
+	    $sd->symbol = trim($_REQUEST['symbol']);
+	    $sd->delete();
+
+	    $sd = new stockData();
+	    $sd->symbol = trim($_REQUEST['symbol']);
+	    $sd->currentPrice = trim($_REQUEST['price']);
+	    $sd->insertSimple();
+	}
     }
 ?>
