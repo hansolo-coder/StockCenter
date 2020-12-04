@@ -29,29 +29,6 @@
 			print "    </head>\n";
 			print "    <body>\n";
 			print "        <div class='loader'></div>\n";
-			print " <!--     <style>\n";
-			print "            body{font-family: arial; font-size: 10pt;}\n";
-			print "            div.page{width: 1024px; min-height: 600px; border: 0px solid #cfcfcf; margin: auto;}\n";
-			print "            div.centered{width: 100%; margin: auto;}\n";
-			print "            div.spacer{width: 100%; height: 20px;}\n";
-			print "            div.footer{width: 1024px; text-align: center; margin: auto;}\n";
-			print "            div.success{padding: 4px; border: 2px solid #19A347; color: #19A347; background-color: #AFFFAB; text-align: center;}\n";
-			print "            div.error{padding: 4px; border: 2px solid #FF5036; color: #FF5036; background-color: #FFB6AB; text-align: center;}\n";
-			print "            table.data{width: 100%;}\n";
-			print "            th.data{background-color: #E6E6E6; padding:3px; font-family: arial; font-size: 10pt; border: 1px solid #cfcfcf;}\n";
-			print "            td.data{text-align: center; padding: 3px; font-family: arial; font-size: 10pt; border: 1px solid #cfcfcf;}\n";
-			print "            table.menu{width: 100%;}\n";
-			print "            td.menu{width: 14.3%; background-color: #E6E6E6; text-align: center; padding: 3px; font-family: arial; font-size: 10pt; border: 1px solid #cfcfcf;}\n";
-			print "            a{text-decoration: none; color: #000000;}\n";
-			print "            a.delete{color: #ffffff; text-decoration: none; background-color: red; padding-right: 4px; padding-left: 4px;}\n";
-			print "            span.heading{font-weight: bold; text-align: center;}\n";
-			print "            span.red{color: red;}\n";
-			print "            h3{font-size: 10pt; margin: 0px; text-align: center; color: #666666}\n";
-			print "            fieldset{border: 1px solid #cfcfcf;}\n";
-			print "            legend{font-size: 10pt;}\n";
-			print "            span.debug{color: red;}\n";
-			print "            .loader {position: fixed;left: 0px;top: 0px;width: 100%;height: 100%;z-index: 9999;background: url('images/page-loader.gif') 50% 50% no-repeat rgb(249,249,249);}\n";
-			print "        </style> -->\n";
 			print "        <script>\n";
 			print "            $(window).load(function() {\n";
 			print "                $('.loader').fadeOut('slow');\n";
@@ -117,7 +94,7 @@
 	        }
 	
 	        print "    </tr>\n";
-		print "</table>\n";
+	        print "</table>\n";
     		print "        </td>\n";
     		print "    </tr>\n";
     		print "</table>\n";
