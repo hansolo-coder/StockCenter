@@ -607,9 +607,9 @@
         $conn->fileName = $_SESSION['userId'];
         $db=$conn->connect();
 
- 		$sqlStockList = "SELECT * FROM stocks ORDER BY symbol";
-		$rsStockList = $db->prepare($sqlStockList);
-		$rsStockList->execute();
+ 	$sqlStockList = "SELECT * FROM stocks ORDER BY symbol";
+	$rsStockList = $db->prepare($sqlStockList);
+	$rsStockList->execute();
         $stockList = $rsStockList->fetchAll();
 
         if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";}
@@ -619,11 +619,11 @@
         $db = NULL;
         $conn = NULL;
         
-		print "<div class='spacer'></div>\n";
-		print "<fieldset>\n";
+	print "<div class='spacer'></div>\n";
+	print "<fieldset>\n";
         print "<legend>Portfolio Overview</legend>\n";
         print "<table class='display' id='overview'>\n";
-		print "    <thead>\n";
+	print "    <thead>\n";
         print "    <tr>\n";
         print "        <th class='data' width='16.6%'>\n";
         print "            Stock\n";
@@ -644,8 +644,8 @@
         print "            Dividends Earned\n";
         print "        </th>\n";
         print "    </tr>\n";
-		print "    </thead>\n";
-		print "    <tbody>\n";
+	print "    </thead>\n";
+	print "    <tbody>\n";
 
         $totalCurrentlyInvested = 0;
         $totalCurrentValue = 0;
@@ -826,22 +826,22 @@
             $css = "background-color: #FFB6AB;";
         }
 
-		print "    </tbody>\n";
-		print "</table>\n";
-		print "<div class='spacer'></div>\n";
-		print "<table class='data' id='totals'>\n";
+	print "    </tbody>\n";
+	print "</table>\n";
+	print "<div class='spacer'></div>\n";
+	print "<table class='data' id='totals'>\n";
         print "    <tr>\n";
         print "        <td class='data' width='48.5%' style='text-align: right; background-color: #E6E6E6; font-weight: bold;' colspan='3'>\n";
         print "            Totals:\n";
         print "        </td>\n";
         print "        <td class='data' width='16.6%' style='taxt-align: right;'>\n";
-        print "            $ " . $totalCurrentlyInvested;
+        print "            " . formatCash($totalCurrentlyInvested);
         print "        </td>\n";
         print "        <td class='data' width='16.6%' style='taxt-align: right; $css'>\n";
-        print "            $ " . $totalCurrentValue;
+        print "            " . formatCash($totalCurrentValue);
         print "        </td>\n";
         print "        <td class='data' width='16.6%'>\n";
-        print "            $ " . $totalDividends;
+        print "            " . formatCash($totalDividends);
         print "        </td>\n";
         print "</table>\n";
         print "</fieldset>\n";
