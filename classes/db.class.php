@@ -82,6 +82,9 @@
 			$sql .= "[accountNumber] varchar(20),";
 			$sql .= "[accountName] varchar(20),";
 			$sql .= "[financialInstitution] varchar(40),";
+			$sql .= "[isPension] char(1) NOT NULL DEFAULT 'N',";
+			$sql .= "[accountType] varchar(20),";
+			$sql .= "[accountCurrency] VARCHAR(3) NOT NULL DEFAULT 'DKK',";
 			$sql .= "[aCreated] DATE,";
 			$sql .= "[aClosed] DATE)";
 			$rs = $db->prepare($sql);
@@ -93,7 +96,7 @@
 			$rs->execute();
 
 			# transaction table
-			$sql = "CREATE TABLE [transactions] ([tDate] DATE NOT NULL,[symbol] VARCHAR(20) NOT NULL,[activity] VARCHAR(10) NOT NULL,[shares] INT,[cost] INT(0, 2), [tDateIsApprox] INTEGER, [accountId] INTEGER NOT NULL, [currency] VARCHAR(3) NOT NULL DEFAULT 'DKK', [tax] DECIMAL)";
+			$sql = "CREATE TABLE [transactions] ([tDate] DATE NOT NULL,[symbol] VARCHAR(20) NOT NULL,[activity] VARCHAR(10) NOT NULL,[shares] INT,[cost] INT(0, 2), [tDateIsApprox] INTEGER, [accountId] INTEGER NOT NULL, [currency] VARCHAR(3) NOT NULL DEFAULT 'DKK', [tax] DECIMAL, exchangeRate DECIMAL)";
 			$rs = $db->prepare($sql);
 			$rs->execute();
 
