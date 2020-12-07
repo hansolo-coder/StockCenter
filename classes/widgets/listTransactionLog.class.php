@@ -77,6 +77,7 @@
                   print "      <tr>\n";
                   print "        <th class='data'>Date</th>\n";
                   print "        <th class='data'>Value</th>\n";
+                  print "        <th class='data'>Name</th>\n";
                   print "        <th class='data'>&nbsp;</th>\n";
                   print "      </tr>\n";
 		  print "      <form action='" . htmlentities($_SERVER['PHP_SELF']) . "?action=setStockPrice&symbol=" . $this->symbol . "' method='post'>\n";
@@ -96,6 +97,10 @@
                   print "        <td class='data'>";
                   print "            <input type='text' name='price' id='price' value='";
 		  print $stockdata->currentPrice;
+		  print "'></td>\n";
+                  print "        <td class='data'>";
+                  print "            <input type='text' name='name' id='name' value='";
+		  print $stockdata->name;
 		  print "'></td>\n";
                   print "        <td class='data'>";
 		  print "            <input type='submit' value='Save'>\n";
@@ -378,6 +383,7 @@
 	    $sd = new stockData();
 	    $sd->symbol = trim($_REQUEST['symbol']);
 	    $sd->currentPrice = trim($_REQUEST['price']);
+	    $sd->name = trim($_REQUEST['name']);
 	    $sd->insertSimple();
 	}
     }

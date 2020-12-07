@@ -184,6 +184,11 @@
 			$sqlInsert .= "VALUES('" . $this->symbol . "','','ask','" . $this->currentPrice . "','" . time() . "')";
 			$rsInsert = $db->prepare($sqlInsert);
 			$rsInsert->execute();
+
+			$sqlInsert = "INSERT INTO stockData (symbol, market, attribute, value, lastUpdated) ";
+			$sqlInsert .= "VALUES('" . $this->symbol . "','','name','" . $this->name . "','" . time() . "')";
+			$rsInsert = $db->prepare($sqlInsert);
+			$rsInsert->execute();
 		
 			# disconnect from the database
 			$rsInsert = null;
