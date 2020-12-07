@@ -323,7 +323,7 @@
 
 		print "</table>";
 		print "<br>";
-		print "<span class='heading'>Total Dividends Earned: $ " . $totalDividends . "</span>";
+		print "<span class='heading'>Total Dividends Earned: " . formatCash($totalDividends) . "</span>";
         print "</fieldset>";
 
 
@@ -429,7 +429,7 @@
 
         print "</table>";
 		print "<br>";
-		print "<span class='heading'>Total Dividends Earned: $ " . $totalDividends . "</span>";
+		print "<span class='heading'>Total Dividends Earned: " . formatCash($totalDividends) . "</span>";
         print "</fieldset>";
 
 
@@ -535,7 +535,7 @@
 
 		print "</table>";
 		print "<br>";
-		print "<span class='heading'>Total Dividends Earned: $ " . $totalDividends . "</span>";
+		print "<span class='heading'>Total Dividends Earned: " . formatCash($totalDividends) . "</span>";
         print "</fieldset>";
 	}
 	

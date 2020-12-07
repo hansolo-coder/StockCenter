@@ -148,8 +148,8 @@
             $this->display();
     
             print "<fieldset>";
-            print "    Selling your shares in " . $_REQUEST['symbol'] . " would generate $ " . toCash($sellValue) . " to work with.<br>";
-            print "    This holding also produced an annual dividend income of $ " . toCash($soldAnnualDps) . " or a quarterly income of $ " . toCash($soldAnnualDps / 4) . ".<br>";
+            print "    Selling your shares in " . $_REQUEST['symbol'] . " would generate " . formatCash($sellValue) . " to work with.<br>";
+            print "    This holding also produced an annual dividend income of " . formatCash($soldAnnualDps) . " or a quarterly income of " . formatCash($soldAnnualDps / 4) . ".<br>";
             print "    Below is a \"what if\" simulation of how your dividend income would change if you re-invested the income from the sale into each of your holdings.";
             print "</fieldset>";
             print "<div class='spacer'></div>";
@@ -233,7 +233,7 @@
                     print "            " . $stock['symbol'];
                     print "        </td>";
                     print "        <td class='data'>";
-                    print "            $ " . toCash($buyCurrentPrice);
+                    print "            " . formatCash($buyCurrentPrice);
                     print "        </td>";
                     print "        <td class='data'>";
                     print "            " . $sharesToBuy;
@@ -245,10 +245,10 @@
                     print "            (" . $buyData->dps . " * " . $sharesToBuy . ") - " . $soldAnnualDps;
                     print "        </td>";
                     print "        <td class='data' $css>";
-                    print "           $ " . $qtrDelta;
+                    print "           " . formatCash($qtrDelta);
                     print "        </td>";
                     print "        <td class='data' $css>";
-                    print "           $ " . $annualDelta;
+                    print "           " . formatCash($annualDelta);
                     print "        </td>";
                     print "    </tr>";
                 }
