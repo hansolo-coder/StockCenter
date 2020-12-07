@@ -19,7 +19,8 @@
 			print "        <meta http-equiv='Cache-Control' content='no-cache, must-revalidate'>\n";
 			print "        <meta http-equiv='Pragma' content='no-cache'>\n";
 			print "        <meta http-equiv='Expires' content='0'>\n";
-			print "        <link rel='stylesheet' type='text/css' href='assets/style.css'>\n";
+			print "        <link rel='stylesheet' media='screen and (min-device-width: 1000px)' type='text/css' href='assets/style.css'>\n";
+			print "        <link rel='stylesheet' media='screen and (min-device-width: 800px)' type='text/css' href='assets/style800.css'>\n";
 			print "\n";
 			print "        <link rel='stylesheet' href='./javascript/jquery-ui/jquery-ui.min.css'>\n";
 			print "        <script src='./javascript/jquery-ui/external/jquery/jquery.js'></script>\n";
