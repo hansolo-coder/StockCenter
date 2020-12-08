@@ -115,6 +115,11 @@
                 include_once 'classes/widgets/listTransactionLog.class.php';
                 $log = new listTransactionLog();
                 $log->setStockPrice();
+
+                message("success", "Fixed stock data updated");
+                
+                $log->symbol = $_REQUEST['symbol'];
+                $log->showLog();
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "deleteTransaction")
             {
