@@ -708,9 +708,9 @@
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStocklist['symbol']);
             $rs->execute();
-			$rows = $rs->fetchAll();
+            $rows = $rs->fetchAll();
 			
-			$rs = null;
+            $rs = null;
 			
             $totalSpent = 0;
 
@@ -724,9 +724,9 @@
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStocklist['symbol']);
             $rs->execute();
-			$rows = $rs->fetchAll();
+            $rows = $rs->fetchAll();
 			
-			$rs = null;
+            $rs = null;
 			
             $totalSales = 0;
 
@@ -772,6 +772,9 @@
 
             if ((($boughtShares - $soldShares) > 0))
             {
+                $currentValue = ($currentPrice * ($boughtShares - $soldShares));
+                $currentlyInvested = toCash($totalSpent) - toCash($totalSales);
+
                 print "<tr>\n";
                 print "    <td class='data'>\n";
                 print "        " . $rowStocklist['symbol'];
@@ -783,10 +786,14 @@
                 print "        " . ($boughtShares - $soldShares);
                 print "    </td>\n";
                 print "    <td class='data'>\n";
-                print "        " . formatCash(toCash($totalSpent) - toCash($totalSales));
+                print "        " . formatCash($currentlyInvested);
                 print "    </td>\n";
 
-                if(toCash(($currentPrice * ($boughtShares - $soldShares))) > (toCash($totalSpent) - toCash($totalSales)))
+                if($currentlyInvested > 0 && (abs($currentlyInvested - $currentValue) / $currentlyInvested < 0.05))
+                {
+                    print "    <td class='data' style='background-color: #F3E5AB;'>\n"; // Dark Yellow #9B870C / Pale Yellow #F3E5AB
+                }
+                else if($currentValue > $currentlyInvested)
                 {
                     print "    <td class='data' style='background-color: #AFFFAB;'>\n";
                 }
@@ -795,15 +802,15 @@
                     print "    <td class='data' style='background-color: #FFB6AB;'>\n";
                 }
 
-                print "        " . formatCash(($currentPrice * ($boughtShares - $soldShares)));
+                print "        " . formatCash($currentValue);
                 print "    </td>\n";
                 print "    <td class='data'>\n";
                 print "        " . formatCash($dividends);
                 print "    </td>\n";
                 print "</tr>\n";
 
-                $totalCurrentlyInvested = toCash($totalCurrentlyInvested + ($totalSpent) - toCash($totalSales));
-                $totalCurrentValue = toCash($totalCurrentValue + ($currentPrice * ($boughtShares - $soldShares)));
+                $totalCurrentlyInvested = toCash($totalCurrentlyInvested + $currentlyInvested);
+                $totalCurrentValue = toCash($totalCurrentValue + $currentValue);
                 $totalDividends = toCash($totalDividends + $dividends);
             }
             
