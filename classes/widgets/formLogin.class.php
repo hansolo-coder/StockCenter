@@ -138,66 +138,70 @@
 				# if it matches the provided password...
 				if ($s->settingValue == md5(trim($_REQUEST['pass'])))
 				{
-					# set session variables
-					$_SESSION['userId'] = $_REQUEST['userId'];
-					$_SESSION['loggedIn'] = "y";
+				    # set session variables
+				    $_SESSION['userId'] = $_REQUEST['userId'];
+				    $_SESSION['loggedIn'] = "y";
 	
 				    include_once './classes/db.class.php';
 					
-					if ($_SESSION['debug'] == "on"){
-						print "<span class='debug'>dbConnect: loginForm.class.php " . __LINE__ . "</span><br>";
-					}
+				    if ($_SESSION['debug'] == "on"){
+					print "<span class='debug'>dbConnect: loginForm.class.php " . __LINE__ . "</span><br>";
+				    }
 	
 				    $conn = new db();
-					$conn->fileName = $_SESSION['userId'];
-					$db=$conn->connect();
+				    $conn->fileName = $_SESSION['userId'];
+				    $db=$conn->connect();
 	
-					# upgrade the database if needed
-					dbUpgrade($db);
+				    # upgrade the database if needed
+				    dbUpgrade($db);
 
-					# get the settings from the settings table
-					$sqlSettings = "SELECT * FROM settings";
-					$rsSettings = $db->prepare($sqlSettings);
-					$rsSettings->execute();
-					$rows = $rsSettings->fetchAll();
+				    # get the settings from the settings table
+				    $sqlSettings = "SELECT * FROM settings";
+				    $rsSettings = $db->prepare($sqlSettings);
+				    $rsSettings->execute();
+				    $rows = $rsSettings->fetchAll();
 	
-					if ($_SESSION['debug'] == "on"){
-						print "<span class='debug'>dbDisconnect: loginForm.class.php " . __LINE__ . "</span><br>";
-					}
+				    if ($_SESSION['debug'] == "on"){
+					print "<span class='debug'>dbDisconnect: loginForm.class.php " . __LINE__ . "</span><br>";
+				    }
 	
 				    $rsSettings = NULL;
-					$db = NULL;
-					$conn = NULL;
+				    $db = NULL;
+				    $conn = NULL;
 	
-					# set the refresh time from the setting
-					foreach($rows as $rowSettings)
+				    # set the refresh time from the setting
+				    foreach($rows as $rowSettings)
+				    {
+					if ($rowSettings['settingName'] == "refreshTime")
 					{
-						if ($rowSettings['settingName'] == "refreshTime")
-						{
-							$_SESSION['refreshTime'] = $rowSettings['settingValue'];
-						}
-						if ($rowSettings['settingName'] == "currency")
-						{
-							$_SESSION['DefaultCurrency'] = $rowSettings['settingValue'];
-						}
-						if ($rowSettings['settingName'] == "showTransactionTax")
-						{
-							$_SESSION['showTransactionTax'] = strtoupper(trim($rowSettings['settingValue']));
-						}
-						if ($rowSettings['settingName'] == "region")
-						{
-							$_SESSION['region'] = strtoupper(trim($rowSettings['settingValue']));
-						}
+						$_SESSION['refreshTime'] = $rowSettings['settingValue'];
 					}
+					if ($rowSettings['settingName'] == "currency")
+					{
+						$_SESSION['DefaultCurrency'] = $rowSettings['settingValue'];
+					}
+					if ($rowSettings['settingName'] == "showTransactionTax")
+					{
+						$_SESSION['showTransactionTax'] = strtoupper(trim($rowSettings['settingValue']));
+					}
+					if ($rowSettings['settingName'] == "region")
+					{
+						$_SESSION['region'] = strtoupper(trim($rowSettings['settingValue']));
+					}
+					if ($rowSettings['settingName'] == "chgPctMarkUnchanged")
+					{
+						$_SESSION['chgPctMarkUnchanged'] = $rowSettings['settingValue'];
+					}
+				    }
 	
-					# display the home page
-					include_once './classes/page.class.php';
-					$page = new page();
-					$page->start();
+				    # display the home page
+				    include_once './classes/page.class.php';
+				    $page = new page();
+				    $page->start();
 
-					homePage();
+				    homePage();
 					
-					$page->end();
+				    $page->end();
 				}
 				else
 				{
