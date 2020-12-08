@@ -9,19 +9,19 @@
     	 */
     	function display()
     	{
-        	if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
+            if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
+
+            include_once './classes/db.class.php';
         	
-        	include_once './classes/db.class.php';
-        	
-        	# get the settings from the database
-        	$conn = new db();
+            # get the settings from the database
+            $conn = new db();
             $conn->fileName = $_SESSION['userId'];
             $db=$conn->connect();
             
-    		$sqlSettings = "SELECT * FROM settings";
-    		$rsSettings  = $db->prepare($sqlSettings);
-    		$rsSettings->execute();
-    		$rowSettings = $rsSettings->fetchall();
+    	    $sqlSettings = "SELECT * FROM settings";
+    	    $rsSettings  = $db->prepare($sqlSettings);
+    	    $rsSettings->execute();
+    	    $rowSettings = $rsSettings->fetchall();
     
     	    if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";}
         	
@@ -30,9 +30,9 @@
     	    $conn = null;
     	    
     	    # display the form
-    		print "<div class='spacer'></div>";
-    		print "<div style='width: 550px; color: black; padding: 10px; margin: auto; text-align: center;'>";
-    		print "    <form action='" . $_SERVER['PHP_SELF'] . "' method='post'>";
+    	    print "<div class='spacer'></div>";
+    	    print "<div style='width: 550px; color: black; padding: 10px; margin: auto; text-align: center;'>";
+    	    print "    <form action='" . $_SERVER['PHP_SELF'] . "' method='post'>";
             print "        <table class='data'>";
             print "            <tr>";
             print "                <th class='data'>";
@@ -105,6 +105,10 @@
             	$set = new setting();
             	$set->settingName = 'region';
                 $set->settingValue = trim($_REQUEST['region']);
+                $set->update();
+            	$set = new setting();
+            	$set->settingName = 'chgPctMarkUnchanged';
+                $set->settingValue = trim($_REQUEST['chgPctMarkUnchanged']);
                 $set->update();
     
                 message("success", "Settings Saved");
