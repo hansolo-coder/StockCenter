@@ -53,7 +53,24 @@
         # if we have an action to process
         if (isset($_REQUEST['action']) and $_REQUEST['action'] != '')
         {
-            if (isset($_REQUEST['action']) and $_REQUEST['action'] == "addStock")
+            // $_REQUEST['action'] IS set and non-blank so no need to check more
+            if ($_REQUEST['action'] == "showExecuteCommand")
+            {
+            	include_once 'classes/widgets/formExecuteCommand.class.php';
+
+            	$form = new formExecuteCommand();
+                $form->action = "executeCommand";
+            	$form->display();
+            }
+            elseif ($_REQUEST['action'] == "executeCommand")
+            {
+            	include_once 'classes/widgets/formExecuteCommand.class.php';
+
+            	$form = new formExecuteCommand();
+                $form->action = "showExecuteCommand";
+            	$form->process();
+            }
+            elseif ($_REQUEST['action'] == "addStock")
             {
             	include_once 'classes/widgets/formAddStock.class.php';
 
