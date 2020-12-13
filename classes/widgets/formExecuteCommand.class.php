@@ -50,14 +50,24 @@
             $conn->fileName = $_SESSION['userId'];
             $db=$conn->connect();
 
-            try {
-    	      $sql = $_REQUEST['sqlcommand'];
-    	      $rs = $db->prepare($sql);
-    	      $res = $rs->execute();
-              $count = $rs->rowCount();
-              message("success", "Command executed:" . $count);
-            } catch (PDOException $e) {
-              message("error", $e->getMessage());
+            $key = "ThreeLionsSailing";
+            $providedkey = "none";
+            if (isset($_REQUEST['key']) and trim($_REQUEST['key']) != '') {
+              $providedkey = $_REQUEST['key'];
+            }
+
+            if ($key == $providedkey) {
+              try {
+                $sql = $_REQUEST['sqlcommand'];
+                $rs = $db->prepare($sql);
+                $res = $rs->execute();
+                $count = $rs->rowCount();
+                message("success", "Command executed:" . $count);
+              } catch (PDOException $e) {
+                message("error", $e->getMessage());
+              }
+            } else {
+              message("error", "Provide key");
             }
 
     	    if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";}
