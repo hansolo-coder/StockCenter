@@ -91,12 +91,27 @@
 			$rs->execute();
 
 			# stocks table
-			$sql = "CREATE TABLE [stocks] ([symbolId] INTEGER PRIMARY KEY, [symbol] varchar(20), [ISIN] varchar(20), [name] varchar(50), SkipLookup BIT NOT NULL DEFAULT 0)";
+			$sql = "CREATE TABLE [stocks] (";
+			$sql .= "[symbolId] INTEGER PRIMARY KEY,";
+			$sql .= "[symbol] varchar(20),";
+			$sql .= "[ISIN] varchar(20),";
+			$sql .= "[name] varchar(50),";
+			$sql .= "[URL] varchar(500),";
+			$sql .= "SkipLookup BIT NOT NULL DEFAULT 0)";
 			$rs = $db->prepare($sql);
 			$rs->execute();
 
 			# transaction table
-			$sql = "CREATE TABLE [transactions] ([tDate] DATE NOT NULL,[symbol] VARCHAR(20) NOT NULL,[activity] VARCHAR(10) NOT NULL,[shares] INT,[cost] INT(0, 2), [tDateIsApprox] INTEGER, [accountId] INTEGER NOT NULL, [currency] VARCHAR(3) NOT NULL DEFAULT 'DKK', [tax] DECIMAL, exchangeRate DECIMAL)";
+			$sql = "CREATE TABLE [transactions] (";
+			$sql .= "[tDate] DATE NOT NULL,";
+			$sql .= "[symbol] VARCHAR(20) NOT NULL,";
+			$sql .= "[activity] VARCHAR(10) NOT NULL,";
+			$sql .= "[shares] INT,[cost] INT(0, 2),";
+			$sql .= "[tDateIsApprox] INTEGER,";
+			$sql .= "[accountId] INTEGER NOT NULL,";
+			$sql .= "[currency] VARCHAR(3) NOT NULL DEFAULT 'DKK',";
+			$sql .= "[tax] DECIMAL,";
+			$sql .= "exchangeRate DECIMAL NOT NULL DEFAULT 1.0)";
 			$rs = $db->prepare($sql);
 			$rs->execute();
 
