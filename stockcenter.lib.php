@@ -676,13 +676,13 @@
             
             $dataSource = "Updates in " . number_format((float)($_SESSION['refreshTime'] - ((time() - $lastUpdated) / 60)), 0, '.', '') . " minutes";
 
-	        if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: index.php " . __LINE__ . "</span><br>";}
+	    if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: index.php " . __LINE__ . "</span><br>";}
 	    	
-	        include_once './classes/db.class.php';
+	    include_once './classes/db.class.php';
 	        
-	        $conn = new db();
-	        $conn->fileName = $_SESSION['userId'];
-	        $db=$conn->connect();
+	    $conn = new db();
+	    $conn->fileName = $_SESSION['userId'];
+	    $db=$conn->connect();
 
             $sql = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
             $rs = $db->prepare($sql);
@@ -1156,7 +1156,7 @@
 		$conn = null;
 		
 
-		print "<div class='spacer'></div>";
+	print "<div class='spacer'></div>";
         print "<fieldset>";
         print "<legend>Legend</legend>";
         print "<table class='data'>";
@@ -1375,8 +1375,79 @@
 		$data->delete();
 		$data->insert();
 	}
+
+	# log daily status
+	function logDailyStatus($action, $userId, $access) {
+    	  if ($_SESSION['debug'] == "on"){
+    		print "<span class='debug'>logDailyStatus</span><br>";
+    	  }
+
+          include_once './classes/db.class.php';
+
+          if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
     	
-	
+          $conn = NULL;
+          $db = NULL;
+          $rs = NULL;
+          $row = NULL;
+
+          try {
+            $conn = new db();
+            $conn->fileName = trim($userId);
+            $db=$conn->connect();
+
+            $key = getAccessKey($db);
+            if ($key != $access)
+              throw new Exception("Key is not correct");
+
+ 	    $sqlStockList = "INSERT INTO dailystatus (tDate, symbol, shares, cost, currency)";
+            $sqlStockList .= " select DATETIME('now','localtime'), symbol, shares, case when ask <= 0 then lastTradePriceOnly else ask end as cost, currency from (";
+            $sqlStockList .= "select t.symbol, sum(case when t.activity = 'SELL' THEN t.shares * -1 ELSE t.shares END) AS shares, sum(case when t.activity = 'SELL' THEN shares * cost * -1 ELSE shares * cost END) AS totalCost, t.currency";
+            $sqlStockList .= ", (SELECT [value] from stockdata sd where sd.symbol = t.symbol and attribute = 'ask') AS ask";
+            $sqlStockList .= ", (SELECT [value] from stockdata sd where sd.symbol = t.symbol and attribute = 'lastTradePriceOnly') AS lastTradePriceOnly";
+            $sqlStockList .= " from transactions t";
+            $sqlStockList .= " where t.activity in ('BUY','BONUS','SPLIT','SELL') GROUP BY t.symbol, t.currency) WHERE shares != 0 ORDER BY 1";
+	    $rsStockList = $db->prepare($sqlStockList);
+	    $rsStockList->execute();
+	  } catch (Exception $e) {
+            if ($_SESSION['debug'] == "on"){print "<span class='debug'>logDailyStatus: " . __LINE__ . ":" . $e->getMessage() . "</span><br>";}
+            print $e->getMessage();
+            $row = null;
+            $rs = null;
+            $db = null;
+            $conn = null;
+	    return false;
+	  }
+
+          if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";}
+
+          $row = null;
+          $rs = null;
+          $db = null;
+          $conn = null;
+
+          return true;
+	}
+
+        function getAccessKey($db) {
+          $key = NULL;
+
+          # $sql = "SELECT * FROM settings WHERE settingName=:settingName";
+          $sql = "SELECT * FROM settings WHERE settingName='accessKey'";
+	  # $rs = $db->prepare($sql);
+	  # $rs->bindValue(':settingName', $this->settingName);
+	  #$rs->execute();
+          $rs = $db->query($sql, PDO::FETCH_ASSOC);
+	  $row = $rs->fetch();
+          $key = $row['settingValue'];
+
+          $row = NULL;
+          $rs = NULL;
+          $sql = NULL;
+
+          return $key;
+        }
+
 	# displays summary bar
 	function summaryBar($symbol)
 	{

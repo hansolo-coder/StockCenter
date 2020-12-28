@@ -47,7 +47,7 @@
             {
                 print "            <tr>";
     
-                if ($setting['settingName'] != "password" and $setting['settingName'] != "refreshTime" and $setting['settingName'] != "databaseVersion")
+                if ($setting['settingName'] != "password" and $setting['settingName'] != "refreshTime" and $setting['settingName'] != "databaseVersion" and $setting['settingName'] != "accessKey")
                 {
                     print "                <td class='data'>";
                     print $setting['settingName'] . " (" . $setting['settingDesc'] . ")";
