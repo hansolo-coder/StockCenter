@@ -132,7 +132,18 @@
 			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('showTransactionTax', '0', 'Yes/No > Show tax on transactionlist')");
 			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('region', 'EUR', 'US/EUR > Adapt to region')");
 			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('chgPctMarkUnchanged', '0.2', 'Mark as unchanged if change in value is below percentage')");
+			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('accessKey', null, 'Key for authorizing remote access')");
 
+			# dailystatus table
+			$sql = "CREATE TABLE [dailystatus] (";
+			$sql .= " [tDate] DATE NOT NULL";
+			$sql .= ",[accountId] INTEGER";
+			$sql .= ",[symbol] VARCHAR(20) NOT NULL";
+			$sql .= ",[shares] INT NOT NULL,[cost] DECIMAL NOT NULL";
+			$sql .= ",[currency] VARCHAR(3) NOT NULL DEFAULT 'DKK'";
+			$sql .= ")";
+			$rs = $db->prepare($sql);
+			$rs->execute();
 		}
 	}
 ?>

@@ -282,6 +282,13 @@
         }
 
         $page->end();
+    } // NOT logged in
+    elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == 'dailyStatus' and isset($_REQUEST['user']) and isset($_REQUEST['access']))
+    {
+        if (logDailyStatus($_REQUEST['action'], $_REQUEST['user'], $_REQUEST['access']))
+          http_response_code(200);
+        else
+          http_response_code(403);
     }
     elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "login")
     {
