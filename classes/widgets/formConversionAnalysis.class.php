@@ -204,29 +204,35 @@
                 	$buyData->select();
     
                     $buyCurrentPrice = $buyData->currentPrice;
-    
-                    # divide money to spend by stock price to get # of shares we can buy
-                    $sharesToBuy = toCash(($sellValue / $buyCurrentPrice));
-    
-    
-                    # calculate current dps for stock being bought
-                    $boughtAnnualDps = toCash(($sharesToBuy * $buyData->dps));
-                    $boughtQtrDps = toCash(($boughtAnnualDps / 4));
-    
-                    # calculate total dividends gained
-                    $annualDelta = toCash(($boughtAnnualDps - $soldAnnualDps));
-                    $qtrDelta = toCash($annualDelta / 4);
-    
-                    # decide what color to highlight cells
-                    if($annualDelta > 0)
+
+                    if ($buyCurrentPrice != 0 && is_numeric($buyData->dps))
                     {
-                        $css = "style='background-color: #AFFFAB;'";
-                    }
-                    else
-                    {
-                        $css = "style='background-color: #FFB6AB;'";
-                    }
+                      # divide money to spend by stock price to get # of shares we can buy
+                      $sharesToBuy = toCash(($sellValue / $buyCurrentPrice));
     
+                      # calculate current dps for stock being bought
+                      $boughtAnnualDps = toCash(($sharesToBuy * $buyData->dps));
+                      $boughtQtrDps = toCash(($boughtAnnualDps / 4));
+    
+                      # calculate total dividends gained
+                      $annualDelta = toCash(($boughtAnnualDps - $soldAnnualDps));
+                      $qtrDelta = toCash($annualDelta / 4);
+    
+                      # decide what color to highlight cells
+                      if($annualDelta > 0)
+                      {
+                          $css = "style='background-color: #AFFFAB;'";
+                      }
+                      else
+                      {
+                          $css = "style='background-color: #FFB6AB;'";
+                      }
+                    } else {
+                      $sharesToBuy = "Cannot calc. No price/dps";
+                      $css = "style='background-color: lightgray;'";
+                      $annualDelta = "";
+                      $qtrDelta = "";
+                    }
                     # display the information
                     print "    <tr>";
                     print "        <td class='data'>";
@@ -242,7 +248,10 @@
                     print "            " . $buyData->dps;
                     print "        </td>";
                     print "        <td class='data'>";
-                    print "            (" . $buyData->dps . " * " . $sharesToBuy . ") - " . $soldAnnualDps;
+                    if (is_numeric($sharesToBuy))
+                    {
+                      print "            (" . $buyData->dps . " * " . $sharesToBuy . ") - " . $soldAnnualDps;
+                    }
                     print "        </td>";
                     print "        <td class='data' $css>";
                     print "           " . formatCash($qtrDelta);
