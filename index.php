@@ -167,7 +167,12 @@
                 $header = new pageHeader();
                 $header->display();
 
-                dividendReport();
+                $forYear = date('Y');
+                if (isset($_REQUEST['year']) and is_numeric($_REQUEST['year']))
+                {
+                  $forYear = substr($_REQUEST['year'],0,4) + 0;
+                }
+                dividendReport($forYear);
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "addUserForm")
             {

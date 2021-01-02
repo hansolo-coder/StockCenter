@@ -158,15 +158,20 @@
 	
     
     # dividend report block
-	function dividendReport()
-	{
-		print "<div class='spacer'></div>";
+    function dividendReport($forYear)
+    {
+        print "<div class='spacer'></div>";
 	    
-		# historical dividend chart
+        # historical dividend chart
         $labels = '[';
         $data = '[';
 
         $endYear = date('Y');
+        $otherYear = $endYear;
+        if ($forYear == $endYear)
+        {
+          $otherYear = $endYear - 1;
+        }
         
         for($i = ($endYear - 9); $i <= ($endYear); $i++)
         {
@@ -187,27 +192,27 @@
         print "<fieldset>";
         print "<legend>Annual Dividend Earnings</legend>";
         print "<div style='width:100%; margins: auto;'>";
-		print "	   <div>";
-		print "		   <canvas id='canvas' height='15' width='100%'></canvas>";
-		print "	   </div>";
-		print "</div>";
+        print "	   <div>";
+        print "		   <canvas id='canvas' height='15' width='100%'></canvas>";
+        print "	   </div>";
+        print "</div>";
         print "<script>";
         ?>
-		var lineChartData = {
-			labels : <?php print $labels; ?>,
-			datasets : [
-				{
-					label: "Dividend Payments",
-					fillColor : "rgba(220,220,220,0.2)",
-					strokeColor : "rgba(220,220,220,1)",
-					pointColor : "rgba(220,220,220,1)",
-					pointStrokeColor : "#fff",
-					pointHighlightFill : "#fff",
-					pointHighlightStroke : "rgba(220,220,220,1)",
-					data : <?php print $data; ?>
-				}
+        var lineChartData = {
+        	labels : <?php print $labels; ?>,
+        	datasets : [
+        		{
+        			label: "Dividend Payments",
+        			fillColor : "rgba(220,220,220,0.2)",
+        			strokeColor : "rgba(220,220,220,1)",
+        			pointColor : "rgba(220,220,220,1)",
+        			pointStrokeColor : "#fff",
+        			pointHighlightFill : "#fff",
+        			pointHighlightStroke : "rgba(220,220,220,1)",
+        			data : <?php print $data; ?>
+        		}
                 ]
-		}
+        }
 
         window.onload = function(){
             var ctx = document.getElementById("canvas").getContext("2d");
@@ -218,56 +223,56 @@
         <?php
         print "</script>";
         print "</fieldset>";
-                
-        
 
-		include_once './classes/db.class.php';
-		
-		if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
-		
-		$conn = new db();
+
+        include_once './classes/db.class.php';
+
+        if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
+
+        $conn = new db();
         $conn->fileName = $_SESSION['userId'];
         $db = $conn->connect();
         
         # begin this year dividend report
-		$totalDividends = 0;
+        $totalDividends = 0;
 
-		$sqlStockList = "SELECT * FROM stocks ORDER BY symbol";
-		$rsStockList = $db->prepare($sqlStockList);
-		$rsStockList->execute();
-		$stockList = $rsStockList->fetchall();
-		
-		$rsStockList = null;
+        $sqlStockList = "SELECT * FROM stocks ORDER BY symbol";
+        $rsStockList = $db->prepare($sqlStockList);
+        $rsStockList->execute();
+        $stockList = $rsStockList->fetchall();
 
-		print "<div class='spacer'></div>";
+        $rsStockList = null;
+
+        print "<div class='spacer'></div>";
         print "<fieldset>";
         print "    <legend>";
-        print "        " . date('Y') . " Dividend Report";
+        print "        " . $forYear . " Dividend Report";
+        print " (See <a href='" . htmlentities($_SERVER['PHP_SELF']) . "?action=dividendReport&year=" . $otherYear . "'>" . $otherYear . "</a>)";
         print "    </legend>";
-		print "<table class='data'>";
-		print "    <tr>";
-		print "        <th class='data' width='10%'>";
-		print "            Symbol";
-		print "        </th>";
-		print "        <th class='data' width='75%'>";
-		print "            Company Name";
-		print "        </th>";
-		print "        <th class='data' width='15'>";
-		print "            Dividends Earned";
-		print "        </th>";
-		print "    </tr>";
+        print "<table class='data'>";
+        print "    <tr>";
+        print "        <th class='data' width='10%'>";
+        print "            Symbol";
+        print "        </th>";
+        print "        <th class='data' width='75%'>";
+        print "            Company Name";
+        print "        </th>";
+        print "        <th class='data' width='15'>";
+        print "            Dividends Earned";
+        print "        </th>";
+        print "    </tr>";
 
         $totalDividends = 0;
 
-		foreach($stockList as $rowStockList)
-		{
-			if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
-			
-			$conn = new db();
-	        $conn->fileName = $_SESSION['userId'];
-	        $db = $conn->connect();
+        foreach($stockList as $rowStockList)
+        {
+            if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
+        	
+            $conn = new db();
+            $conn->fileName = $_SESSION['userId'];
+            $db = $conn->connect();
 	        
-			$sql = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
+            $sql = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStockList['symbol']);
             $rs->execute();
@@ -281,27 +286,27 @@
             $row = $rs->fetch();
             $soldShares = $row['s'];
 
-			$sqlDividend = "SELECT sum(cost) as s FROM transactions where activity='DIVIDEND' AND symbol=:symbol AND tDate > '" . date('Y') . "-01-01'";
-			$rsDividend = $db->prepare($sqlDividend);
+        	$sqlDividend = "SELECT sum(cost) as s FROM transactions where activity='DIVIDEND' AND symbol=:symbol AND tDate >= '" . $forYear . "-01-01' AND tDate <= '" . $forYear . "-12-31'";
+        	$rsDividend = $db->prepare($sqlDividend);
             $rsDividend->bindValue(':symbol', $rowStockList['symbol']);
-			$rsDividend->execute();
-			$rowDividend = $rsDividend->fetch();
-			$dividends = $rowDividend['s'];
+        	$rsDividend->execute();
+        	$rowDividend = $rsDividend->fetch();
+        	$dividends = $rowDividend['s'];
 
-			if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";}
-			$row = null;
-			$rowDividend = null;
-			$rs = null;
-			$rsDividend = null;
-			$rsStockList = null;
-			$db = null;
-			$conn = null;
-			
-			include_once './classes/tc/stockData.class.php';
+        	if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";}
+        	$row = null;
+        	$rowDividend = null;
+        	$rs = null;
+        	$rsDividend = null;
+        	$rsStockList = null;
+        	$db = null;
+        	$conn = null;
+        	
+        	include_once './classes/tc/stockData.class.php';
 
-			$sData = new stockData();
-			$sData->symbol = $rowStockList['symbol'];
-			$sData->select();
+        	$sData = new stockData();
+        	$sData->symbol = $rowStockList['symbol'];
+        	$sData->select();
 
             if ($dividends > 0)
             {
@@ -319,61 +324,61 @@
 
                 $totalDividends = toCash($totalDividends + $dividends);
             }
-		}
+        }
 
-		print "</table>";
-		print "<br>";
-		print "<span class='heading'>Total Dividends Earned: " . formatCash($totalDividends) . "</span>";
+        print "</table>";
+        print "<br>";
+        print "<span class='heading'>Total Dividends Earned: " . formatCash($totalDividends) . "</span>";
         print "</fieldset>";
 
 
         # begin cumulitive dividend report
-		$totalDividends = 0;
+        $totalDividends = 0;
 
-		if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: index.php " . __LINE__ . "</span><br>";}
+        if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: index.php " . __LINE__ . "</span><br>";}
 
-		include_once './classes/db.class.php';
-		
+        include_once './classes/db.class.php';
+        
         $conn = new db();
         $conn->fileName = $_SESSION['userId'];
         $db=$conn->connect();
-        
-        $sqlStockList = "SELECT * FROM stocks ORDER BY symbol";
-		$rsStockList = $db->prepare($sqlStockList);
-		$rsStockList->execute();
-		$rows = $rsStockList->fetchAll();
 
-		$rsStockList = null;
-		
-		print "<div class='spacer'></div>";
+        $sqlStockList = "SELECT * FROM stocks ORDER BY symbol";
+        $rsStockList = $db->prepare($sqlStockList);
+        $rsStockList->execute();
+        $rows = $rsStockList->fetchAll();
+
+        $rsStockList = null;
+        
+        print "<div class='spacer'></div>";
         print "<fieldset>";
         print "    <legend>";
         print "        Cumulitive Dividend Report (Current Holdings)";
         print "    </legend>";
-		print "<table class='data'>";
-		print "    <tr>";
-		print "        <th class='data' width='10%'>";
-		print "            Symbol";
-		print "        </th>";
-		print "        <th class='data' width='75%'>";
-		print "            Company Name";
-		print "        </th>";
-		print "        <th class='data' width='15'>";
-		print "            Dividends Earned";
-		print "        </th>";
-		print "    </tr>";
+        print "<table class='data'>";
+        print "    <tr>";
+        print "        <th class='data' width='10%'>";
+        print "            Symbol";
+        print "        </th>";
+        print "        <th class='data' width='75%'>";
+        print "            Company Name";
+        print "        </th>";
+        print "        <th class='data' width='15'>";
+        print "            Dividends Earned";
+        print "        </th>";
+        print "    </tr>";
 
         $totalDividends = 0;
 
-		foreach ($rows as $rowStockList)
-		{
-			if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: index.php " . __LINE__ . "</span><br>";}
-			
-			$conn = new db();
+        foreach ($rows as $rowStockList)
+        {
+        	if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: index.php " . __LINE__ . "</span><br>";}
+        	
+        	$conn = new db();
 	        $conn->fileName = $_SESSION['userId'];
 	        $db = $conn->connect();
 	        
-			$sql = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
+        	$sql = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStockList['symbol']);
             $rs->execute();
@@ -387,29 +392,29 @@
             $row = $rs->fetch();
             $soldShares = $row['s'];
 
-			$sqlDividend = "SELECT sum(cost) as s FROM transactions where activity='DIVIDEND' AND symbol=:symbol";
-			$rsDividend = $db->prepare($sqlDividend);
+        	$sqlDividend = "SELECT sum(cost) as s FROM transactions where activity='DIVIDEND' AND symbol=:symbol";
+        	$rsDividend = $db->prepare($sqlDividend);
             $rsDividend->bindValue(':symbol', $rowStockList['symbol']);
-			$rsDividend->execute();
-			$rowDividend = $rsDividend->fetch();
-			$dividends = $rowDividend['s'];
+        	$rsDividend->execute();
+        	$rowDividend = $rsDividend->fetch();
+        	$dividends = $rowDividend['s'];
 
-			if ($_SESSION['debug'] == "on"){
-				print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";
-			}
-			
-			$rowDividend = null;
-			$rsDividend = null;
-			$row = null;
-			$rs = null;
-			$rsStockList = null;
-			$db = null;
-			$conn = null;
-			
-			$sData->symbol = $rowStockList['symbol'];
-			$sData->select();
+        	if ($_SESSION['debug'] == "on"){
+        		print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";
+        	}
+        	
+        	$rowDividend = null;
+        	$rsDividend = null;
+        	$row = null;
+        	$rs = null;
+        	$rsStockList = null;
+        	$db = null;
+        	$conn = null;
+        	
+        	$sData->symbol = $rowStockList['symbol'];
+        	$sData->select();
 
-			if ((($boughtShares - $soldShares) > 0))
+        	if ((($boughtShares - $soldShares) > 0))
             {
                 print "<tr>";
                 print "    <td class='data'>";
@@ -425,61 +430,61 @@
 
                 $totalDividends = toCash($totalDividends + $dividends);
             }
-		}
+        }
 
         print "</table>";
-		print "<br>";
-		print "<span class='heading'>Total Dividends Earned: " . formatCash($totalDividends) . "</span>";
+        print "<br>";
+        print "<span class='heading'>Total Dividends Earned: " . formatCash($totalDividends) . "</span>";
         print "</fieldset>";
 
 
         # begin all-time dividend report
-		$totalDividends = 0;
+        $totalDividends = 0;
 
-		if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
+        if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
 
-		include_once './classes/db.class.php';
-		
+        include_once './classes/db.class.php';
+        
         $conn = new db();
         $conn->fileName = $_SESSION['userId'];
         $db=$conn->connect();
         
         $sqlStockList = "SELECT * FROM stocks ORDER BY symbol";
-		$rsStockList = $db->prepare($sqlStockList);
-		$rsStockList->execute();
-		$rows = $rsStockList->fetchAll();
-		
-		$rsStockList = null;
+        $rsStockList = $db->prepare($sqlStockList);
+        $rsStockList->execute();
+        $rows = $rsStockList->fetchAll();
+        
+        $rsStockList = null;
 
-		print "<div class='spacer'></div>";
+        print "<div class='spacer'></div>";
         print "<fieldset>";
         print "    <legend>";
         print "        All-Time Dividend Report (Includes Liquidated Holdings)";
         print "    </legend>";
-		print "<table class='data'>";
-		print "    <tr>";
-		print "        <th class='data' width='10%'>";
-		print "            Symbol";
-		print "        </th>";
-		print "        <th class='data' width='75%'>";
-		print "            Company Name";
-		print "        </th>";
-		print "        <th class='data' width='15'>";
-		print "            Dividends Earned";
-		print "        </th>";
-		print "    </tr>";
+        print "<table class='data'>";
+        print "    <tr>";
+        print "        <th class='data' width='10%'>";
+        print "            Symbol";
+        print "        </th>";
+        print "        <th class='data' width='75%'>";
+        print "            Company Name";
+        print "        </th>";
+        print "        <th class='data' width='15'>";
+        print "            Dividends Earned";
+        print "        </th>";
+        print "    </tr>";
 
         $totalDividends = 0;
 
-		foreach ($rows as $rowStockList)
-		{
-			if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: index.php " . __LINE__ . "</span><br>";}
-			
-			$conn = new db();
+        foreach ($rows as $rowStockList)
+        {
+        	if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: index.php " . __LINE__ . "</span><br>";}
+        	
+        	$conn = new db();
 	        $conn->fileName = $_SESSION['userId'];
 	        $db = $conn->connect();
 	        
-			$sql = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
+        	$sql = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStockList['symbol']);
             $rs->execute();
@@ -493,31 +498,31 @@
             $row = $rs->fetch();
             $soldShares = $row['s'];
 
-			$sqlDividend = "SELECT sum(cost) as s FROM transactions where activity='DIVIDEND' AND symbol=:symbol";
-			$rsDividend = $db->prepare($sqlDividend);
+        	$sqlDividend = "SELECT sum(cost) as s FROM transactions where activity='DIVIDEND' AND symbol=:symbol";
+        	$rsDividend = $db->prepare($sqlDividend);
             $rsDividend->bindValue(':symbol', $rowStockList['symbol']);
-			$rsDividend->execute();
-			$rowDividend = $rsDividend->fetch();
-			$dividends = $rowDividend['s'];
+        	$rsDividend->execute();
+        	$rowDividend = $rsDividend->fetch();
+        	$dividends = $rowDividend['s'];
 
-			if ($_SESSION['debug'] == "on"){
-				print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";
-			}
-			
-			$rowDividend = null;
-			$rsDividend = null;
-			$row = null;
-			$rs = null;
-			$rsStockList = null;
-			$db = null;
-			$conn = null;
-			
-			$sData->symbol = $rowStockList['symbol'];
-			$sData->select();
+        	if ($_SESSION['debug'] == "on"){
+        		print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";
+        	}
+        	
+        	$rowDividend = null;
+        	$rsDividend = null;
+        	$row = null;
+        	$rs = null;
+        	$rsStockList = null;
+        	$db = null;
+        	$conn = null;
+        	
+        	$sData->symbol = $rowStockList['symbol'];
+        	$sData->select();
 
-			if($dividends > 0)
-			{
-				print "<tr>";
+        	if($dividends > 0)
+        	{
+        		print "<tr>";
 	            print "    <td class='data'>";
 	            print "        " . $sData->symbol;
 	            print "    </td>";
@@ -528,14 +533,14 @@
 	            print "        " . formatCash($dividends);
 	            print "    </td>";
 	            print "</tr>";
-			}
-			
+        	}
+        	
             $totalDividends = toCash($totalDividends + $dividends);
-		}
+        }
 
-		print "</table>";
-		print "<br>";
-		print "<span class='heading'>Total Dividends Earned: " . formatCash($totalDividends) . "</span>";
+        print "</table>";
+        print "<br>";
+        print "<span class='heading'>Total Dividends Earned: " . formatCash($totalDividends) . "</span>";
         print "</fieldset>";
 	}
 	
