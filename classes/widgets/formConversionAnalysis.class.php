@@ -103,11 +103,11 @@
             $sellCurrentPrice = $sellData->currentPrice;
             $sellCurrentDps = $sellData->dps;
     
-        	if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
+            if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
         	
-        	include_once './classes/db.class.php';
+            include_once './classes/db.class.php';
         	
-        	$conn = new db();
+            $conn = new db();
             $conn->fileName = $_SESSION['userId'];
             $db=$conn->connect();
             
@@ -138,9 +138,9 @@
             $sellValue = ($sellCurrentPrice * $sharesToSell);
     
             # get a list of all your stocks
-       		$sqlStockList = "SELECT * FROM stocks ORDER BY symbol";
-    		$rsStockList = $db->prepare($sqlStockList);
-    		$rsStockList->execute();
+            $sqlStockList = "SELECT * FROM stocks ORDER BY symbol";
+            $rsStockList = $db->prepare($sqlStockList);
+            $rsStockList->execute();
             $stockList = $rsStockList->fetchAll();
     
             # begin the data table
