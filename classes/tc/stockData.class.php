@@ -14,6 +14,7 @@
 		public $pDate;		// Dividend pay date
  		public $eps;		// Earning per share
 		public $name;
+		public $currency;       // currency of stock
 		public $lastUpdated;
 		public $errors;
 
@@ -34,6 +35,7 @@
 			$this->pDate = '';
 			$this->eps = '';
 			$this->name = '';
+			$this->currency = '';
 			$this->lastUpdated = 0;
 			$this->errors = 'none';
 		}
@@ -101,6 +103,10 @@
 				elseif($row['attribute'] == "name")
 				{
 					$this->name = $row['value'];
+				}
+				elseif($row['attribute'] == "currency")
+				{
+					$this->currency = $row['value'];
 				}
     
 				$this->lastUpdated = $row['lastUpdated'];

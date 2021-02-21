@@ -87,7 +87,7 @@
         $db = $conn->connect();
     	
         # get the dividend data
-        $sql = "SELECT * FROM (SELECT * FROM transactions where activity='DIVIDEND' AND symbol=:symbol ORDER BY tdate DESC LIMIT 10) ORDER BY tdate";
+        $sql = "SELECT * FROM (SELECT t.tDate, t.symbol, t.activity, t.shares, case when t.currency = a.accountcurrency then t.cost else t.cost * t.exchangerate end as cost, t.currency, case when t.currency = a.accountcurrency then t.tax else t.tax * t.exchangerate end as tax, t.exchangerate, a.accountcurrency FROM transactions t inner join accounts a on a.accountid = t.accountid where t.activity='DIVIDEND' AND t.symbol=:symbol ORDER BY t.tdate DESC LIMIT 10) ORDER BY tdate;";
         $rs = $db->prepare($sql);
         $rs->bindValue(':symbol', $symbol);
         $rs->execute();
@@ -286,12 +286,16 @@
             $row = $rs->fetch();
             $soldShares = $row['s'];
 
-        	$sqlDividend = "SELECT sum(cost) as s FROM transactions where activity='DIVIDEND' AND symbol=:symbol AND tDate >= '" . $forYear . "-01-01' AND tDate <= '" . $forYear . "-12-31'";
-        	$rsDividend = $db->prepare($sqlDividend);
+            $sqlDividend = "SELECT sum(cost) as s, currency FROM transactions where activity='DIVIDEND' AND symbol=:symbol AND tDate >= '" . $forYear . "-01-01' AND tDate <= '" . $forYear . "-12-31' group by currency";
+            $rsDividend = $db->prepare($sqlDividend);
             $rsDividend->bindValue(':symbol', $rowStockList['symbol']);
-        	$rsDividend->execute();
-        	$rowDividend = $rsDividend->fetch();
-        	$dividends = $rowDividend['s'];
+            $rsDividend->execute();
+            $rowDividend = $rsDividend->fetch();
+            $dividends = $rowDividend['s'];
+            $divcurrency = $rowDividend['currency'];
+            if ($divcurrency == '') {
+               $divcurrency = $_SESSION['DefaultCurrency'];
+            }
 
         	if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";}
         	$row = null;
@@ -318,7 +322,7 @@
                 print "        " . $sData->name;
                 print "    </td>";
                 print "    <td class='data' style='text-align: right;'>";
-                print "        " . formatCash($dividends);
+                print "        " . formatCashWCurr($dividends, $divcurrency);
                 print "    </td>";
                 print "</tr>";
 
@@ -332,7 +336,7 @@
         print "</fieldset>";
 
 
-        # begin cumulitive dividend report
+        # begin cumulative dividend report
         $totalDividends = 0;
 
         if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: index.php " . __LINE__ . "</span><br>";}
@@ -353,7 +357,7 @@
         print "<div class='spacer'></div>";
         print "<fieldset>";
         print "    <legend>";
-        print "        Cumulitive Dividend Report (Current Holdings)";
+        print "        Cumulative Dividend Report (Current Holdings)";
         print "    </legend>";
         print "<table class='data'>";
         print "    <tr>";
@@ -372,13 +376,13 @@
 
         foreach ($rows as $rowStockList)
         {
-        	if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: index.php " . __LINE__ . "</span><br>";}
-        	
-        	$conn = new db();
-	        $conn->fileName = $_SESSION['userId'];
-	        $db = $conn->connect();
+            if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: index.php " . __LINE__ . "</span><br>";}
+
+            $conn = new db();
+	    $conn->fileName = $_SESSION['userId'];
+	    $db = $conn->connect();
 	        
-        	$sql = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
+            $sql = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStockList['symbol']);
             $rs->execute();
@@ -392,12 +396,16 @@
             $row = $rs->fetch();
             $soldShares = $row['s'];
 
-        	$sqlDividend = "SELECT sum(cost) as s FROM transactions where activity='DIVIDEND' AND symbol=:symbol";
-        	$rsDividend = $db->prepare($sqlDividend);
+            $sqlDividend = "SELECT sum(cost) as s, currency FROM transactions where activity='DIVIDEND' AND symbol=:symbol";
+            $rsDividend = $db->prepare($sqlDividend);
             $rsDividend->bindValue(':symbol', $rowStockList['symbol']);
-        	$rsDividend->execute();
-        	$rowDividend = $rsDividend->fetch();
-        	$dividends = $rowDividend['s'];
+            $rsDividend->execute();
+            $rowDividend = $rsDividend->fetch();
+            $dividends = $rowDividend['s'];
+            $divcurrency = $rowDividend['currency'];
+            if ($divcurrency == '') {
+               $divcurrency = $_SESSION['DefaultCurrency'];
+            }
 
         	if ($_SESSION['debug'] == "on"){
         		print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";
@@ -414,7 +422,7 @@
         	$sData->symbol = $rowStockList['symbol'];
         	$sData->select();
 
-        	if ((($boughtShares - $soldShares) > 0))
+            if ((($boughtShares - $soldShares) > 0))
             {
                 print "<tr>";
                 print "    <td class='data'>";
@@ -424,7 +432,7 @@
                 print "        " . $sData->name;
                 print "    </td>";
                 print "    <td class='data' style='text-align: right;'>";
-                print "        " . formatCash($dividends);
+                print "        " . formatCashWCurr($dividends, $divcurrency);
                 print "    </td>";
                 print "</tr>";
 
@@ -498,12 +506,16 @@
             $row = $rs->fetch();
             $soldShares = $row['s'];
 
-        	$sqlDividend = "SELECT sum(cost) as s FROM transactions where activity='DIVIDEND' AND symbol=:symbol";
-        	$rsDividend = $db->prepare($sqlDividend);
+            $sqlDividend = "SELECT sum(cost) as s, currency FROM transactions where activity='DIVIDEND' AND symbol=:symbol";
+            $rsDividend = $db->prepare($sqlDividend);
             $rsDividend->bindValue(':symbol', $rowStockList['symbol']);
-        	$rsDividend->execute();
-        	$rowDividend = $rsDividend->fetch();
-        	$dividends = $rowDividend['s'];
+            $rsDividend->execute();
+            $rowDividend = $rsDividend->fetch();
+            $dividends = $rowDividend['s'];
+            $divcurrency = $rowDividend['currency'];
+            if ($divcurrency == '') {
+               $divcurrency = $_SESSION['DefaultCurrency'];
+            }
 
         	if ($_SESSION['debug'] == "on"){
         		print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";
@@ -530,7 +542,7 @@
 	            print "        " . $sData->name;
 	            print "    </td>";
 	            print "    <td class='data' style='text-align: right;'>";
-	            print "        " . formatCash($dividends);
+	            print "        " . formatCashWCurr($dividends, $divcurrency);
 	            print "    </td>";
 	            print "</tr>";
         	}
@@ -603,28 +615,36 @@
     
     function overview()
     {
-    	if ($_SESSION['debug'] == "on"){
-    		print "<span class='debug'>overview</span><br>";
-    	}
-        if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
+	if ($_SESSION['debug'] == "on"){
+		print "<span class='debug'>overview</span><br>";
+	}
+	if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
     	
-        $conn = new db();
-        $conn->fileName = $_SESSION['userId'];
-        $db=$conn->connect();
+	# Get the percentage-range for which to mark a position as "Unchanged" in value
+	include_once './classes/tc/setting.class.php';
+	$set = new setting();
+	$set->settingName = "chgPctMarkUnchanged";
+	$set->select();
+	$chgPcrMarkUnchanged = $set->settingValue + 0;
 
- 	$sqlStockList = "SELECT * FROM stocks ORDER BY symbol";
+	$conn = new db();
+	$conn->fileName = $_SESSION['userId'];
+	$db=$conn->connect();
+
+	$sqlStockList = "SELECT * FROM stocks ORDER BY symbol";
 	$rsStockList = $db->prepare($sqlStockList);
 	$rsStockList->execute();
-        $stockList = $rsStockList->fetchAll();
+	$stockList = $rsStockList->fetchAll();
 
-        if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";}
+	if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";}
         
-        $rsStockList = NULL;
-        $sqlStockList = NULL;
-        $db = NULL;
-        $conn = NULL;
+	$rsStockList = NULL;
+	$sqlStockList = NULL;
+	$db = NULL;
+	$conn = NULL;
         
 	print "<div class='spacer'></div>\n";
+	dividendEvents();
 	print "<fieldset>\n";
         print "<legend>Portfolio Overview</legend>\n";
         print "<table class='display' id='overview'>\n";
@@ -676,6 +696,10 @@
             $eps = $sData->eps;
             $name = $sData->name;
             $lastUpdated = $sData->lastUpdated;
+            $scurrency = $sData->currency;
+            if ($scurrency == '') {
+               $scurrency = $_SESSION['DefaultCurrency'];
+            }
 
             $sData = null;
             
@@ -741,12 +765,16 @@
                 $totalSales = $totalSales + $sale;
             }
 
-            $sql = "SELECT sum(cost) as s FROM transactions where activity='DIVIDEND' AND symbol=:symbol";
+            $sql = "SELECT sum(cost) as s, currency FROM transactions where activity='DIVIDEND' AND symbol=:symbol group by currency";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStocklist['symbol']);
             $rs->execute();
             $row = $rs->fetch();
             $dividends = $row['s'];
+            $divcurrency = $row['currency'];
+            if ($divcurrency == '') {
+               $divcurrency = $scurrency;
+            }
 
             $row = null;
             $rs = null;
@@ -756,7 +784,7 @@
                 $dividends = 0;
             }
 
-            $sql = "SELECT sum(cost) as s FROM transactions where activity='FEE' AND symbol=:symbol";
+            $sql = "SELECT sum(cost) as s FROM transactions where activity='FEE' AND symbol=:symbol group by currency";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStocklist['symbol']);
             $rs->execute();
@@ -785,16 +813,16 @@
                 print "        " . $rowStocklist['symbol'];
                 print "    </td>\n";
                 print "    <td class='data'>\n";
-                print "       " . formatCash($currentPrice);
+                print "       " . formatCashWCurr($currentPrice, $scurrency);
                 print "    </td>\n";
                 print "    <td class='data'>\n";
                 print "        " . ($boughtShares - $soldShares);
                 print "    </td>\n";
                 print "    <td class='data'>\n";
-                print "        " . formatCash($currentlyInvested);
+                print "        " . formatCashWCurr($currentlyInvested, $scurrency);
                 print "    </td>\n";
 
-                if($currentlyInvested > 0 && (abs($currentlyInvested - $currentValue) / $currentlyInvested < 0.05))
+                if($currentlyInvested > 0 && (abs($currentlyInvested - $currentValue) / $currentlyInvested < $chgPcrMarkUnchanged))
                 {
                     print "    <td class='data' style='background-color: #F3E5AB;'>\n"; // Dark Yellow #9B870C / Pale Yellow #F3E5AB
                 }
@@ -807,10 +835,10 @@
                     print "    <td class='data' style='background-color: #FFB6AB;'>\n";
                 }
 
-                print "        " . formatCash($currentValue);
+                print "        " . formatCashWCurr($currentValue, $scurrency);
                 print "    </td>\n";
                 print "    <td class='data'>\n";
-                print "        " . formatCash($dividends);
+                print "        " . formatCashWCurr($dividends, $divcurrency);
                 print "    </td>\n";
                 print "</tr>\n";
 
@@ -1473,42 +1501,43 @@
 		$payDate = $sData->pDate;
 		$eps = $sData->eps;
 		$name = $sData->name;
+		$scurrency = $sData->currency;
 
 		$dataSource = "Updates in " . number_format((float)($_SESSION['refreshTime'] - ((time() - $sData->lastUpdated) / 60)), 0, '.', '') . " minutes";
 
-        # connect to the database
-    	if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
+		# connect to the database
+		if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
     	
-    	include_once './classes/db.class.php';
+		include_once './classes/db.class.php';
 	
-    	$conn = new db();
-        $conn->fileName = $_SESSION['userId'];
-        $db = $conn->connect();
+		$conn = new db();
+		$conn->fileName = $_SESSION['userId'];
+		$db = $conn->connect();
 
 		$sql = "SELECT currency as s FROM transactions where symbol=:symbol GROUP BY currency";
 		$rs = $db->prepare($sql);
-        $rs->bindValue(':symbol', $symbol);
+		$rs->bindValue(':symbol', $symbol);
 		$rs->execute();
 		$row = $rs->fetch();
 		$currency = $row['s'];
 
 		$sql = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
 		$rs = $db->prepare($sql);
-        $rs->bindValue(':symbol', $symbol);
+		$rs->bindValue(':symbol', $symbol);
 		$rs->execute();
 		$row = $rs->fetch();
 		$boughtShares = $row['s'];
 
 		$sql = "SELECT sum(shares) as s FROM transactions where activity='SELL' AND symbol=:symbol";
 		$rs = $db->prepare($sql);
-        $rs->bindValue(':symbol', $symbol);
+		$rs->bindValue(':symbol', $symbol);
 		$rs->execute();
 		$row = $rs->fetch();
 		$soldShares = $row['s'];
 
 		$sql = "SELECT cost, shares FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
 		$rs = $db->prepare($sql);
-        $rs->bindValue(':symbol', $symbol);
+		$rs->bindValue(':symbol', $symbol);
 		$rs->execute();
 
 		$totalSpent = 0;
@@ -1544,12 +1573,13 @@
 			$dividends = 0;
 		}
 
-		$sql = "SELECT sum(cost) as s FROM transactions where activity='FEE' AND symbol=:symbol";
+		$sql = "SELECT currency, sum(cost) as s FROM transactions where activity='FEE' AND symbol=:symbol GROUP BY currency";
 		$rs = $db->prepare($sql);
         $rs->bindValue(':symbol', $symbol);
 		$rs->execute();
 		$row = $rs->fetch();
 		$fees = $row['s'];
+		$feecurrency = $row['currency'];
 
 		if (($boughtShares - $soldShares) > 0)
 		{
@@ -1584,14 +1614,14 @@
 		print "                        </td>";
 		print "                        <td width='50%' class='data'>";
 
-        if(toCash(($totalSpent - $totalSales)) > 0)
-        {
-            print formatCashWCurr(($totalSpent - $totalSales), $currency);
-        }
-        else
-        {
-            print formatCashWCurr("0.00", $currency);
-        }
+		if(toCash(($totalSpent - $totalSales)) > 0)
+		{
+		    print formatCashWCurr(($totalSpent - $totalSales), $scurrency);
+		}
+		else
+		{
+		    print formatCashWCurr("0.00", $currency);
+		}
 
 		print "                        </td>";
 		print "                    </tr>";
@@ -1608,7 +1638,7 @@
 		print "                            Current Price";
 		print "                        </td>";
 		print "                        <td class='data'>";
-		print "                            " . formatCashWCurr($currentPrice, $currency);
+		print "                            " . formatCashWCurr($currentPrice, $scurrency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1616,7 +1646,7 @@
 		print "                            Current Value";
 		print "                        </td>";
 		print "                        <td class='data'>";
-		print "                            " . formatCashWCurr(($currentPrice * ($boughtShares - $soldShares)), $currency);
+		print "                            " . formatCashWCurr(($currentPrice * ($boughtShares - $soldShares)), $scurrency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                </table>";
@@ -1627,7 +1657,7 @@
 		print "                			   Total Invested";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                			   " . formatCashWCurr($totalSpent, $currency);
+		print "                			   " . formatCashWCurr($totalSpent, $scurrency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1635,7 +1665,7 @@
 		print "                            Avg Paid Per Share";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCashWCurr($pps, $currency);
+		print "                            " . formatCashWCurr($pps, $scurrency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1643,7 +1673,7 @@
 		print "                            Total Realized";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCashWCurr($totalSales, $currency);
+		print "                            " . formatCashWCurr($totalSales, $scurrency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1651,7 +1681,7 @@
 		print "                            Dividends Earned";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCashWCurr($dividends, $currency);
+		print "                            " . formatCashWCurr($dividends, $scurrency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1659,7 +1689,7 @@
 		print "                            Total Income";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCashWCurr(($totalSales + $dividends), $currency);
+		print "                            " . formatCashWCurr(($totalSales + $dividends), $scurrency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1667,7 +1697,7 @@
 		print "                            Total Fees";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCashWCurr($fees, $currency);
+		print "                            " . formatCashWCurr($fees, $feecurrency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1715,7 +1745,7 @@
 		print "                			   52 High";
 		print "                        </td>";
 		print "                        <td width='50%' class='data'>";
-		print "                			   " . formatCashWCurr($yearHigh, $currency);
+		print "                			   " . formatCashWCurr($yearHigh, $scurrency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1723,7 +1753,7 @@
 		print "                        	   52 Low";
 		print "                        </td>";
 		print "                        <td width='50%' class='data'>";
-		print "                        	   " . formatCashWCurr($yearLow, $currency);
+		print "                        	   " . formatCashWCurr($yearLow, $scurrency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1821,16 +1851,16 @@
 	    $conn->fileName = $_SESSION['userId'];
 	    $db = $conn->connect();
 
-		$sqlDividend = "SELECT sum(cost) as s FROM transactions where activity='DIVIDEND' AND tDate > '" . $year . "-01-01' AND tDate < '" . $year . "-12-31'";
-		$rsDividend = $db->prepare($sqlDividend);
-		$rsDividend->execute();
-		$rowDividend = $rsDividend->fetch();
-		$dividends = $rowDividend['s'];
+	    $sqlDividend = "SELECT sum(cost) as s FROM transactions where activity='DIVIDEND' AND tDate > '" . $year . "-01-01' AND tDate < '" . $year . "-12-31'";
+	    $rsDividend = $db->prepare($sqlDividend);
+	    $rsDividend->execute();
+	    $rowDividend = $rsDividend->fetch();
+	    $dividends = $rowDividend['s'];
 		
-		$rowDividend = null;
-		$rsDividend = null;
-		$db = null;
-		$conn = null;	
+	    $rowDividend = null;
+	    $rsDividend = null;
+	    $db = null;
+	    $conn = null;	
 	
 		if ($dividends > 0)
 		{
@@ -1841,4 +1871,25 @@
 		    return 0;
 		}
 	}
+
+	function dividendEvents()
+	{
+	    include_once './classes/db.class.php';
+		
+	    $conn = new db();
+	    $conn->fileName = $_SESSION['userId'];
+	    $db = $conn->connect();
+
+	    $sqlDividend = "SELECT group_concat(symbol || ':' || value) AS DividendData FROM stockData WHERE attribute IN ('exDividendDate','xdividendPayDate') AND value <> '' AND value BETWEEN date('now','start of month','-1 month') AND date('now','start of month','+1 month','-1 day') ORDER BY value asc";
+	    $rsDividend = $db->prepare($sqlDividend);
+	    $rsDividend->execute();
+	    $rowDividend = $rsDividend->fetch();
+	    if (strlen(trim($rowDividend['DividendData'])) > 0) {
+		print "<fieldset>";
+		print "<legend>Dividend announcements</legend>";
+		message("success", trim($rowDividend['DividendData']));
+		print "</fieldset>";
+	    }
+	}
+
 ?>

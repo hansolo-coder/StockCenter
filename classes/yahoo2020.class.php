@@ -479,6 +479,13 @@
 		 * @return stock exchange
 		 */
 		public $stockExchange;
+
+		/**
+		 * @var string
+		 * @access public
+		 * @return stock currency on exchange
+		 */
+		public $currency;
 		
 		/**
 		 * @var string
@@ -610,24 +617,24 @@
 		
 		function __construct()
 		{
-			$this->url                                    = "https://query2.finance.yahoo.com/v10/finance/quoteSummary/";
-			$this->codes1                                 = "?modules=price";
-			$this->codes2                                 = "?modules=summaryDetail";
-			$this->symbol                                 = NULL;
-			$this->ask                                    = NULL;
-			$this->askRealtime                            = NULL;
-			$this->bid                                    = NULL;
-			$this->bidRealtime                            = NULL;
-			$this->previousClose                          = NULL;
-			$this->open                                   = NULL;
-			$this->dividendYield                          = NULL;
-			$this->dps                                    = NULL;
-			$this->dividendPayDate                        = NULL;
-			$this->exDividendDate                         = NULL;
-			$this->change                                 = NULL;
-			$this->changeAndPercent                       = NULL;
-			$this->changeRealtime                         = NULL;
-		 	$this->changePercentRealtime                  = NULL;
+		    $this->url                                    = "https://query2.finance.yahoo.com/v10/finance/quoteSummary/";
+		    $this->codes1                                 = "?modules=price";
+		    $this->codes2                                 = "?modules=summaryDetail";
+		    $this->symbol                                 = NULL;
+		    $this->ask                                    = NULL;
+		    $this->askRealtime                            = NULL;
+		    $this->bid                                    = NULL;
+		    $this->bidRealtime                            = NULL;
+		    $this->previousClose                          = NULL;
+		    $this->open                                   = NULL;
+		    $this->dividendYield                          = NULL;
+		    $this->dps                                    = NULL;
+		    $this->dividendPayDate                        = NULL;
+		    $this->exDividendDate                         = NULL;
+		    $this->change                                 = NULL;
+		    $this->changeAndPercent                       = NULL;
+		    $this->changeRealtime                         = NULL;
+		    $this->changePercentRealtime                  = NULL;
 		    $this->changeInPercent                        = NULL;
 		    $this->afterHoursChangeRealtime               = NULL;
 		    $this->commission                             = NULL;
@@ -655,38 +662,39 @@
 		    $this->holdingsGainRealtime                   = NULL;
 		    $this->fiftyTwoWeekHigh                       = NULL;
 		    $this->fiftyTwoWeekLow                        = NULL;
-			$this->changeFrom52WeekLow                    = NULL;
-			$this->changeFrom52WeekHigh                   = NULL;
-			$this->changeFrom52WeekLowInPercent           = NULL;
-			$this->changeFrom52WeekHighInPercent          = NULL;
-			$this->fiftyTwoWeekRange                      = NULL;
-			$this->volume                                 = NULL;
-			$this->marketCapitalization                   = NULL;
-			$this->marketCapitalizationRealtime           = NULL;
-			$this->floatShares                            = NULL;
-			$this->name                                   = NULL;
-			$this->notes                                  = NULL;
-			$this->symbol                                 = NULL;
-			$this->sharesOwned                            = NULL;
-			$this->stockExchange                          = NULL;
-			$this->sharesOutstanding                      = NULL;
-			$this->earningsPerShare                       = NULL;
-			$this->earningsPerShareEstimateCurrentYear    = NULL;
-			$this->earningsPerShareEstimateNextYear       = NULL;
-			$this->earningsPerShareEstimateNextQuarter    = NULL;
-			$this->bookValue                              = NULL;
-			$this->ebitda                                 = NULL;
-			$this->priceToSales                           = NULL;
-			$this->priceToBook                            = NULL;
-			$this->peRatio                                = NULL;
-			$this->peRatioRealtime                        = NULL;
-			$this->pegRatio                               = NULL;
-			$this->priceToEpsEstimateCurrentYear          = NULL;
-			$this->priceToEpsEstimateNextYear             = NULL;
-			$this->shortRatio                             = NULL;
-			$this->tickerTrend                            = NULL;
-			$this->tradeLinks                             = NULL;
-			$this->revenue                                = NULL;
+		    $this->changeFrom52WeekLow                    = NULL;
+		    $this->changeFrom52WeekHigh                   = NULL;
+		    $this->changeFrom52WeekLowInPercent           = NULL;
+		    $this->changeFrom52WeekHighInPercent          = NULL;
+		    $this->fiftyTwoWeekRange                      = NULL;
+		    $this->volume                                 = NULL;
+		    $this->marketCapitalization                   = NULL;
+		    $this->marketCapitalizationRealtime           = NULL;
+		    $this->floatShares                            = NULL;
+		    $this->name                                   = NULL;
+		    $this->notes                                  = NULL;
+		    $this->symbol                                 = NULL;
+		    $this->sharesOwned                            = NULL;
+		    $this->stockExchange                          = NULL;
+		    $this->currency                               = NULL;
+		    $this->sharesOutstanding                      = NULL;
+		    $this->earningsPerShare                       = NULL;
+		    $this->earningsPerShareEstimateCurrentYear    = NULL;
+		    $this->earningsPerShareEstimateNextYear       = NULL;
+		    $this->earningsPerShareEstimateNextQuarter    = NULL;
+		    $this->bookValue                              = NULL;
+		    $this->ebitda                                 = NULL;
+		    $this->priceToSales                           = NULL;
+		    $this->priceToBook                            = NULL;
+		    $this->peRatio                                = NULL;
+		    $this->peRatioRealtime                        = NULL;
+		    $this->pegRatio                               = NULL;
+		    $this->priceToEpsEstimateCurrentYear          = NULL;
+		    $this->priceToEpsEstimateNextYear             = NULL;
+		    $this->shortRatio                             = NULL;
+		    $this->tickerTrend                            = NULL;
+		    $this->tradeLinks                             = NULL;
+		    $this->revenue                                = NULL;
 		}
 	
 		
@@ -717,9 +725,11 @@
 					
 				# stock exchange
 				$this->stockExchange = $sData["quoteSummary"]["result"][0]["price"]["exchangeName"];
-					
 
-				usleep(200000);
+				# currency
+				$this->currency = $sData["quoteSummary"]["result"][0]["price"]["currency"];
+
+				usleep(100000);
 
 				$yData = file_get_contents($this->url . $this->symbol . $this->codes2);
 				$sData = json_decode($yData, true);
