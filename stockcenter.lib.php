@@ -643,8 +643,8 @@
 	$db = NULL;
 	$conn = NULL;
         
-	print "<div class='spacer'></div>\n";
 	dividendEvents();
+	print "<div class='spacer'></div>\n";
 	print "<fieldset>\n";
         print "<legend>Portfolio Overview</legend>\n";
         print "<table class='display' id='overview'>\n";
@@ -1885,10 +1885,11 @@
 	    $rsDividend->execute();
 	    $rowDividend = $rsDividend->fetch();
 	    if (strlen(trim($rowDividend['DividendData'])) > 0) {
+		print "<div class='spacer'></div>\n";
 		print "<fieldset>";
 		print "<legend>Dividend announcements</legend>";
 		message("success", trim($rowDividend['DividendData']));
-		print "</fieldset>";
+		print "</fieldset>\n";
 	    }
 	}
 
