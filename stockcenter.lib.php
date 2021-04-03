@@ -955,7 +955,7 @@
         	$sData->symbol = $stock['symbol'];
         	$sData->select();
 
-        	$currentPrice = $sData->currentPrice;
+        	$currentPrice = $sData->currentPrice2;
 
 	        if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
 	    	
@@ -1315,17 +1315,17 @@
 			}
 
 			# calculate the signal
-			if ($sData->currentPrice < $pps) # cheaper than average price paid
+			if ($sData->currentPrice2 < $pps) # cheaper than average price paid
 			{
 				$signalColor = "#AFFFAB";
-				$signal = "BELOW AVERAGE BUY (" . tocash($pps - $sData->currentPrice) . " cheaper)";
+				$signal = "BELOW AVERAGE BUY (" . tocash($pps - $sData->currentPrice2) . " cheaper)";
 			}
-			elseif ($sData->currentPrice >= $sData->yearHigh) # current price is at 52 week high
+			elseif ($sData->currentPrice2 >= $sData->yearHigh) # current price is at 52 week high
 			{
 				$signalColor = "#FFB6AB";
-				$signal = "HIGH SELL (+" . (toCash($sData->currentPrice) - (toCash($pps))) . " vs. avg paid)";
+				$signal = "HIGH SELL (+" . (toCash($sData->currentPrice2) - (toCash($pps))) . " vs. avg paid)";
 			}
-			elseif ((toCash(($sellTrigger * $pps)) + $pps) < $sData->currentPrice)
+			elseif ((toCash(($sellTrigger * $pps)) + $pps) < $sData->currentPrice2)
 			{
 				$signalColor = "#FFB6AB";
 				$signal = "GROWTH SELL > " . ($sellTrigger * 100) . "%";
@@ -1343,7 +1343,7 @@
 				print "            " . $sData->symbol;
 				print "        </td>";
 				print "        <td class='data'>";
-				print "            " . toCash($sData->currentPrice);
+				print "            " . toCash($sData->currentPrice2);
 				print "        </td>";
 				print "        <td class='data'>";
 				print "            " . toCash($pps);
@@ -1357,7 +1357,7 @@
 				print "        <td class='data'>";
 				print "            " . toCash(($sellTrigger * $pps) + $pps);
 				
-				if ($sData->currentPrice - (($sellTrigger * $pps) + $pps) > 0)
+				if ($sData->currentPrice2 - (($sellTrigger * $pps) + $pps) > 0)
 				{
 				    print "            <span style='color: #0BA800;'>";
 				}
@@ -1366,7 +1366,7 @@
 				    print "            <span style='color: #FF2F14;'>";
 				}
 				
-				print "                (" . toCash($sData->currentPrice - (($sellTrigger * $pps) + $pps)) . ")";
+				print "                (" . toCash($sData->currentPrice2 - (($sellTrigger * $pps) + $pps)) . ")";
 				print "            </span>";
 				print "        </td>";
 				print "        <td class='data' style='background-color: " . $signalColor . ";'>";

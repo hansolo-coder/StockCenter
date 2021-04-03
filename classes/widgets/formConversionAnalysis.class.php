@@ -100,7 +100,7 @@
             $sellData->symbol = $_REQUEST['symbol'];
             $sellData->select();
     
-            $sellCurrentPrice = $sellData->currentPrice;
+            $sellCurrentPrice = $sellData->currentPrice2;
             $sellCurrentDps = $sellData->dps;
     
             if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
@@ -203,7 +203,7 @@
                 	$buyData->symbol = $stock['symbol'];
                 	$buyData->select();
     
-                    $buyCurrentPrice = $buyData->currentPrice;
+                    $buyCurrentPrice = $buyData->currentPrice2;
 
                     if ($buyCurrentPrice != 0 && is_numeric($buyData->dps))
                     {
