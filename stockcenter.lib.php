@@ -625,7 +625,7 @@
 	$set = new setting();
 	$set->settingName = "chgPctMarkUnchanged";
 	$set->select();
-	$chgPcrMarkUnchanged = $set->settingValue + 0;
+	$chgPctMarkUnchanged = $set->settingValue + 0;
 
 	$conn = new db();
 	$conn->fileName = $_SESSION['userId'];
@@ -650,13 +650,13 @@
         print "<table class='display' id='overview'>\n";
 	print "    <thead>\n";
         print "    <tr>\n";
-        print "        <th class='data' width='16.6%'>\n";
+        print "        <th class='data' width='20.6%'>\n";
         print "            Stock\n";
         print "        </th>\n";
         print "        <th class='data' width='16.6%'>\n";
         print "            Current Price\n";
         print "        </th>\n";
-        print "        <th class='data' width='16.6%'>\n";
+        print "        <th class='data' width='10.6%'>\n";
         print "            Shares Owned\n";
         print "        </th>\n";
         print "        <th class='data' width='16.6%'>\n";
@@ -686,7 +686,7 @@
             $sData->symbol = $rowStocklist['symbol'];
             $sData->select();
 
-            $currentPrice = $sData->currentPrice;
+            $currentPrice = $sData->currentPrice2;
             $yearHigh = $sData->yearHigh;
             $yearLow = $sData->yearLow;
             $dividendYield = $sData->yield;
@@ -822,7 +822,7 @@
                 print "        " . formatCashWCurr($currentlyInvested, $scurrency);
                 print "    </td>\n";
 
-                if($currentlyInvested > 0 && (abs($currentlyInvested - $currentValue) / $currentlyInvested < $chgPcrMarkUnchanged))
+                if($currentlyInvested > 0 && (abs($currentlyInvested - $currentValue) / $currentlyInvested < $chgPctMarkUnchanged))
                 {
                     print "    <td class='data' style='background-color: #F3E5AB;'>\n"; // Dark Yellow #9B870C / Pale Yellow #F3E5AB
                 }
@@ -1492,7 +1492,7 @@
 		$sData->symbol = $symbol;
 		$sData->select();
 
-		$currentPrice = $sData->currentPrice;
+		$currentPrice = $sData->currentPrice2;
 		$yearHigh = $sData->yearHigh;
 		$yearLow = $sData->yearLow;
 		$dividendYield = $sData->yield;
@@ -1550,7 +1550,7 @@
 
 		$sql = "SELECT cost, shares FROM transactions where activity='SELL' AND symbol=:symbol";
 		$rs = $db->prepare($sql);
-        $rs->bindValue(':symbol', $symbol);
+		$rs->bindValue(':symbol', $symbol);
 		$rs->execute();
 
 		$totalSales = 0;
@@ -1563,7 +1563,7 @@
 
 		$sql = "SELECT sum(cost) as s FROM transactions where activity='DIVIDEND' AND symbol=:symbol";
 		$rs = $db->prepare($sql);
-        $rs->bindValue(':symbol', $symbol);
+		$rs->bindValue(':symbol', $symbol);
 		$rs->execute();
 		$row = $rs->fetch();
 		$dividends = $row['s'];
@@ -1825,17 +1825,13 @@
 	function formatCash($value)
 	{
         # if ($_SESSION['debug'] == "on"){print "<span class='debug'>formatCash($value)</span><br>\n";}
-		$currency = $_SESSION['DefaultCurrency'];
-		if (strlen($currency) > 1)
-		  return toCash($value) . "&nbsp;" . $currency;
-		else
-		  return $currency . "&nbsp;" . toCash($value);
+		return formatCashWCurr($value, $_SESSION['DefaultCurrency']);
 	}
 
 	# formats a cash value including currency
 	function formatCashWCurr($value, $currency)
 	{
-        # if ($_SESSION['debug'] == "on"){print "<span class='debug'>formatCash($value)</span><br>\n";}
+        # if ($_SESSION['debug'] == "on"){print "<span class='debug'>formatCashWCurr($value)</span><br>\n";}
 		if (strlen($currency) > 1)
 		  return toCash($value) . "&nbsp;" . $currency;
 		else

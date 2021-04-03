@@ -6,6 +6,8 @@
 	{
 		public $symbol;
 		public $currentPrice;	// 'ask' price
+		public $currentPrice2;	// 'ask' price (if exist) or 'lastTradePriceOnly'
+		public $currentPrice2Src;	// 'ask' price (A) or 'lastTradePriceOnly' (L)
 		public $yearHigh;	// 52 week high
 		public $yearLow;	// 52 week low
 		public $yield;		// Divident yield
@@ -27,6 +29,8 @@
 			
 			$this->symbol = '';
 			$this->currentPrice = '';
+			$this->currentPrice2 = '0';
+			$this->currentPrice2Src = '';
 			$this->yearHigh = '';
 			$this->yearLow = '';
 			$this->yield = '';
@@ -66,11 +70,19 @@
 			$rs->execute();
 			$rows = $rs->fetchAll();
 
+			$currentPriceTmp = '';
+
 			foreach($rows as $row)
 			{
 				if($row['attribute'] == "ask")
 				{
 					$this->currentPrice = $row['value'];
+					$this->currentPrice2 = $row['value'];
+					$this->currentPrice2Src = 'A';
+				}
+				elseif($row['attribute'] == "lastTradePriceOnly")
+				{
+					$currentPriceTmp = $row['value'];
 				}
 				elseif($row['attribute'] == "fiftyTwoWeekHigh")
 				{
@@ -112,8 +124,17 @@
 				$this->lastUpdated = $row['lastUpdated'];
 				
 			}
+			if ($this->currentPrice2 == '' || $this->currentPrice2 == '0' || $this->currentPrice2 == '0.00') {
+				$this->currentPrice2 = $currentPriceTmp; // if no non-zero 'ask' value was found
+				$this->currentPrice2Src = 'L';
+			}
+			
 			if ($this->currentPrice == '') {
-				$this->currentPrice = 0; // Must NEVER return blank. Used for calculations
+				$this->currentPrice = 0; // Must NEVER return blank. Used for calculations (probably only used currentPrice2 now)
+			}
+			if ($this->currentPrice2 == '') {
+				$this->currentPrice2 = 0; // Must NEVER return blank. Used for calculations
+				$this->currentPrice2Src = 'D';
 			}
 			if ($this->lastUpdated == '') {
 				$this->lastUpdated = 0;  // Must NEVER return blank. Used for comparison

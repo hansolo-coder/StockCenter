@@ -34,7 +34,7 @@
 
 			print "<h3>Add Stock</h3>\n";
 			print "<form method='post' action='" . htmlentities($_SERVER['PHP_SELF']) . "'>\n";
-			print "Symbol \n";
+			print "Symbol or Symbol/ISIN/Name\n";
 			print "    <input type='text' name='symbol'>\n";
 			print "    <input type='submit' value='Add'>\n";
 			print "    <input type='hidden' name='action' value='" . $this->action . "'>\n";
