@@ -38,9 +38,9 @@
 			print "        <div class='spacer'></div>\n";
 			print "        <div class='page'>\n";
 			# menu
-    		print "<table class='data'>\n";
-    		print "    <tr>\n";
-    		print "        <td colspan='3' class='data'>\n";
+			print "<table class='data'>\n";
+			print "    <tr>\n";
+			print "        <td colspan='3' class='data'>\n";
 			print "<table class='menu'>\n";
 			print "    <tr>\n";
 			print "        <td class='menu'>\n";
@@ -64,8 +64,8 @@
 			print "        <td class='menu'>\n";
 			print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=logout'>Logout</a>\n";
 			print "        </td>\n";
-	        print "    </tr>\n";
-	        print "    <tr>\n";
+			print "    </tr>\n";
+			print "    <tr>\n";
 			print "        <td class='menu'>\n";
 			print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=accounts'>Accounts</a>\n";
 			print "        </td>\n";
@@ -85,20 +85,20 @@
 			print "            &nbsp;\n";
 			print "        </td>\n";
 	
-	        if ($_SESSION['userId'] == "admin")
-	        {
+			if ($_SESSION['userId'] == "admin")
+			{
 	
-	            print "        <td class='menu'>\n";
-	            print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=addUserForm'>Add User</a>\n";
-	            print "        </td>\n";
+				print "        <td class='menu'>\n";
+				print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=addUserForm'>Add User</a>\n";
+				print "        </td>\n";
 	
-	        }
+			}
 	
-	        print "    </tr>\n";
-	        print "</table>\n";
-    		print "        </td>\n";
-    		print "    </tr>\n";
-    		print "</table>\n";
+			print "    </tr>\n";
+			print "</table>\n";
+			print "        </td>\n";
+			print "    </tr>\n";
+			print "</table>\n";
 		}
 		
 		

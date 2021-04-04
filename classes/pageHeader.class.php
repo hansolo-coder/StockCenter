@@ -11,8 +11,8 @@
         {
             if ($_SESSION['debug'] == "on"){print "<span class='debug'>pageHeader()</span><br>\n";}
     
-            print "<table class='data'>\n";
-            print "    <tr>\n";
+		print "<table class='data'>\n";
+		print "    <tr>\n";
     		print "        <td class='data' width='33%'>\n";
     
     		include_once './classes/widgets/formAddStock.class.php';
