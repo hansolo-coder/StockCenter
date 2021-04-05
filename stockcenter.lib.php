@@ -1876,7 +1876,7 @@
 	    $conn->fileName = $_SESSION['userId'];
 	    $db = $conn->connect();
 
-	    $sqlDividend = "SELECT group_concat(symbol || ':' || value) AS DividendData FROM stockData WHERE attribute IN ('exDividendDate','xdividendPayDate') AND value <> '' AND value BETWEEN date('now','start of month','-1 month') AND date('now','start of month','+1 month','-1 day') ORDER BY value asc";
+	    $sqlDividend = "SELECT group_concat(symbol || ':' || value, ', ') AS DividendData FROM stockData WHERE attribute IN ('exDividendDate','xdividendPayDate') AND value <> '' AND value BETWEEN date('now','start of month','-1 month') AND date('now','start of month','+1 month','-1 day') ORDER BY value asc";
 	    $rsDividend = $db->prepare($sqlDividend);
 	    $rsDividend->execute();
 	    $rowDividend = $rsDividend->fetch();
