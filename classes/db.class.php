@@ -95,7 +95,7 @@
 			$sql .= "[symbolId] INTEGER PRIMARY KEY,";
 			$sql .= "[symbol] varchar(20),";
 			$sql .= "[ISIN] varchar(20),";
-			$sql .= "[name] varchar(50),";
+			$sql .= "[name] varchar(100),";
 			$sql .= "[URL] varchar(500),";
 			$sql .= "[SkipLookup] BIT NOT NULL DEFAULT 0)";
 			$rs = $db->prepare($sql);
@@ -125,15 +125,15 @@
 			$rs = $db->prepare($sql);
 			$rs->execute();
 
-			addSetting($db, "INSERT INTO settings (settingName, settingValue) VALUES('password', '" . md5($this->password) . "')");
-			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('refreshTime', '15', 'Time between yahoo data refreshes')");
-			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('databaseVersion', '3', 'Database schema version')");
-			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('stockdataclass', 'yahoo.class.php', 'PHP class to handle the stock API')");
-			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('currency', '$', 'Default currency symbol')");
-			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('showTransactionTax', '0', 'Yes/No > Show tax on transactionlist')");
-			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('region', 'EUR', 'US/EUR > Adapt to region')");
-			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('chgPctMarkUnchanged', '0.2', 'Mark as unchanged if change in value is below percentage')");
-			addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('accessKey', null, 'Key for authorizing remote access')");
+			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue) VALUES('password', '" . md5($this->password) . "')");
+			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('refreshTime', '15', 'Time between yahoo data refreshes')");
+			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('databaseVersion', '3', 'Database schema version')");
+			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('stockdataclass', 'yahoo.class.php', 'PHP class to handle the stock API')");
+			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('currency', '$', 'Default currency symbol')");
+			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('showTransactionTax', '0', 'Yes/No > Show tax on transactionlist')");
+			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('region', 'EUR', 'US/EUR > Adapt to region')");
+			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('chgPctMarkUnchanged', '0.2', 'Mark as unchanged if change in value is below percentage')");
+			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('accessKey', null, 'Key for authorizing remote access')");
 
 			# dailystatus table
 			$sql = "CREATE TABLE [dailystatus] (";
