@@ -1575,7 +1575,7 @@
 
 		$sql = "SELECT currency, sum(cost) as s FROM transactions where activity='FEE' AND symbol=:symbol GROUP BY currency";
 		$rs = $db->prepare($sql);
-        $rs->bindValue(':symbol', $symbol);
+		$rs->bindValue(':symbol', $symbol);
 		$rs->execute();
 		$row = $rs->fetch();
 		$fees = $row['s'];
@@ -1590,8 +1590,8 @@
 			$pps = 0;
 		}
 
-		print "    <div class='spacer'></div>";
-		print "    <fieldset>";
+		print "  <div class='spacer'></div>";
+		print "  <fieldset>";
 		print "    <legend>Summary For " . $name . " (Data " . $dataSource . ")</legend>";
 		print "    <table class='data'>";
 		print "        <tr>";
@@ -1800,16 +1800,15 @@
 		print "            </td>";
 		print "        </tr>";
 		print "    </table>";
-        print "    </fieldset>";
+		print "  </fieldset>";
         
-        if ($_SESSION['debug'] == "on"){
-        	print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";
-        }
+		if ($_SESSION['debug'] == "on"){
+			print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";
+		}
          
-        $rs = null;
-        $db = null;
-        $conn = null;
-        
+		$rs = null;
+		$db = null;
+		$conn = null;
 	}
 	
 	
