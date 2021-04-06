@@ -129,7 +129,7 @@
 			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('refreshTime', '15', 'Time between yahoo data refreshes')");
 			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('databaseVersion', '3', 'Database schema version')");
 			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('stockdataclass', 'yahoo.class.php', 'PHP class to handle the stock API')");
-			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('currency', '$', 'Default currency symbol')");
+			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('currency', 'EUR', 'Default currency symbol')");
 			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('showTransactionTax', '0', 'Yes/No > Show tax on transactionlist')");
 			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('region', 'EUR', 'US/EUR > Adapt to region')");
 			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('chgPctMarkUnchanged', '0.2', 'Mark as unchanged if change in value is below percentage')");
