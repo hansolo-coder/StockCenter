@@ -50,7 +50,7 @@
             $conn->fileName = $_SESSION['userId'];
             $db=$conn->connect();
 
-            $key = "ThreeLionsSailing";
+            $key = getAccessKey($db);
             $providedkey = "none";
             if (isset($_REQUEST['key']) and trim($_REQUEST['key']) != '') {
               $providedkey = $_REQUEST['key'];
