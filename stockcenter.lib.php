@@ -1561,16 +1561,21 @@
 			$totalSales = $totalSales + $sale;
 		}
 
-		$sql = "SELECT sum(cost) as s FROM transactions where activity='DIVIDEND' AND symbol=:symbol";
+		$sql = "SELECT sum(cost) as s, sum(tax) as t FROM transactions where activity='DIVIDEND' AND symbol=:symbol";
 		$rs = $db->prepare($sql);
 		$rs->bindValue(':symbol', $symbol);
 		$rs->execute();
 		$row = $rs->fetch();
 		$dividends = $row['s'];
+		$dividendstax = $row['t'];
 
 		if($dividends == '')
 		{
 			$dividends = 0;
+		}
+		if($dividendstax == '')
+		{
+			$dividendstax = 0;
 		}
 
 		$sql = "SELECT currency, sum(cost) as s FROM transactions where activity='FEE' AND symbol=:symbol GROUP BY currency";
@@ -1594,6 +1599,7 @@
 		print "  <fieldset>";
 		print "    <legend>Summary For " . $name . " (Data " . $dataSource . ")</legend>";
 		print "    <table class='data'>";
+		print "      <thead>";
 		print "        <tr>";
 		print "            <th class='data'>";
 		print "                Current Position";
@@ -1605,6 +1611,8 @@
 		print "                Stats";
 		print "            </th>";
 		print "        </tr>";
+		print "      </thead>";
+		print "      <tbody>";
 		print "        <tr>";
 		print "            <td class='data' width='33%' style='vertical-align: top;'>";
 		print "                <table width='100%'>";
@@ -1684,12 +1692,22 @@
 		print "                            " . formatCashWCurr($dividends, $scurrency);
 		print "                        </td>";
 		print "                    </tr>";
+		if ($_SESSION['showTransactionTax'] == 'YES') {
+			print "                    <tr>";
+			print "                        <td class='data' align='right'>";
+			print "                            Dividends Taxes";
+			print "                        </td>";
+			print "                        <td class='data' align='left'>";
+			print "                            " . formatCashWCurr($dividendstax, $scurrency);
+			print "                        </td>";
+			print "                    </tr>";
+		}
 		print "                    <tr>";
 		print "                        <td class='data' align='right'>";
 		print "                            Total Income";
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
-		print "                            " . formatCashWCurr(($totalSales + $dividends), $scurrency);
+		print "                            " . formatCashWCurr(($totalSales + $dividends - $dividendstax), $scurrency);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1708,7 +1726,7 @@
 
 		if ($totalSpent > 0)
 		{
-			 print toCash(((((($currentPrice * ($boughtShares - $soldShares)) + $dividends) - $totalSpent) / $totalSpent) * 100)) . " %";
+			 print toCash(((((($currentPrice * ($boughtShares - $soldShares)) + $dividends - $dividendstax) - $totalSpent) / $totalSpent) * 100)) . " %";
 		}
 		else
 		{
@@ -1723,7 +1741,7 @@
 		print "                        </td>";
 		print "                        <td class='data' align='left'>";
 
-		$standing = toCash((($totalSales + $dividends) - (($fees)+($totalSpent))+($currentPrice * ($boughtShares - $soldShares))));
+		$standing = toCash((($totalSales + $dividends - $dividendstax) - (($fees)+($totalSpent))+($currentPrice * ($boughtShares - $soldShares))));
 
 		if($standing < 0)
 		{
@@ -1799,6 +1817,7 @@
 		print "                </table>";
 		print "            </td>";
 		print "        </tr>";
+		print "      </tbody>";
 		print "    </table>";
 		print "  </fieldset>";
         
@@ -1817,7 +1836,7 @@
 	{
         # if ($_SESSION['debug'] == "on"){print "<span class='debug'>toCash($value)</span><br>\n";}
 
-		return number_format((float)$value, 2, '.', '');
+		return number_format((float)$value, 2, '.', ''); // $_SESSION['DecimalPoint'], $_SESSION['ThousandSep']
 	}
 
 	# formats a cash value including currency
@@ -1832,9 +1851,9 @@
 	{
         # if ($_SESSION['debug'] == "on"){print "<span class='debug'>formatCashWCurr($value)</span><br>\n";}
 		if (strlen($currency) > 1)
-		  return toCash($value) . "&nbsp;" . $currency;
+		  return number_format((float)$value, 2, $_SESSION['DecimalPoint'], $_SESSION['ThousandSep']) . "&nbsp;" . $currency;
 		else
-		  return $currency . "&nbsp;" . toCash($value);
+		  return $currency . "&nbsp;" . number_format((float)$value, 2, $_SESSION['DecimalPoint'], $_SESSION['ThousandSep']);
 	}
 	
 	
