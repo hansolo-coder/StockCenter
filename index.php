@@ -19,8 +19,10 @@
             $dataFile = "./data/" . $_SESSION['userId'] . ".sqlite";
 
             # read the file & send to the user
-	    # TODO make dateformat dependent on US/EUR setting
-            header('Content-Disposition: attachment; filename=stock_center_data_' . date('Y-m-d') . ".sqlite");
+            if (isset($_SESSION['region']) and $_SESSION['region'] == 'US')
+              header('Content-Disposition: attachment; filename=stock_center_data_' . date('m-d-Y') . ".sqlite");
+            else
+              header('Content-Disposition: attachment; filename=stock_center_data_' . date('Y-m-d') . ".sqlite");
             header("Content-type: application/x-sqlite3");
             readfile($dataFile);
 
