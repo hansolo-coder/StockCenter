@@ -40,6 +40,7 @@
             print "        Stocks\n";
             print "    </legend>\n";
             print "<table class='data'>\n";
+            print "  <thead>\n";
             print "    <tr>\n";
             print "        <th class='data'>\n";
             print "            Symbol\n";
@@ -60,19 +61,21 @@
             print "            &nbsp;\n";
             print "        </th>\n";
             print "    </tr>\n";
+            print "  </thead>\n";
+            print "  <tbody>\n";
             print "    <form action='" . htmlentities($_SERVER['PHP_SELF']) . "?action=addStock2' method='post'>\n";
             print "    <tr>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='symbol'>\n";
+            print "            <input type='text' name='symbol' class='date'>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='ISIN'>\n";
+            print "            <input type='text' name='ISIN' class='medium'>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='name'>\n";
+            print "            <input type='text' name='name' class='large'>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='skipLookup'>\n";
+            print "            <input type='text' name='skipLookup' class='mini' maxlength='1'>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
             print "            -\n";
@@ -110,6 +113,7 @@
                 print "    </tr>\n";
             } // foreach
     
+            print "  </tbody>\n";
             print "</table>\n";
             print "</fieldset>\n";
         } // show

@@ -158,5 +158,37 @@
 			$sql  = NULL;
 			$rs   = NULL;
 		}
+
+		/**
+		 * deletes a transaction
+		 */
+		public function deleteById()
+		{
+			include_once './classes/db.class.php';
+
+			if ($_SESSION['debug'] == "on"){
+				print "<span class='debug'>dbConnect: transaction.class.php " . __LINE__ . "</span><br>";
+			}
+			
+			$conn = new db();
+			$conn->fileName = $_SESSION['userId'];
+			$db = $conn->connect();
+
+			$sql = "DELETE FROM transactions WHERE transactionId=:transactionId and symbol=:symbol";
+			$rs = $db->prepare($sql);
+			$rs->bindValue(':transactionId', $this->transactionId);
+			$rs->bindValue(':symbol', trim(strtoupper($this->symbol)));
+			$rs->execute();
+
+			if ($_SESSION['debug'] == "on"){
+				print "<span class='debug'>dbDisconnect: transaction.class.php " . __LINE__ . "</span><br>";
+			}
+			
+			$conn = NULL;
+			$db   = NULL;
+			$sql  = NULL;
+			$rs   = NULL;
+		}
+
 	}
 ?>

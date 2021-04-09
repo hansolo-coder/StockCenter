@@ -33,21 +33,25 @@
 		$stock->symbol = $this->symbol;
 		$stock->select();
 
-		
                 // get transactions for the stock
-                $sql = "SELECT accounts.accountNumber, transactions.* FROM transactions LEFT OUTER JOIN accounts ON transactions.accountId = accounts.accountId WHERE symbol=:symbol ORDER BY tDate DESC";
+                $sql = "SELECT accounts.accountNumber, accounts.accountName, transactions.*, coalesce(transactions.currency, accounts.accountCurrency) AS ccurrency FROM transactions LEFT OUTER JOIN accounts ON transactions.accountId = accounts.accountId WHERE symbol=:symbol ORDER BY tDate DESC";
                 $rs = $db->prepare($sql);
                 $rs->bindValue(':symbol', $this->symbol);
                 $rs->execute();
                 $rows = $rs->fetchAll();
+                $ccurrency = "";
+                if (count($rows) > 0) {
+                  $ccurrency = $rows[0]['ccurrency'];
+                } else {
+                  $ccurrency = $_SESSION['DefaultCurrency'];
+                }
 
                 // get accounts
-                $sql = "SELECT accountId, accountNumber FROM accounts ORDER BY aCreated DESC";
+                $sql = "SELECT accountId, accountNumber, accountName FROM accounts ORDER BY aCreated DESC";
                 $rs = $db->prepare($sql);
                 $rs->execute();
                 $accounts = $rs->fetchAll();
 
-    
                 if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: transaction.class.php " . __LINE__ . "</span><br>";}
                 
                 $rs = NULL;
@@ -88,7 +92,10 @@
                   print "            <script>\n";
                   print "                $(function(){\n";
                   print "                    var opts = {\n";
-                  print "                        dateFormat:'yy-mm-dd'\n";
+                  if (isset($_SESSION['region']) and $_SESSION['region'] == 'US')
+                    print "                        dateFormat:'mm-dd-yy'\n";
+                  else
+                    print "                        dateFormat:'yy-mm-dd'\n";
                   print "                    };\n";
                   print "                    $( '#pricedate' ).datepicker(opts);\n";
                   print "                });\n";
@@ -121,6 +128,7 @@
                 print "        Activity ($this->symbol)\n";
                 print "    </legend>\n";
                 print "<table class='data'>\n";
+                print "   <thead>\n";
                 print "    <tr>\n";
                 print "        <th class='data'>Account</th>\n";
                 print "        <th class='data'>Date</th>\n";
@@ -136,30 +144,35 @@
                 print "            &nbsp;\n";
                 print "        </th>\n";
                 print "    </tr>\n";
+                print "   </thead>\n";
+                print "   <tbody>\n";
                 print "    <form action='" . htmlentities($_SERVER['PHP_SELF']) . "?action=addTransaction&symbol=" . $this->symbol . "' method='post'>\n";
                 print "    <tr>\n";
                 print "        <td class='data'>\n";
-                print "            <select name='accountId'>\n";
+                print "            <select name='accountId' class='numbers'>\n";
                 foreach($accounts as $row)
                 {
-                  print "                <option value='" . $row['accountId'] . "'>" . $row['accountNumber'] . "</option>\n";
+                  print "                <option value='" . $row['accountId'] . "'>" . $row['accountName'] . "</option>\n";
 		}
                 print "            </select>\n";
                 print "        </td>\n";
 		/* TODO should be possible to mark an approximate date */
                 print "        <td class='data'>\n";
-                print "            <input type='text' name='date' id='date'>\n";
+                print "            <input type='text' name='date' id='date' required class='date'>\n";
                 print "            <script>\n";
                 print "                $(function(){\n";
                 print "                    var opts = {\n";
-                print "                        dateFormat:'yy-mm-dd'\n";
+                if (isset($_SESSION['region']) and $_SESSION['region'] == 'US')
+                  print "                        dateFormat:'mm-dd-yy'\n";
+                else
+                  print "                        dateFormat:'yy-mm-dd'\n";
                 print "                    };\n";
                 print "                    $( '#date' ).datepicker(opts);\n";
                 print "                });\n";
                 print "            </script>\n";
                 print "        </td>\n";
                 print "        <td class='data'>\n";
-                print "            <select name='activity'>\n";
+                print "            <select name='activity' class='activity'>\n";
                 print "                <option value='BUY'>BUY</option>\n";
                 print "                <option value='SELL'>SELL</option>\n";
                 print "                <option value='DIVIDEND'>DIVIDEND</option>\n";
@@ -170,15 +183,16 @@
                 print "            </select>\n";
                 print "        </td>\n";
                 print "        <td class='data'>\n";
-                print "            <input type='text' name='shares'>\n";
+                print "            <input type='text' name='shares' maxlength='10' class='date'>\n";
                 print "        </td>\n";
                 print "        <td class='data'>\n";
-                print "            $&nbsp;<input type='text' name='cost'>\n";
+// TODO skal nok enten være currency fra stock-tabel, currency fra account, currency fra settings (men ikke currency fra transactions)
+                print "            <span class='currencyamount'><label class='currencyamount' for='cost'>" . $ccurrency . "</label><input type='text' id='cost' name='cost' maxlength='11' class='amount' required></span>\n";
                 print "        </td>\n";
 		if ($_SESSION['showTransactionTax'] == 'YES')
 		{
 	                print "        <td class='data'>\n";
-                	print "            $&nbsp;<input type='text' name='tax'>\n";
+                	print "            <span class='currencyamount'><label class='currencyamount' for='tax'>" . $ccurrency . "</label><input type='text' id='tax' name='tax' maxlength='11' class='amount'></span>\n";
 	                print "        </td>\n";
 		}
                 print "        <td class='data'>\n";
@@ -209,7 +223,7 @@
                     {
                         $css = "style='background-color: #FFB6AB;'";
                     }
-                    elseif($row['activity'] == "BONUS") # Bonus Shares
+                    elseif($row['activity'] == "BONUS") # Bonus Shares - alternative to split
                     {
                         $css = "style='background-color: #8BD9FF;'";
                     }
@@ -219,7 +233,7 @@
                     }
     
                     print "    <tr $css>\n";
-                    print "        <td class='data'>" . $row['accountNumber'] . "</td>\n";
+                    print "        <td class='data'>" . $row['accountName'] . "</td>\n";
 		    if ($row['tDateIsApprox'] != 0) {
                       print "        <td class='data'>Approx. " . $row['tDate']         . "</td>\n";
 		    } else {
@@ -228,32 +242,33 @@
                     print "        <td class='data'>" . $row['activity']      . "</td>\n";
                     print "        <td class='data'>" . $row['shares']        . "</td>\n";
                     print "        <td class='data' style='text-align: right;'>";
-                    print formatCash($row['cost']);
+                    print formatCashWCurr($row['cost'], $row['ccurrency']);
                     print "</td>\n";
-		if ($_SESSION['showTransactionTax'] == 'YES')
-		{
-                    print "        <td class='data' style='text-align: right;'>";
-                    print formatCash($row['tax']);
-                    print "</td>\n";
-		}
+                    if ($_SESSION['showTransactionTax'] == 'YES')
+                    {
+                        print "        <td class='data' style='text-align: right;'>";
+                        print formatCashWCurr($row['tax'], $row['ccurrency']);
+                        print "</td>\n";
+                    }
                     print "        <td class='data' style='text-align: right;'>";
     
                     if($row['activity'] == 'DIVIDEND' OR $row['activity'] == 'FEE')
                     {
-                        print formatCash($row['cost']);
+                        print formatCashWCurr($row['cost'], $row['ccurrency']);
                     }
                     else
                     {
-                        print formatCash(($row['cost'] * $row['shares']));
+                        print formatCashWCurr(($row['cost'] * $row['shares']), $row['ccurrency']);
                     }
     
                     print         "</td>\n";
                     print "        <td class='data'>\n";
-                    print "            <a class='delete' href='index.php?action=deleteTransaction&date=" . $row['tDate'] . "&activity=" . $row['activity'] . "&shares=" . $row['shares'] . "&cost=" . $row['cost'] . "&symbol=" . $row['symbol'] . "'>Delete</a>\n";
+                    print "            <a class='delete' href='index.php?action=deleteTransaction&id=" . $row['transactionId'] . "&symbol=" . $row['symbol'] . "'>Delete</a>\n";
                     print "        </td>\n";
                     print "    </tr>\n";
                 }
     
+                print "   </tbody>\n";
                 print "</table>\n";
                 print "</fieldset>\n";
             }
@@ -357,14 +372,10 @@
             include_once './classes/tc/transaction.class.php';
     
             $trans = new transaction();
-            $trans->accountId = trim($_REQUEST['accountId']);
-            $trans->activity = trim($_REQUEST['activity']);
-            $trans->cost = trim($_REQUEST['cost']);
-            $trans->shares = trim($_REQUEST['shares']);
+            $trans->transactionId = trim($_REQUEST['id']);
             $trans->symbol = trim($_REQUEST['symbol']);
-            $trans->tDate = trim($_REQUEST['date']);
     
-            $trans->delete();
+            $trans->deleteById();
     	}
 
 	/**

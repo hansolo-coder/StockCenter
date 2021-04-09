@@ -39,7 +39,8 @@
             print "    <legend>\n";
             print "        Accounts\n";
             print "    </legend>\n";
-            print "<table class='data'>\n";
+            print "<table class='data' id='aoverview' xstyle='width: 100%; xtable-layout:fixed;'>\n";
+            print "   <thead>\n";
             print "    <tr>\n";
             print "        <th class='data'>\n";
             print "            Number\n";
@@ -60,47 +61,52 @@
             print "            &nbsp;\n";
             print "        </th>\n";
             print "    </tr>\n";
-            print "    <form action='" . htmlentities($_SERVER['PHP_SELF']) . "?action=addAccount' method='post'>\n";
+            print "   </thead>\n";
+            print "   <tbody>\n";
             print "    <tr>\n";
+            print "    <form action='" . htmlentities($_SERVER['PHP_SELF']) . "?action=addAccount' method='post'>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='number'>\n";
+            print "            <input type='text' name='number' class='large'>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='name'>\n";
+            print "            <input type='text' name='name' class='large'>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='financialinstitution'>\n";
+            print "            <input type='text' name='financialinstitution' class='large'>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='created' id='created'>\n";
+            print "            <input type='text' name='created' id='created' class='date'>\n";
             print "            <script>\n";
             print "                $(function(){\n";
             print "                    var opts = {\n";
-            print "                        dateFormat:'yy-mm-dd'\n";
+            if (isset($_SESSION['region']) and $_SESSION['region'] == 'US')
+              print "                        dateFormat:'mm-dd-yy'\n";
+            else
+              print "                        dateFormat:'yy-mm-dd'\n";
             print "                    };\n";
             print "                    $( '#created' ).datepicker(opts);\n";
             print "                });\n";
             print "            </script>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='closed' id='closed'>\n";
+            print "            <input type='text' name='closed' id='closed' class='date'>\n";
             print "            <script>\n";
             print "                $(function(){\n";
             print "                    var opts = {\n";
-            print "                        dateFormat:'yy-mm-dd'\n";
+            if (isset($_SESSION['region']) and $_SESSION['region'] == 'US')
+              print "                        dateFormat:'mm-dd-yy'\n";
+            else
+              print "                        dateFormat:'yy-mm-dd'\n";
             print "                    };\n";
             print "                    $( '#closed' ).datepicker(opts);\n";
             print "                });\n";
             print "            </script>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
-            print "            -\n";
-            print "        </td>";
-            print "        <td class='data'>\n";
             print "            <input type='submit' value='Save'>\n";
             print "        </td>\n";
-            print "    </tr>\n";
             print "    </form>\n";
+            print "    </tr>\n";
     
             // set row color based on activity type
             foreach($rows as $row)
@@ -127,8 +133,14 @@
                 print "    </tr>\n";
             } // foreach
     
+            print "   </tbody>\n";
             print "</table>\n";
             print "</fieldset>\n";
+            print "<script>\n";
+            print "    $(document).ready(function(){\n";
+            print "        $('#aoverview').DataTable();\n";
+            print "    });\n";
+            print "</script>\n";
         } // show
         
         
