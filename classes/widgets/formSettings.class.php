@@ -47,7 +47,7 @@
             {
                 print "            <tr>";
     
-                if ($setting['settingName'] != "password" and $setting['settingName'] != "refreshTime" and $setting['settingName'] != "databaseVersion" and $setting['settingName'] != "accessKey")
+                if ($setting['settingName'] != "password" and $setting['settingName'] != "databaseVersion" and $setting['settingName'] != "accessKey")
                 {
                     print "                <td class='data'>";
                     print $setting['settingName'] . " (" . $setting['settingDesc'] . ")";
@@ -89,6 +89,10 @@
             	$set = new setting();
             	$set->settingName = 'sellTrigger';
                 $set->settingValue = trim($_REQUEST['sellTrigger']);
+                $set->update();
+            	$set = new setting();
+            	$set->settingName = 'refreshTime';
+                $set->settingValue = trim($_REQUEST['refreshTime']);
                 $set->update();
             	$set = new setting();
             	$set->settingName = 'stockdataclass';
