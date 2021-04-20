@@ -53,7 +53,7 @@
                     print $setting['settingName'] . " (" . $setting['settingDesc'] . ")";
                     print "                </td>";
                     print "                <td class='data'>";
-                    print "                    <input type='text' name='" . $setting['settingName'] . "' value='" . $setting['settingValue'] . "' style='width: 100%;'>";
+                    print "                    <input type='text' name='" . $setting['settingName'] . "' value='" . $setting['settingValue'] . "' class='widetext'>";
                     print "                </td>";
                 }
     
