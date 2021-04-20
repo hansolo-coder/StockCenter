@@ -61,8 +61,7 @@
             print "            &nbsp;\n";
             print "        </th>\n";
             print "    </tr>\n";
-            print "   </thead>\n";
-            print "   <tbody>\n";
+			// https://datatables.net/forums/discussion/41314/how-to-fix-a-row-with-sorting-enabled
             print "    <tr>\n";
             print "    <form action='" . htmlentities($_SERVER['PHP_SELF']) . "?action=addAccount' method='post'>\n";
             print "        <td class='data'>\n";
@@ -107,6 +106,8 @@
             print "        </td>\n";
             print "    </form>\n";
             print "    </tr>\n";
+            print "   </thead>\n";
+            print "   <tbody>\n";
     
             // set row color based on activity type
             foreach($rows as $row)
@@ -138,7 +139,7 @@
             print "</fieldset>\n";
             print "<script>\n";
             print "    $(document).ready(function(){\n";
-            print "        $('#aoverview').DataTable({'pageLength':15, 'lengthMenu':[5, 15, 30, 50]});\n";
+            print "        $('#aoverview').DataTable({'pageLength':15, 'lengthMenu':[5, 15, 30, 50], 'orderCellsTop': true, 'aaSorting': [[ 3, 'desc' ]]});\n";
             print "    });\n";
             print "</script>\n";
         } // show
