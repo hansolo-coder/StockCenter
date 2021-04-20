@@ -88,7 +88,10 @@
                   print "      <tr>\n";
                   print "        <td class='data'>";
                   print "            <input type='text' name='date' id='pricedate' value='";
-		  print date("Y-m-d", $stockdata->lastUpdated) . "'>\n";
+                  if (isset($_SESSION['region']) and $_SESSION['region'] == 'US')
+		    print date("m-d-Y", $stockdata->lastUpdated) . "'>\n";
+		  else
+		    print date("Y-m-d", $stockdata->lastUpdated) . "'>\n";
                   print "            <script>\n";
                   print "                $(function(){\n";
                   print "                    var opts = {\n";
@@ -234,6 +237,7 @@
     
                     print "    <tr $css>\n";
                     print "        <td class='data'>" . $row['accountName'] . "</td>\n";
+		    // TODO format tDate according to region
 		    if ($row['tDateIsApprox'] != 0) {
                       print "        <td class='data'>Approx. " . $row['tDate']         . "</td>\n";
 		    } else {
