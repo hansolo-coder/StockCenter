@@ -138,7 +138,7 @@
             print "</fieldset>\n";
             print "<script>\n";
             print "    $(document).ready(function(){\n";
-            print "        $('#aoverview').DataTable();\n";
+            print "        $('#aoverview').DataTable({'pageLength':15});\n";
             print "    });\n";
             print "</script>\n";
         } // show
