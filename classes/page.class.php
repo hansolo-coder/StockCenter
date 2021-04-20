@@ -59,7 +59,10 @@
 			print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=settingsForm'>Settings</a>\n";
 			print "        </td>\n";
 			print "        <td class='menu'>\n";
-			print "            &nbsp;\n";
+			if (isset($_SESSION['region']) and $_SESSION['region'] == 'US')
+			  print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=showTax'>Tax</a>\n";
+			else
+			  print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=showTax'>Tax Report</a>\n";
 			print "        </td>\n";
 			print "        <td class='menu'>\n";
 			print "            <a href='" . $_SERVER['PHP_SELF'] . "?action=logout'>Logout</a>\n";
