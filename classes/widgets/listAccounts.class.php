@@ -39,11 +39,11 @@
             print "    <legend>\n";
             print "        Accounts\n";
             print "    </legend>\n";
-            print "<table class='data' id='aoverview' xstyle='width: 100%; xtable-layout:fixed;'>\n";
+            print "<table class='display' id='aoverview' xstyle='width: 100%; xtable-layout:fixed;'>\n";
             print "   <thead>\n";
             print "    <tr>\n";
             print "        <th class='data'>\n";
-            print "            Number\n";
+            print "            Account\n";
             print "        </th>\n";
             print "        <th class='data'>\n";
             print "            Name\n";
@@ -64,9 +64,11 @@
             print "   </thead>\n";
             print "   <tbody>\n";
             print "    <tr>\n";
-            print "    <form action='" . htmlentities($_SERVER['PHP_SELF']) . "?action=addAccount' method='post'>\n";
+            print "    <form action='" . htmlentities($_SERVER['PHP_SELF']) . "' method='post'>\n";
+            print "        <input type='hidden' name='accountId' value=''>\n";
+            print "        <input type='hidden' name='action' value='addAccount'>";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='number' class='large'>\n";
+            print "            <input type='text' name='number' class='medium'>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
             print "            <input type='text' name='name' class='large'>\n";
@@ -111,9 +113,9 @@
             // set row color based on activity type
             foreach($rows as $row)
             {
-                print "    <tr style='background-color: #ABD9FF;'>\n";
+                print "    <tr>\n"; //  style='background-color: #ABD9FF;'
                 print "        <td class='data'>\n";
-                print "            " . $row['accountNumber'];
+                print "            <a href='" . htmlentities($_SERVER['PHP_SELF']) . "?action=overview&account=" . $row['accountId'] . "'>" . $row['accountNumber'] . "</a>";
                 print "        </td>\n";
                 print "        <td class='data'>\n";
                 print "            " . $row['accountName'];

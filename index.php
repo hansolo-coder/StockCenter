@@ -113,8 +113,11 @@
                 include_once './classes/pageHeader.class.php';
                 $header = new pageHeader();
                 $header->display();
-                
-                overview();
+
+                $showForAccount = NULL;
+                if (isset($_REQUEST['account']))
+                    $showForAccount = $_REQUEST['account'];
+                overview($showForAccount);
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "activityLog")
             {
@@ -264,6 +267,13 @@
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "charts")
             {
                 charts();
+            }
+            elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "showTax")
+            {
+                include_once 'classes/widgets/listTax.class.php';
+                $form = new listTax();
+                $form->action = 'showTax';
+                $form->display();
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "logout")
             {

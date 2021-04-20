@@ -598,7 +598,7 @@
         include_once './classes/pageHeader.class.php';
         $header = new pageHeader();
         $header->display();
-        overview();
+        overview(NULL);
     }
 
 
@@ -613,7 +613,7 @@
     }
     
     
-    function overview()
+    function overview($showForAccount)
     {
 	if ($_SESSION['debug'] == "on"){
 		print "<span class='debug'>overview</span><br>";
@@ -675,7 +675,6 @@
         $totalCurrentlyInvested = 0;
         $totalCurrentValue = 0;
         $totalDividends = 0;
-
         foreach ($stockList as $rowStocklist)
         {
             getData($rowStocklist['symbol']);
@@ -713,9 +712,10 @@
 	    $conn->fileName = $_SESSION['userId'];
 	    $db=$conn->connect();
 
-            $sql = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
+            $sql = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol AND (:accountId IS NULL OR :accountId = accountId)";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStocklist['symbol']);
+            $rs->bindValue(':accountId', $showForAccount);
             $rs->execute();
             $row = $rs->fetch();
             $boughtShares = $row['s'];
@@ -723,9 +723,10 @@
             $row = null;
             $rs = null;
 
-            $sql = "SELECT sum(shares) as s FROM transactions where activity='SELL' AND symbol=:symbol";
+            $sql = "SELECT sum(shares) as s FROM transactions where activity='SELL' AND symbol=:symbol AND (:accountId IS NULL OR :accountId = accountId)";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStocklist['symbol']);
+            $rs->bindValue(':accountId', $showForAccount);
             $rs->execute();
             $row = $rs->fetch();
             $soldShares = $row['s'];
@@ -1894,7 +1895,7 @@
 	    $conn->fileName = $_SESSION['userId'];
 	    $db = $conn->connect();
 
-	    $sqlDividend = "SELECT group_concat(symbol || ':' || value, ', ') AS DividendData FROM stockData WHERE attribute IN ('exDividendDate','xdividendPayDate') AND value <> '' AND value BETWEEN date('now','start of month','-1 month') AND date('now','start of month','+1 month','-1 day') ORDER BY value asc";
+	    $sqlDividend = "SELECT group_concat(symbol || ':' || value, ', ') AS DividendData FROM stockData WHERE attribute IN ('exDividendDate','xdividendPayDate') AND value <> '' AND value BETWEEN date('now','start of month','-15 day') AND date('now','start of month','+1 month','-1 day') ORDER BY value asc";
 	    $rsDividend = $db->prepare($sqlDividend);
 	    $rsDividend->execute();
 	    $rowDividend = $rsDividend->fetch();
