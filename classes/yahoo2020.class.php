@@ -753,10 +753,10 @@
 				$this->open = $sData["quoteSummary"]["result"][0]["summaryDetail"]["open"]["raw"];
 	
 				# dividend yield
-				$this->dividendYield = 0.04;
+				$this->dividendYield = $sData["quoteSummary"]["result"][0]["summaryDetail"]["dividendYield"]["raw"];
 					
 				# dps
-				$this->dps = 0.05;
+				$this->dps = $sData["quoteSummary"]["result"][0]["summaryDetail"]["dividendRate"]["raw"];
 	
 				# dividend pay date
 				$this->dividendPayDate = "2020-01-01";
