@@ -100,7 +100,7 @@
 			      $totalCostAllOAccount += $totalCost;
 			      $totalTaxAllOAccount += $totalTax;
 			    }
-			    print "<u>Account total    : " . $this->formatCashWCurrLocal($totalCost, $trow['ccurrency']) . "</u>\n";
+			    print "\n<u>Account total    : " . $this->formatCashWCurrLocal($totalCost, $trow['ccurrency']) . "</u>\n";
 			    if ($_SESSION['showTransactionTax'] == 'YES')
 			      print "<u>Account tax total: " . $this->formatCashWCurrLocal($totalTax, $trow['ccurrency']) . "</u>\n";
 			    print "\n";
@@ -163,7 +163,7 @@
 			      $totalCostAllOAccount += $totalCost;
 			      $totalFeeAllOAccount += $totalFee;
 			    }
-			    print "<u>Account total    : " . $this->formatCashWCurrLocal($totalCost, $trow['ccurrency']) . "</u>\n";
+			    print "\n<u>Account total    : " . $this->formatCashWCurrLocal($totalCost, $trow['ccurrency']) . "</u>\n";
 			    print "<u>Account fee total: " . $this->formatCashWCurrLocal($totalFee, $trow['ccurrency']) . "</u>\n";
 			    print "\n";
 			  }
@@ -177,6 +177,7 @@
 			print "\n";
 			print "<h2>SALEs in year\n";
 			print "=============</h2>\n";
+			print "(The purchase price for these stocks must be looked up manually)\n\n";
 			$totalCostAllOAccount = 0;
 			$totalFeeAllOAccount = 0;
 			$totalCostAllPAccount = 0;
@@ -224,7 +225,7 @@
 			      $totalCostAllOAccount += $totalCost;
 			      $totalFeeAllOAccount += $totalFee;
 			    }
-			    print "<u>Account total    : " . $this->formatCashWCurrLocal($totalCost, $trow['ccurrency']) . "</u>\n";
+			    print "\n<u>Account total    : " . $this->formatCashWCurrLocal($totalCost, $trow['ccurrency']) . "</u>\n";
 			    print "<u>Account fee total: " . $this->formatCashWCurrLocal($totalFee, $trow['ccurrency']) . "</u>\n";
 			    print "\n";
 			  }
@@ -242,8 +243,8 @@ left outer join transactions t2 on t1.symbol = t2.symbol and t1.tDate = t2.tDate
 where t1.tDate between '2020-01-01' and '2021-12-31' and t1.activity in ('SELL');
 */
 			print "\n";
-			print "<h2>Loose FEES in year\n";
-			print "=============</h2>\n";
+			print "<h2>Other FEES in year not relatable to other transactions\n";
+			print "======================================================</h2>\n";
 /*
 select * from transactions tf where tf.tDate between '2020-01-01' and '2021-12-31' and tf.activity in ('FEE') AND tf.transactionId NOT IN (
 select t2.transactionId from transactions t1
@@ -251,6 +252,30 @@ left outer join transactions t2 on t1.symbol = t2.symbol and t1.tDate = t2.tDate
 where t1.tDate between '2020-01-01' and '2021-12-31' and t1.activity in ('SELL','BUY')
 );
 */
+			$sql = "select tf.tDate, tf.tDateIsApprox, tf.symbol, tf.cost AS cost, CASE WHEN tf.tax <> '' THEN tf.tax ELSE 0 END AS tax, COALESCE(tf.currency, a.accountCurrency) AS currency, tf.exchangeRate, a.accountCurrency AS ccurrency from transactions tf LEFT OUTER JOIN accounts a ON tf.accountId = a.accountId where tf.tDate BETWEEN '" . $forYear . "-01-01' AND '" . $forYear . "-12-31' and tf.activity in ('FEE') AND tf.transactionId NOT IN (select t2.transactionId from transactions t1 left outer join transactions t2 on t1.symbol = t2.symbol and t1.tDate = t2.tDate and t2.activity = 'FEE' where t1.tDate BETWEEN '" . $forYear . "-01-01' AND '" . $forYear . "-12-31' and t1.activity in ('SELL','BUY') )";
+			$rs = $db->prepare($sql);
+			$rs->execute();
+			$nrfees = $rs->fetchAll();
+			if (count($nrfees) > 0) {
+			  $maxLengthSymbol = $this->getMaxLength($nrfees, 'symbol', 'Symbol');
+			  $maxLengthCost = $this->getMaxLengthMoney($nrfees, 'cost', 'currency', 'exchangeRate', 'ccurrency', 'Amount');
+			  $totalCost = 0;
+
+			  print "<u>" . str_pad("Date",10) . " " . str_pad('Symbol', $maxLengthSymbol) . " " . str_pad('Amount', $maxLengthCost, " ", STR_PAD_LEFT) . "</u>\n";
+			  foreach($nrfees as $trow) {
+			    // TODO format tDate to region - probably requires storing dates as integers globally (which is probably a good idea anyway)
+			    if (isset($_SESSION['region']) and $_SESSION['region'] == 'US') {
+			    //  print date("m-d-Y", $trow['tDate']);
+			      print $trow['tDate'];
+			    } else {
+			    //  print date("Y-m-d", $trow['tDate']);
+			      print $trow['tDate'];
+			    }
+			    print " " . str_pad($trow['symbol'], $maxLengthSymbol, " ");
+			    print " " . str_pad($this->formatCashWRateLocal($trow['cost'], $trow['currency'], $trow['exchangeRate'], $trow['ccurrency']), $maxLengthCost, " ", STR_PAD_LEFT);
+			  }
+			}
+
 
 			print "</pre>\n";
 		}
