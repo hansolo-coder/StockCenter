@@ -4,3 +4,15 @@ Installation
 2. Open a web browser & navigate to the URL where you uploaded the files
 3. An initial user will be created with the login and password of admin
 4. Change the admin's password and add users as desired
+
+5. Before doing anything else, then goto "Settings" and adjust the settings to your liking:
+	"stockdataclass" can be "REAL" or "MOCK" (to provide dummy data for testing). Yahoo unfortunately has a habit of changing their api.
+	"currency" should be your main currency - it is suggested to use 3-character codes like "USD", but styles like "$" are also somewhat supported.
+	"showTransactionTax" can be "No" or "Yes". Set it to "Yes" to be able to register taxes when receiving dividends.
+	"region" currently only recognizes "EUR" or "US" - it mainly controls date-formats.
+	"chgPctMarkUnchanged" is an addition to only showing wins or losses in the "Overview". Here you can register a percentage (like 0.05) and if the current value of a stock is within that percentage of the purchase price, it will be shown as yellow ("unchanged").
+6. Goto "Accounts" and add your accounts.
+
+There are currently a -few- columns in the sqlite-database, that cannot be entered/seen using the UI. If all your stocks are in the same currency (and equal to the one you registered in "Settings"), all is probably good. Otherwise you currently have to make a few manual updates in the sqlite-database (like exchange-rates etc.) if you handle a stock in another currency.
+These updates is done by backing up the sqlite3 database (in UI) to your local pc, making manual updates using sqlite3.exe tool and then "Restore" the database again using the UI.
+This is expected to go away in later versions :-)
