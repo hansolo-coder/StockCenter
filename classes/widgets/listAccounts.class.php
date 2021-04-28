@@ -39,7 +39,7 @@
             print "    <legend>\n";
             print "        Accounts\n";
             print "    </legend>\n";
-            print "<table class='display' id='aoverview' xstyle='width: 100%; xtable-layout:fixed;'>\n";
+            print "<table class='display' id='aoverview' style='width: 100%; xtable-layout:fixed;'>\n";
             print "   <thead>\n";
             print "    <tr>\n";
             print "        <th class='data'>\n";
@@ -64,19 +64,19 @@
 			// https://datatables.net/forums/discussion/41314/how-to-fix-a-row-with-sorting-enabled
             print "    <tr>\n";
             print "    <form action='" . htmlentities($_SERVER['PHP_SELF']) . "' method='post'>\n";
-            print "        <input type='hidden' name='accountId' value=''>\n";
-            print "        <input type='hidden' name='action' value='addAccount'>";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='number' class='medium'>\n";
+            print "            <input type='hidden' name='accountId' value=''>\n";
+            print "            <input type='hidden' name='action' value='addAccount'>\n";
+            print "            <input type='text' name='number' class='medium' required>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='name' class='large'>\n";
+            print "            <input type='text' name='name' class='large' required>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='financialinstitution' class='large'>\n";
+            print "            <input type='text' name='financialinstitution' class='large' required>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='created' id='created' class='date'>\n";
+            print "            <input type='text' name='created' id='created' class='date' required>\n";
             print "            <script>\n";
             print "                $(function(){\n";
             print "                    var opts = {\n";
@@ -116,20 +116,20 @@
             {
                 print "    <tr>\n"; //  style='background-color: #ABD9FF;'
                 print "        <td class='data'>\n";
-                print "            <a href='" . htmlentities($_SERVER['PHP_SELF']) . "?action=overview&account=" . $row['accountId'] . "'>" . $row['accountNumber'] . "</a>";
+                print "            <a href='" . htmlentities($_SERVER['PHP_SELF']) . "?action=overview&account=" . $row['accountId'] . "'>" . $row['accountNumber'] . "</a>\n";
                 print "        </td>\n";
-                print "        <td class='data'>\n";
-                print "            " . $row['accountName'];
-                print "        </td>\n";
-                print "        <td class='data'>\n";
-                print "            " . $row['financialInstitution'];
-                print "        </td>\n";
-                print "        <td class='data'>\n";
-                print "            " . $row['aCreated'];
-                print "        </td>\n";
-                print "        <td class='data'>\n";
-                print "            " . $row['aClosed'];
-                print "        </td>\n";
+                print "        <td class='data'>";
+                print              $row['accountName'];
+                print         "</td>\n";
+                print "        <td class='data'>";
+                print              $row['financialInstitution'];
+                print         "</td>\n";
+                print "        <td class='data'>";
+                print              $row['aCreated'];
+                print         "</td>\n";
+                print "        <td class='data'>";
+                print              $row['aClosed'];
+                print         "</td>\n";
                 print "        <td class='data'>\n";
                 print "            <a class='delete' href='index.php?action=deleteAccount&id=" . $row['accountId'] . "'>Delete</a>\n";
                 print "        </td>\n";
@@ -139,11 +139,11 @@
             print "   </tbody>\n";
             print "</table>\n";
             print "</fieldset>\n";
-            print "<script>\n";
-            print "    $(document).ready(function(){\n";
-            print "        $('#aoverview').DataTable({'pageLength':15, 'lengthMenu':[5, 15, 30, 50], 'orderCellsTop': true, 'aaSorting': [[ 3, 'desc' ]]});\n";
-            print "    });\n";
-            print "</script>\n";
+            //print "<script>\n";
+            //print "    $(document).ready(function(){\n";
+            //print "        $('#aoverview').DataTable({'pageLength':15, 'lengthMenu':[5, 15, 30, 50], 'orderCellsTop': true, 'aaSorting': [[ 3, 'desc' ]]});\n";
+            //print "    });\n";
+            //print "</script>\n";
         } // show
         
         
@@ -167,6 +167,18 @@
                	$trans->financialInstitution = trim($_REQUEST['financialinstitution']);
                	$trans->created = trim($_REQUEST['created']);
                	$trans->closed = trim($_REQUEST['closed']);
+		if (isset($_REQUEST['isPension']))
+               	  $trans->isPension = trim($_REQUEST['isPension']);
+		else
+               	  $trans->isPension = 'N';
+		if (isset($_REQUEST['accountType']))
+               	  $trans->accountType = trim($_REQUEST['accountType']);
+		else
+               	  $trans->accountType = "Ordinary";
+		if (isset($_REQUEST['accountCurrency']))
+               	  $trans->accountCurrency = trim($_REQUEST['accountCurrency']);
+		else
+               	  $trans->accountCurrency = trim($_SESSION['DefaultCurrency']);
    
                	$trans->insert();
     

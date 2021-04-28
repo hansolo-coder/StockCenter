@@ -10,7 +10,9 @@
 		public $financialInstitution;
 		public $created;
 		public $closed;
-
+		public $isPension;
+		public $accountType;
+		public $accountCurrency;
 		
 		
 		function __construct()
@@ -21,6 +23,9 @@
 			$this->financialInstitution = 'none';
 			$this->created = 'none';
 			$this->closed = 'none';
+			$this->isPension = "N";
+			$this->accountType = "none";
+			$this->accountCurrency = "none";
 		}
 
 		
@@ -50,6 +55,9 @@
 			$this->financialInstitution = $row['financialInstitution'];
 			$this->created = $row['created'];
 			$this->closed = $row['closed'];
+			$this->isPension = $row['isPension'];
+			$this->accountType = $row['accountType'];
+			$this->accountCurrency = $row['accountCurrency'];
 
 			if ($_SESSION['debug'] == "on"){
 				print "<span class='debug'>dbDisconnect: account.class.php " . __LINE__ . "</span><br>";
@@ -78,13 +86,16 @@
 			$conn->fileName = $_SESSION['userId'];
 			$db = $conn->connect();
 
-			$sql = "INSERT INTO accounts (accountNumber, accountName, financialInstitution, aCreated, aClosed) VALUES(:accountNumber, :accountName, :financialInstitution, :created, :closed)";
+			$sql = "INSERT INTO accounts (accountNumber, accountName, financialInstitution, aCreated, aClosed, isPension, accountType, accountCurrency) VALUES(:accountNumber, :accountName, :financialInstitution, :created, :closed, :isPension, :accountType, :accountCurrency)";
 			$rs = $db->prepare($sql);
 			$rs->bindValue(':accountNumber', trim($this->accountNumber));
 			$rs->bindValue(':accountName', trim($this->accountName));
 			$rs->bindValue(':financialInstitution', trim($this->financialInstitution));
 			$rs->bindValue(':created', $this->created);
 			$rs->bindValue(':closed', $this->closed);
+			$rs->bindValue(':isPension', $this->isPension);
+			$rs->bindValue(':accountType', $this->accountType);
+			$rs->bindValue(':accountCurrency', $this->accountCurrency);
 			$rs->execute();
 
 			if ($_SESSION['debug'] == "on"){
