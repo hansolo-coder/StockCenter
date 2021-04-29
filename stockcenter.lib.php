@@ -723,7 +723,7 @@
             $row = null;
             $rs = null;
 
-            $sql = "SELECT sum(shares) as s FROM transactions where (activity='SELL' OR (activity = 'MOVE' AND shares < 0)) AND symbol=:symbol AND (:accountId IS NULL OR :accountId = accountId)";
+            $sql = "SELECT sum(CASE WHEN activity = 'MOVE' THEN shares * -1 ELSE shares END) as s FROM transactions where (activity='SELL' OR (activity = 'MOVE' AND shares < 0)) AND symbol=:symbol AND (:accountId IS NULL OR :accountId = accountId)";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStocklist['symbol']);
             $rs->bindValue(':accountId', $showForAccount);
