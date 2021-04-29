@@ -712,7 +712,7 @@
 	    $conn->fileName = $_SESSION['userId'];
 	    $db=$conn->connect();
 
-            $sql = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol AND (:accountId IS NULL OR :accountId = accountId)";
+            $sql = "SELECT sum(shares) as s FROM transactions where (activity IN ('BUY','BONUS','SPLIT') OR (activity = 'MOVE' AND shares > 0)) AND symbol=:symbol AND (:accountId IS NULL OR :accountId = accountId)";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStocklist['symbol']);
             $rs->bindValue(':accountId', $showForAccount);
@@ -723,7 +723,7 @@
             $row = null;
             $rs = null;
 
-            $sql = "SELECT sum(shares) as s FROM transactions where activity='SELL' AND symbol=:symbol AND (:accountId IS NULL OR :accountId = accountId)";
+            $sql = "SELECT sum(shares) as s FROM transactions where (activity='SELL' OR (activity = 'MOVE' AND shares < 0)) AND symbol=:symbol AND (:accountId IS NULL OR :accountId = accountId)";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStocklist['symbol']);
             $rs->bindValue(':accountId', $showForAccount);
