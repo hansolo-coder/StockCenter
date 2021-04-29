@@ -236,7 +236,7 @@
                     }
     
                     print "    <tr $css>\n";
-                    print "        <td class='data'>" . $row['accountName'] . "</td>\n";
+                    print "        <td class='data'><div class='tooltip'>" . $row['accountName'] . "<div class='tooltiptext'>" . $row['accountNumber'] . "</div></div></td>\n";
 		    // TODO format tDate according to region
 		    if ($row['tDateIsApprox'] != 0) {
                       print "        <td class='data'>Approx. " . $row['tDate']         . "</td>\n";

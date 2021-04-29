@@ -673,8 +673,10 @@
 	print "    <tbody>\n";
 
         $totalCurrentlyInvested = 0;
+        $totalCurrentlyInvestedLocal = 0;
         $totalCurrentValue = 0;
         $totalDividends = 0;
+        $totalDividendsLocal = 0;
         foreach ($stockList as $rowStocklist)
         {
             getData($rowStocklist['symbol']);
@@ -734,7 +736,7 @@
             $row = null;
             $rs = null;
             
-            $sql = "SELECT cost, shares FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
+            $sql = "SELECT t.cost, t.shares, COALESCE(t.currency, a.accountCurrency) AS currency, t.exchangeRate, a.accountCurrency AS ccurrency FROM transactions t LEFT OUTER JOIN accounts a ON t.accountId = a.accountId where t.activity IN ('BUY','BONUS','SPLIT') AND t.symbol=:symbol";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStocklist['symbol']);
             $rs->execute();
@@ -743,14 +745,19 @@
             $rs = null;
 			
             $totalSpent = 0;
+            $totalSpentLocal = 0;
+            $totalSpentLocalCurr = "";
 
             foreach ($rows as $row)
             {
                 $sale = $row['shares'] * $row['cost'];
+                $saleLocal = $row['shares'] * $row['cost'] * $row['exchangeRate'];
                 $totalSpent = $totalSpent + $sale;
+                $totalSpentLocal = $totalSpentLocal + $saleLocal;
+                $totalSpentLocalCurr = $row['ccurrency'] ;
             }
 
-            $sql = "SELECT cost, shares FROM transactions where activity='SELL' AND symbol=:symbol";
+            $sql = "SELECT t.cost, t.shares, COALESCE(t.currency, a.accountCurrency) AS currency, t.exchangeRate, a.accountCurrency AS ccurrency FROM transactions t LEFT OUTER JOIN accounts a ON t.accountId = a.accountId where t.activity='SELL' AND t.symbol=:symbol";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStocklist['symbol']);
             $rs->execute();
@@ -759,22 +766,30 @@
             $rs = null;
 			
             $totalSales = 0;
+            $totalSalesLocal = 0;
 
             foreach ($rows as $row)
             {
                 $sale = $row['shares'] * $row['cost'];
+                $saleLocal = $row['shares'] * $row['cost'] * $row['exchangeRate'];
                 $totalSales = $totalSales + $sale;
+                $totalSalesLocal = $totalSalesLocal + $saleLocal;
             }
 
-            $sql = "SELECT sum(cost) as s, currency FROM transactions where activity='DIVIDEND' AND symbol=:symbol group by currency";
+            $sql = "SELECT sum(t.cost) as s, sum(t.cost * t.exchangeRate) as slocal, COALESCE(t.currency, a.accountCurrency) AS currency, a.accountCurrency AS ccurrency FROM transactions t LEFT OUTER JOIN accounts a ON t.accountId = a.accountId where t.activity='DIVIDEND' AND t.symbol=:symbol group by currency";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStocklist['symbol']);
             $rs->execute();
             $row = $rs->fetch();
             $dividends = $row['s'];
+            $dividendsLocal = $row['slocal'];
             $divcurrency = $row['currency'];
+            $divcurrencyLocal = $row['ccurrency'];
             if ($divcurrency == '') {
                $divcurrency = $scurrency;
+            }
+            if ($divcurrencyLocal == '') {
+               $divcurrencyLocal = $scurrency;
             }
 
             $row = null;
@@ -808,6 +823,7 @@
             {
                 $currentValue = ($currentPrice * ($boughtShares - $soldShares));
                 $currentlyInvested = toCash($totalSpent) - toCash($totalSales);
+                $currentlyInvestedLocal = toCash($totalSpentLocal) - toCash($totalSalesLocal);
 
                 print "<tr>\n";
                 print "    <td class='data'>\n";
@@ -821,6 +837,8 @@
                 print "    </td>\n";
                 print "    <td class='data'>\n";
                 print "        " . formatCashWCurr($currentlyInvested, $scurrency);
+                if ($currentlyInvested <> $currentlyInvestedLocal)
+                  print "\n        (" . formatCashWCurr($currentlyInvestedLocal, $totalSpentLocalCurr) . ")";
                 print "    </td>\n";
 
                 if($currentlyInvested > 0 && (abs($currentlyInvested - $currentValue) / $currentlyInvested < $chgPctMarkUnchanged))
@@ -840,12 +858,16 @@
                 print "    </td>\n";
                 print "    <td class='data'>\n";
                 print "        " . formatCashWCurr($dividends, $divcurrency);
+                if ($dividends <> $dividendsLocal)
+                  print "\n        (" . formatCashWCurr($dividendsLocal, $divcurrencyLocal) . ")";
                 print "    </td>\n";
                 print "</tr>\n";
 
                 $totalCurrentlyInvested = toCash($totalCurrentlyInvested + $currentlyInvested);
+                $totalCurrentlyInvestedLocal = toCash($totalCurrentlyInvestedLocal + $currentlyInvestedLocal);
                 $totalCurrentValue = toCash($totalCurrentValue + $currentValue);
                 $totalDividends = toCash($totalDividends + $dividends);
+                $totalDividendsLocal = toCash($totalDividendsLocal + $dividendsLocal);
             }
             
             if ($_SESSION['debug'] == "on"){
@@ -876,13 +898,13 @@
         print "            Totals:\n";
         print "        </td>\n";
         print "        <td class='data' width='16.6%' style='taxt-align: right;'>\n";
-        print "            " . formatCash($totalCurrentlyInvested);
+        print "            " . formatCash($totalCurrentlyInvestedLocal);
         print "        </td>\n";
         print "        <td class='data' width='16.6%' style='taxt-align: right; $css'>\n";
         print "            " . formatCash($totalCurrentValue);
         print "        </td>\n";
         print "        <td class='data' width='16.6%'>\n";
-        print "            " . formatCash($totalDividends);
+        print "            " . formatCash($totalDividendsLocal);
         print "        </td>\n";
         print "</table>\n";
         print "</fieldset>\n";
@@ -1761,7 +1783,8 @@
 		print "                <table width='100%'>";
 		print "                    <tr>";
 		print "                        <td width='50%' class='data'>";
-		print "                			   52 High";
+		print "                			   <div class='tooltip'>52 High";
+		print "<div class='tooltiptext'>The highest stock price in the latest 52 weeks</div></div>";
 		print "                        </td>";
 		print "                        <td width='50%' class='data'>";
 		print "                			   " . formatCashWCurr($yearHigh, $scurrency);
@@ -1769,7 +1792,8 @@
 		print "                    </tr>";
 		print "                    <tr>";
 		print "                        <td width='50%' class='data'>";
-		print "                        	   52 Low";
+		print "                        	   <div class='tooltip'>52 Low";
+		print "<div class='tooltiptext'>The lowest stock price in the latest 52 weeks</div></div>";
 		print "                        </td>";
 		print "                        <td width='50%' class='data'>";
 		print "                        	   " . formatCashWCurr($yearLow, $scurrency);
@@ -1777,7 +1801,8 @@
 		print "                    </tr>";
 		print "                    <tr>";
 		print "                        <td class='data'>";
-		print "                			   Ex Date";
+		print "                		   <div class='tooltip'>Ex Date";
+		print "<div class='tooltiptext'>The date on and after which a security is traded without a previously declared dividend</div></div>";
 		print "                        </td>";
 		print "                        <td class='data'>";
 		print "                			   " . str_replace('"', '', $exDividendDate);
@@ -1785,7 +1810,8 @@
 		print "                    </tr>";
 		print "                    <tr>";
 		print "                        <td class='data'>";
-		print "                        	   Pay Date";
+		print "                        	   <div class='tooltip'>Pay Date";
+		print "<div class='tooltiptext'>The date when the company pays the declared dividend only to shareholders who own the stock before the ex-date</div></div>";
 		print "                        </td>";
 		print "                        <td class='data'>";
 		print "                        	   " . str_replace('"', '', $payDate);
@@ -1793,7 +1819,8 @@
 		print "                    </tr>";
 		print "                    <tr>";
 		print "                        <td class='data'>";
-		print "                			   DPS";
+		print "                		   <div class='tooltip'>DPS";
+		print "<div class='tooltiptext'>The companys annual dividend payment per share</div></div>";
 		print "                        </td>";
 		print "                        <td class='data'>";
 		print "                			   " . $dps;
@@ -1801,7 +1828,8 @@
 		print "                    </tr>";
 		print "                    <tr>";
 		print "                        <td class='data'>";
-		print "                        	   EPS";
+		print "                        	   <div class='tooltip'>EPS";
+		print "<div class='tooltiptext'>The companys earning per share</div></div>";
 		print "                        </td>";
 		print "                        <td class='data'>";
 		print "                        	   " . $eps;
@@ -1809,7 +1837,8 @@
 		print "                    </tr>";
 		print "                    <tr>";
 		print "                        <td class='data'>";
-		print "                			   Yield";
+		print "                		   <div class='tooltip'>Yield";
+		print "<div class='tooltiptext'>A stock's annual dividend payments to shareholders expressed as a percentage of the stock's current price</div></div>";
 		print "                        </td>";
 		print "                        <td class='data'>";
 		print "                			   " . $dividendYield;
