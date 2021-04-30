@@ -270,10 +270,16 @@
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "showTax")
             {
+                $forYear = date('Y') - 1;
+                if (isset($_REQUEST['year']) and is_numeric($_REQUEST['year']))
+                {
+                  $forYear = substr($_REQUEST['year'],0,4) + 0;
+                }
+
                 include_once 'classes/widgets/listTax.class.php';
                 $form = new listTax();
                 $form->action = 'showTax';
-                $form->display();
+                $form->display($forYear);
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "logout")
             {

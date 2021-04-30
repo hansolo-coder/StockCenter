@@ -29,7 +29,7 @@
 		/**
 		 * displays the form
 		 */
-		function display()
+		function display($forYear)
 		{
 			if ($_SESSION['debug'] == "on"){print "<span class='debug'>listTax($this->action)</span><br>\n";}
 
@@ -39,15 +39,21 @@
 			$conn->fileName = $_SESSION['userId'];
 			$db=$conn->connect();
 
+		        $otherYear = date('Y');
+        		if ($forYear == $otherYear)
+		        {
+		          $otherYear = $otherYear - 1;
+		        }
+
 			// get accounts
 			$sql = "SELECT accountId, accountNumber, accountName, financialInstitution, isPension, accountType, accountCurrency FROM accounts ORDER BY isPension DESC, aCreated DESC";
 			$rs = $db->prepare($sql);
 			$rs->execute();
 			$accounts = $rs->fetchAll();
 
-			$forYear = date('Y') - 1;
-			print "<h1>Tax report (" . $forYear . ")</h1>\n";
-			print "<pre>\n";
+			print "<h1>Tax report (" . $forYear . ")</h1>";
+			print " (See <a href='" . htmlentities($_SERVER['PHP_SELF']) . "?action=" . $this->action . "&year=" . $otherYear . "'>" . $otherYear . "</a>)";
+			print "\n<pre>\n";
 			print "<h2>DIVIDENDs per account\n";
 			print "=====================</h2>\n";
 			$totalCostAllOAccount = 0;
