@@ -674,7 +674,7 @@
 
         $totalCurrentlyInvested = 0;
         $totalCurrentlyInvestedLocal = 0;
-        $totalCurrentValue = 0;
+        $totalCurrentValueLocal = 0;
         $totalDividends = 0;
         $totalDividendsLocal = 0;
         foreach ($stockList as $rowStocklist)
@@ -822,6 +822,17 @@
             if ((($boughtShares - $soldShares) > 0))
             {
                 $currentValue = ($currentPrice * ($boughtShares - $soldShares));
+		$currentValueLocal = 0;
+		$noRateError = NULL;
+		if ($scurrency != $_SESSION['DefaultCurrency']) {
+			if (isset($_SESSION['Rates'][$scurrency])) {
+				$currentValueLocal = $currentValue * $_SESSION['Rates'][$scurrency] / 100;
+			} else {
+				$noRateError = "No rate for " . $scurrency;
+			}
+		} else {
+			$currentValueLocal = $currentValue;
+		}
                 $currentlyInvested = toCash($totalSpent) - toCash($totalSales);
                 $currentlyInvestedLocal = toCash($totalSpentLocal) - toCash($totalSalesLocal);
 
@@ -855,6 +866,9 @@
                 }
 
                 print "        " . formatCashWCurr($currentValue, $scurrency);
+		  if ($currentValue <> $currentValueLocal) {
+		    print "\n        (" . formatCashWCurr($currentValueLocal, $_SESSION['DefaultCurrency']) . ")";
+		  }
                 print "    </td>\n";
                 print "    <td class='data'>\n";
                 print "        " . formatCashWCurr($dividends, $divcurrency);
@@ -865,7 +879,7 @@
 
                 $totalCurrentlyInvested = toCash($totalCurrentlyInvested + $currentlyInvested);
                 $totalCurrentlyInvestedLocal = toCash($totalCurrentlyInvestedLocal + $currentlyInvestedLocal);
-                $totalCurrentValue = toCash($totalCurrentValue + $currentValue);
+                $totalCurrentValueLocal = toCash($totalCurrentValueLocal + $currentValueLocal);
                 $totalDividends = toCash($totalDividends + $dividends);
                 $totalDividendsLocal = toCash($totalDividendsLocal + $dividendsLocal);
             }
@@ -880,7 +894,7 @@
             $conn = null;
        }
 
-        if(toCash($totalCurrentValue) > toCash($totalCurrentlyInvested))
+        if(toCash($totalCurrentValueLocal) > toCash($totalCurrentlyInvestedLocal))
         {
             $css = "background-color: #AFFFAB;";
         }
@@ -901,7 +915,7 @@
         print "            " . formatCash($totalCurrentlyInvestedLocal);
         print "        </td>\n";
         print "        <td class='data' width='16.6%' style='taxt-align: right; $css'>\n";
-        print "            " . formatCash($totalCurrentValue);
+        print "            " . formatCash($totalCurrentValueLocal);
         print "        </td>\n";
         print "        <td class='data' width='16.6%'>\n";
         print "            " . formatCash($totalDividendsLocal);
@@ -1842,6 +1856,15 @@
 		print "                        </td>";
 		print "                        <td class='data'>";
 		print "                			   " . $dividendYield;
+		print "                        </td>";
+		print "                    </tr>";
+		print "                    <tr>";
+		print "                        <td class='data'>";
+		print "                		   <div class='tooltip'>Current P/E";
+		print "<div class='tooltiptext'>The relationship between a company’s stock price and earnings per share (EPS)</div></div>";
+		print "                        </td>";
+		print "                        <td class='data'>";
+		print "                			   ";
 		print "                        </td>";
 		print "                    </tr>";
 		print "                </table>";

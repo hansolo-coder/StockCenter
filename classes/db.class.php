@@ -145,6 +145,20 @@
 			$sql .= ")";
 			$rs = $db->prepare($sql);
 			$rs->execute();
+
+			# ExchangeRates table
+			$sql = "CREATE TABLE [exchangeRates] (";
+			$sql .= "  [source] VARCHAR(50),";
+			$sql .= "  [date] VARCHAR(10),";
+			$sql .= "  [fromCurrency] VARCHAR(5),";
+			$sql .= "  [toCurrency] VARCHAR(5),";
+			$sql .= "  [rate] DECIMAL(25,8)";
+			$sql .= ")";
+			$rs = $db->prepare($sql);
+			$rs->execute();
+			$sql = "CREATE INDEX idxExchangeRates_date ON exchangeRates (date)";
+			$rs = $db->prepare($sql);
+			$rs->execute();
 		}
 	}
 ?>
