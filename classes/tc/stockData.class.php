@@ -15,6 +15,7 @@
 		public $xDate;
 		public $pDate;		// Dividend pay date
  		public $eps;		// Earning per share
+ 		public $peTrailing;	// Trailing PE
 		public $name;
 		public $currency;       // currency of stock
 		public $lastUpdated;
@@ -39,6 +40,7 @@
 			$this->pDate = '';
 			$this->eps = '';
 			$this->name = '';
+			$this->peTrailing = '';
 			$this->currency = '';
 			$this->lastUpdated = 0;
 			$this->errors = 'none';
@@ -119,6 +121,10 @@
 				elseif($row['attribute'] == "currency")
 				{
 					$this->currency = $row['value'];
+				}
+				elseif($row['attribute'] == "peTrailing")
+				{
+					$this->peTrailing = $row['value'];
 				}
     
 				$this->lastUpdated = $row['lastUpdated'];

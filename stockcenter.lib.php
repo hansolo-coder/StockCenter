@@ -1539,6 +1539,7 @@
 		$eps = $sData->eps;
 		$name = $sData->name;
 		$scurrency = $sData->currency;
+		$peTrailing = $sData->peTrailing;
 
 		$dataSource = "Updates in " . number_format((float)($_SESSION['refreshTime'] - ((time() - $sData->lastUpdated) / 60)), 0, '.', '') . " minutes";
 
@@ -1864,7 +1865,7 @@
 		print "<div class='tooltiptext'>The relationship between a company’s stock price and earnings per share (EPS)</div></div>";
 		print "                        </td>";
 		print "                        <td class='data'>";
-		print "                			   ";
+		print "                			   " . $peTrailing;
 		print "                        </td>";
 		print "                    </tr>";
 		print "                </table>";

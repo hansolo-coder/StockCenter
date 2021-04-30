@@ -612,12 +612,26 @@
 		 * @return revenue
 		 */
 		public $revenue;
+
+		/**
+		 * @var decimal
+		 * @access public
+		 * @return Trailing PE
+		 */
+		public $peTrailing;
+
+		/**
+		 * @var decimal
+		 * @access public
+		 * @return Forward PE
+		 */
+		public $peForward;
 		
 		
 		
 		function __construct()
 		{
-		    $this->url                                    = "https://query2.finance.yahoo.com/v10/finance/quoteSummary/";
+		    $this->url                                    = "https://query2.finance.yahoo.com/v11/finance/quoteSummary/";
 		    $this->codes1                                 = "?modules=price";
 		    $this->codes2                                 = "?modules=summaryDetail";
 		    $this->symbol                                 = NULL;
@@ -695,6 +709,8 @@
 		    $this->tickerTrend                            = NULL;
 		    $this->tradeLinks                             = NULL;
 		    $this->revenue                                = NULL;
+		    $this->peTrailing				  = NULL;
+		    $this->peForward				  = NULL;
 		}
 	
 		
@@ -940,6 +956,12 @@
 					
 				# revenue
 				#$this->revenue = $this->removeQuotes(trim($sData[72]));
+
+				# P/E Trailing
+				$this->peTrailing = $sData["quoteSummary"]["result"][0]["summaryDetail"]["trailingPE"]["raw"];
+
+				# P/E Forward
+				$this->peForward = $sData["quoteSummary"]["result"][0]["summaryDetail"]["forwardPE"]["raw"];
 			}
 		}
 
