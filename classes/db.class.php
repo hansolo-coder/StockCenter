@@ -109,8 +109,8 @@
 			$sql .= "[symbol] VARCHAR(20) NOT NULL,";
 			$sql .= "[activity] VARCHAR(10) NOT NULL,";
 			$sql .= "[shares] INT,[cost] INT(0, 2),";
-			$sql .= "[tDateIsApprox] INTEGER,";
-			$sql .= "[currency] VARCHAR(3) NOT NULL DEFAULT 'DKK',";
+			$sql .= "[tDateIsApprox] INTEGER NOT NULL DEFAULT 0,";
+			$sql .= "[currency] VARCHAR(3) NOT NULL,";
 			$sql .= "[tax] DECIMAL,";
 			$sql .= "[exchangeRate] DECIMAL NOT NULL DEFAULT 1.0)";
 			$rs = $db->prepare($sql);

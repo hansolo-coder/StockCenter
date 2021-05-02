@@ -125,6 +125,7 @@
                 dividendEarningsChart($_REQUEST['symbol']);
     
                 print "<div class='spacer'></div>\n";
+                print "<a name='transactions'>\n";
     
                 print "<fieldset>\n";
                 print "    <legend>\n";
@@ -317,7 +318,10 @@
             {
                 if(!isset($_REQUEST['shares']) OR trim($_REQUEST['shares']) == '')
                 {
-                    $shares = 0;
+		    if (isset($_REQUEST['activity']) AND $_REQUEST['activity']=='DIVIDEND')
+                       $shares = NULL;
+		    else
+                       $shares = 0;
                 }
                 else
                 {
@@ -326,12 +330,27 @@
     
                 if(isset($_REQUEST['cost']) and trim($_REQUEST['cost']) != '')
                 {
-                	include_once './classes/tc/transaction.class.php';
+
+			include_once './classes/db.class.php';
     
+			$conn = new db();
+			$conn->fileName = $_SESSION['userId'];
+			$db=$conn->connect();
+			include_once './classes/tc/stockData.class.php';
+			$stock = new stockData();
+			$stock->symbol = trim($_REQUEST['symbol']);
+			$stock->select();
+
+                	include_once './classes/tc/transaction.class.php';
+
+			// TODO skal nok være stock-currency, account-currency eller defaultcurrency (men ikke transaktionscurrency som pt.)
+			$amountAndCurr = parseAmountAndCurr($_REQUEST['cost'], $stock->currency, $_SESSION['DefaultCurrency']);
+
                 	$trans = new transaction();
                 	$trans->accountId = trim($_REQUEST['accountId']);
                 	$trans->activity = trim($_REQUEST['activity']);
-                	$trans->cost = trim($_REQUEST['cost']);
+                	$trans->cost = trim($amountAndCurr[0]);
+			$trans->currency = trim($amountAndCurr[1]);
                 	$trans->shares = $shares;
                 	$trans->symbol = trim($_REQUEST['symbol']);
                 	$trans->tDate = trim($_REQUEST['date']);

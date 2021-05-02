@@ -1909,7 +1909,24 @@
 		else
 		  return $currency . "&nbsp;" . number_format((float)$value, 2, $_SESSION['DecimalPoint'], $_SESSION['ThousandSep']);
 	}
-	
+
+	/* Separate amount and currency if they was both specified in the amount */
+	function parseAmountAndCurr($amount, $accountCurrency, $DefaultCurrency) {
+		$retval = array($amount, $DefaultCurrency);
+
+		$tstr=trim($amount);
+		if (preg_match('/\b([a-zA-Z]{3}) *[\d.,]+\b/' , $tstr, $match) === 1) {
+			$tstr=trim(substr($tstr, 3, strlen($tstr)-3));
+			$retval[1]=$match[1];
+		}
+
+		if (preg_match('/\b[\d.,]+ *([a-zA-Z]{3})\b/' , $tstr, $match) === 1) {
+			$tstr=trim(substr($tstr, 0, strlen($tstr)-3));
+			$retval[1]=$match[1];
+		}
+		$retval[0]=$tstr;
+		return $retval;
+	}	
 	
 	function annualDividends($year)
 	{
