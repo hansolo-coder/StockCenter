@@ -50,13 +50,15 @@
 			# symbol
 			if(isset($symbol))
 			{
-				// TODO Perhaps makes this optional by choosing between US and Europe setup
-				# if symbol is not alpha/numeric only...
-				#if(!ctype_alnum(trim($symbol)))
-				#{
-				#	# invalid characters error
-				#	$this->errors .= "Invalid characters in stock symbol<br>";
-				#}
+				// Only validate for US region - might not even make sense there (if they buy stocks on foreign exchanges)
+				if (isset($_SESSION['region']) and $_SESSION['region'] == 'US') {
+					# if symbol is not alpha/numeric only...
+					if(!ctype_alnum(trim($symbol)))
+					{
+						# invalid characters error
+						$this->errors .= "Invalid characters in stock symbol<br>";
+					}
+				}
 			}
 			else 
 			{
