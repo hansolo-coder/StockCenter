@@ -844,9 +844,9 @@
                 if (strlen($change) == 0 || $change == 0)
                   print "    <td class='data'>\n";
                 else if ($change > 0)
-                  print "    <td class='data' style='background-color: #AFFFAB;'>\n";
+                  print "    <td class='data colpos'>\n";
                 else
-                  print "    <td class='data' style='background-color: #FFB6AB;'>\n"; 
+                  print "    <td class='data colneg'>\n"; 
                 print "       " . formatCashWCurr($currentPrice, $scurrency);
                 if (strlen($change) > 0) {
                   print " (" . toCash($change) . ")";
@@ -863,15 +863,15 @@
 
                 if($currentlyInvested > 0 && (abs($currentlyInvested - $currentValue) / $currentlyInvested < $chgPctMarkUnchanged))
                 {
-                    print "    <td class='data' style='background-color: #F3E5AB;'>\n"; // Dark Yellow #9B870C / Pale Yellow #F3E5AB
+                    print "    <td class='data colunchg'>\n"; // Dark Yellow #9B870C / Pale Yellow #F3E5AB
                 }
                 else if($currentValue > $currentlyInvested)
                 {
-                    print "    <td class='data' style='background-color: #AFFFAB;'>\n";
+                    print "    <td class='data colpos'>\n";
                 }
                 else
                 {
-                    print "    <td class='data' style='background-color: #FFB6AB;'>\n";
+                    print "    <td class='data colneg'>\n";
                 }
 
                 print "        " . formatCashWCurr($currentValue, $scurrency);
@@ -905,11 +905,11 @@
 
         if(toCash($totalCurrentValueLocal) > toCash($totalCurrentlyInvestedLocal))
         {
-            $css = "background-color: #AFFFAB;";
+            $css = "colpos";
         }
         else
         {
-            $css = "background-color: #FFB6AB;";
+            $css = "colneg";
         }
 
 	print "    </tbody>\n";
@@ -923,7 +923,7 @@
         print "        <td class='data' width='16.6%' style='taxt-align: right;'>\n";
         print "            " . formatCash($totalCurrentlyInvestedLocal);
         print "        </td>\n";
-        print "        <td class='data' width='16.6%' style='taxt-align: right; $css'>\n";
+        print "        <td class='data $css' width='16.6%' style='taxt-align: right;'>\n";
         print "            " . formatCash($totalCurrentValueLocal);
         print "        </td>\n";
         print "        <td class='data' width='16.6%'>\n";

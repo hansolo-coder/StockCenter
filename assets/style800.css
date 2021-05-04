@@ -10,6 +10,9 @@ th.data{background-color: #E6E6E6; padding:3px; font-family: arial; font-size: 1
 td.data{text-align: center; padding: 3px; font-family: arial; font-size: 10pt; border: 1px solid #cfcfcf;}
 table.menu{width: 100%;}
 td.menu{width: 14.3%; background-color: #E6E6E6; text-align: center; padding: 3px; font-family: arial; font-size: 10pt; border: 1px solid #cfcfcf;}
+td.colpos {background-color: #AFFFAB;}
+td.colneg {background-color: #FFB6AB;}
+td.colunchg {background-color: #F3E5AB;}
 a{text-decoration: none; color: #000000;}
 a.delete{color: #ffffff; text-decoration: none; background-color: red; padding-right: 4px; padding-left: 4px;}
 span.heading{font-weight: bold; text-align: center;}
