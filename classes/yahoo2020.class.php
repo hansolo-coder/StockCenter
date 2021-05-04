@@ -736,6 +736,12 @@
 				# the days value change
 				$this->theDaysValueChange = $sData["quoteSummary"]["result"][0]["price"]["regularMarketChange"]["raw"];
 					
+				# change
+				$this->change = $sData["quoteSummary"]["result"][0]["price"]["regularMarketChange"]["raw"];
+					
+				# change in percent
+				$this->changeInPercent = $sData["quoteSummary"]["result"][0]["price"]["regularMarketChangePercent"]["raw"];
+					
 				# name
 				$this->name = $sData["quoteSummary"]["result"][0]["price"]["longName"];
 					
@@ -780,9 +786,6 @@
 				# ex dividend date
 				$this->exDividendDate = $sData["quoteSummary"]["result"][0]["summaryDetail"]["exDividendDate"]["fmt"];
 	
-				# change
-				#$this->change = $this->removeQuotes(trim($sData[10]));
-	
 				# change and percent
 				#$this->changeAndPercent = str_replace('"', '', $sData[11]);
 	
@@ -791,10 +794,7 @@
 	
 				# change percent realtime
 				#$this->change = $this->removeQuotes(trim($sData[13]));
-					
-				# change in percent
-				#$this->changeInPercent = $this->removeQuotes(trim($sData[14]));
-					
+
 				# after hours change realtime
 				#$this->afterHoursChangeRealtime = $this->removeQuotes(trim($sData[15]));
 					

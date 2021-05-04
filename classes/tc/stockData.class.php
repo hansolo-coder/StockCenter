@@ -8,6 +8,8 @@
 		public $currentPrice;	// 'ask' price
 		public $currentPrice2;	// 'ask' price (if exist) or 'lastTradePriceOnly'
 		public $currentPrice2Src;	// 'ask' price (A) or 'lastTradePriceOnly' (L)
+		public $change;		// change in price today
+		public $changePercent;	// percentual change in price today
 		public $yearHigh;	// 52 week high
 		public $yearLow;	// 52 week low
 		public $yield;		// Divident yield
@@ -32,6 +34,8 @@
 			$this->currentPrice = '';
 			$this->currentPrice2 = '0';
 			$this->currentPrice2Src = '';
+			$this->change = '';
+			$this->changePercent = '';
 			$this->yearHigh = '';
 			$this->yearLow = '';
 			$this->yield = '';
@@ -125,6 +129,14 @@
 				elseif($row['attribute'] == "peTrailing")
 				{
 					$this->peTrailing = $row['value'];
+				}
+				elseif($row['attribute'] == "change")
+				{
+					$this->change = $row['value'];
+				}
+				elseif($row['attribute'] == "changeInPercent")
+				{
+					$this->changePercent = $row['value'];
 				}
     
 				$this->lastUpdated = $row['lastUpdated'];

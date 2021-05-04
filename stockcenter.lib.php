@@ -650,10 +650,10 @@
         print "<table class='display' id='overview'>\n";
 	print "    <thead>\n";
         print "    <tr>\n";
-        print "        <th class='data' width='20.6%'>\n";
+        print "        <th class='data' width='17.6%'>\n";
         print "            Stock\n";
         print "        </th>\n";
-        print "        <th class='data' width='16.6%'>\n";
+        print "        <th class='data' width='19.6%'>\n";
         print "            Current Price\n";
         print "        </th>\n";
         print "        <th class='data' width='10.6%'>\n";
@@ -688,6 +688,7 @@
             $sData->select();
 
             $currentPrice = $sData->currentPrice2;
+            $change = $sData->change;
             $yearHigh = $sData->yearHigh;
             $yearLow = $sData->yearLow;
             $dividendYield = $sData->yield;
@@ -840,8 +841,16 @@
                 print "    <td class='data'>\n";
                 print "        " . $rowStocklist['symbol'];
                 print "    </td>\n";
-                print "    <td class='data'>\n";
+                if (strlen($change) == 0 || $change == 0)
+                  print "    <td class='data'>\n";
+                else if ($change > 0)
+                  print "    <td class='data' style='background-color: #AFFFAB;'>\n";
+                else
+                  print "    <td class='data' style='background-color: #FFB6AB;'>\n"; 
                 print "       " . formatCashWCurr($currentPrice, $scurrency);
+                if (strlen($change) > 0) {
+                  print " (" . toCash($change) . ")";
+                }
                 print "    </td>\n";
                 print "    <td class='data'>\n";
                 print "        " . ($boughtShares - $soldShares);
