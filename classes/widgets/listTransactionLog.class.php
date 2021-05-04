@@ -150,7 +150,7 @@
                 print "    </tr>\n";
                 print "   </thead>\n";
                 print "   <tbody>\n";
-                print "    <form action='" . htmlentities($_SERVER['PHP_SELF']) . "?action=addTransaction&symbol=" . $this->symbol . "' method='post'>\n";
+                print "    <form action='" . htmlentities($_SERVER['PHP_SELF']) . "?action=addTransaction&symbol=" . $this->symbol . "#transactions' method='post'>\n";
                 print "    <tr>\n";
                 print "        <td class='data'>\n";
                 print "            <select name='accountId' class='numbers'>\n";
@@ -162,6 +162,8 @@
                 print "        </td>\n";
 		/* TODO should be possible to mark an approximate date */
                 print "        <td class='data'>\n";
+                print "          <span class='nobreakcenterv'>\n";
+                print "            <input type='checkbox' name='approxdate' id='approxdate' class='mini'>\n";
                 print "            <input type='text' name='date' id='date' required class='date'>\n";
                 print "            <script>\n";
                 print "                $(function(){\n";
@@ -174,6 +176,7 @@
                 print "                    $( '#date' ).datepicker(opts);\n";
                 print "                });\n";
                 print "            </script>\n";
+                print "          </span>\n";
                 print "        </td>\n";
                 print "        <td class='data'>\n";
                 print "            <select name='activity' class='activity'>\n";
@@ -191,17 +194,17 @@
                 print "        </td>\n";
                 print "        <td class='data'>\n";
 // TODO skal nok enten være currency fra stock-tabel, currency fra account, currency fra settings (men ikke currency fra transactions)
-                print "            <span class='currencyamount'><label class='currencyamount' for='cost'>" . $ccurrency . "</label><input type='text' id='cost' name='cost' maxlength='11' class='amount' required></span>\n";
+                print "            <span class='nobreakcenterv'><label class='currencyamount' for='cost'>" . $ccurrency . "</label><input type='text' id='cost' name='cost' maxlength='11' class='amount' required></span>\n";
                 print "        </td>\n";
 		if ($_SESSION['showTransactionTax'] == 'YES')
 		{
 	                print "        <td class='data'>\n";
-                	print "            <span class='currencyamount'><label class='currencyamount' for='tax'>" . $ccurrency . "</label><input type='text' id='tax' name='tax' maxlength='11' class='amount'></span>\n";
+                	print "            <span class='nobreakcenterv'><label class='currencyamount' for='tax'>" . $ccurrency . "</label><input type='text' id='tax' name='tax' maxlength='11' class='amount'></span>\n";
 	                print "        </td>\n";
 		}
                 print "        <td class='data'>\n";
                 print "            -\n";
-                print "        </td>";
+                print "        </td>\n";
                 print "        <td class='data'>\n";
                 print "            <input type='submit' value='Save'>\n";
                 print "        </td>\n";
@@ -268,7 +271,7 @@
     
                     print         "</td>\n";
                     print "        <td class='data'>\n";
-                    print "            <a class='delete' href='index.php?action=deleteTransaction&id=" . $row['transactionId'] . "&symbol=" . $row['symbol'] . "'>Delete</a>\n";
+                    print "            <a class='delete' href='index.php?action=deleteTransaction&id=" . $row['transactionId'] . "&symbol=" . $row['symbol'] . "#transactions'>Delete</a>\n";
                     print "        </td>\n";
                     print "    </tr>\n";
                 }
@@ -357,6 +360,9 @@
 			if (isset($_REQUEST['tax']))
 			{
 				$trans->tax = trim($_REQUEST['tax']);
+			}
+			if (isset($_REQUEST['approxdate']) && $_REQUEST['approxdate'] == 'on') {
+				$trans->DateIsApprox = 1;
 			}
     
                 	$trans->insert();

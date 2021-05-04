@@ -31,7 +31,7 @@ input.mini{width: 1em;}
 select.activity{max-width:100%;}
 select.numbers{max-width:100%;}
 label.currencyamount{padding: 0px 6px 0px 0px;}
-span.currencyamount{white-space: nowrap;}
+span.nobreakcenterv{white-space: nowrap;display: flex;align-items: center}
 pre { overflow: auto; }
 
 /* tooltip begin -------------------------------------------
