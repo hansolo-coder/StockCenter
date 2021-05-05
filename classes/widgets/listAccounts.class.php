@@ -39,7 +39,9 @@
             print "    <legend>\n";
             print "        Accounts\n";
             print "    </legend>\n";
-            print "<table class='display' id='aoverview' style='width: 100%; xtable-layout:fixed;'>\n";
+            // TODO flyt style til css
+            print "<table class='display' id='aoverview' style='width: 100%; xtable-layout:fixed; border-collapse: separate;
+border-spacing: 0;'>\n";
             print "   <thead>\n";
             print "    <tr>\n";
             print "        <th class='data'>\n";
@@ -111,10 +113,15 @@
             print "   </thead>\n";
             print "   <tbody>\n";
     
-            // set row color based on activity type
+            // set row color based odd/even
+            $lineno = 0;
             foreach($rows as $row)
             {
-                print "    <tr>\n"; //  style='background-color: #ABD9FF;'
+                $lineno = $lineno + 1;
+                if ($lineno % 2 == 0)
+                  print "    <tr class='even'>\n";
+                else
+                  print "    <tr class='odd'>\n";
                 print "        <td class='data'>\n";
                 print "            <a href='" . htmlentities($_SERVER['PHP_SELF']) . "?action=overview&account=" . $row['accountId'] . "'>" . $row['accountNumber'] . "</a>\n";
                 print "        </td>\n";

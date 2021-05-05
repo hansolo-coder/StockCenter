@@ -6,6 +6,7 @@ div.footer{width: 800px; text-align: center; margin: auto;}
 div.success{padding: 4px; border: 2px solid #19A347; color: #19A347; background-color: #AFFFAB; text-align: center;}
 div.error{padding: 4px; border: 2px solid #FF5036; color: #FF5036; background-color: #FFB6AB; text-align: center;}
 table.data{width: 95%;}
+tr.odd{background-color: #f9f9f9}
 th.data{background-color: #E6E6E6; padding:3px; font-family: arial; font-size: 10pt; border: 1px solid #cfcfcf;}
 td.data{text-align: center; padding: 3px; font-family: arial; font-size: 10pt; border: 1px solid #cfcfcf;}
 table.menu{width: 100%;}
