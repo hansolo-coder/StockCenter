@@ -39,7 +39,8 @@
             print "    <legend>\n";
             print "        Stocks\n";
             print "    </legend>\n";
-            print "<table class='data'>\n";
+            // TODO flyt style til css
+            print "<table class='data manualtable' style='border-collapse: separate; border-spacing: 0;'>\n";
             print "  <thead>\n";
             print "    <tr>\n";
             print "        <th class='data'>\n";
@@ -81,17 +82,20 @@
             print "            -\n";
             print "        </td>";
             print "        <td class='data'>\n";
-            print "            -\n";
-            print "        </td>";
-            print "        <td class='data'>\n";
             print "            <input type='submit' value='Save'>\n";
             print "        </td>\n";
             print "    </tr>\n";
             print "    </form>\n";
     
+            // set row color based odd/even
+            $lineno = 0;
             foreach($rows as $row)
             {
-                print "    <tr style='background-color: #ABD9FF;'>\n";
+                $lineno = $lineno + 1;
+                if ($lineno % 2 == 0)
+                  print "    <tr class='data even'>\n";
+                else
+                  print "    <tr class='data odd'>\n";
                 print "        <td class='data'>\n";
                 print "            <a href='index.php?action=activityLog&symbol=" . $row['symbol'] ."'>" . $row['symbol'] ."</a>";
                 print "        </td>\n";

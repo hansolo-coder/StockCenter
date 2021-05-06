@@ -40,7 +40,7 @@
             print "        Accounts\n";
             print "    </legend>\n";
             // TODO flyt style til css
-            print "<table class='display' id='aoverview' style='width: 100%; xtable-layout:fixed; border-collapse: separate;
+            print "<table class='display manualtable' id='aoverview' style='width: 100%; xtable-layout:fixed; border-collapse: separate;
 border-spacing: 0;'>\n";
             print "   <thead>\n";
             print "    <tr>\n";

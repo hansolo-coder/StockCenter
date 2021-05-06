@@ -14,6 +14,8 @@ td.menu{width: 14.3%; background-color: #E6E6E6; text-align: center; padding: 3p
 td.colpos {background-color: #AFFFAB;}
 td.colneg {background-color: #FFB6AB;}
 td.colunchg {background-color: #F3E5AB;}
+table.manualtable thead tr th {padding: 10px 18px;}
+table.manualtable tbody tr td {padding: 8px 10px;}
 a{text-decoration: none; color: #000000;}
 a.delete{color: #ffffff; text-decoration: none; background-color: red; padding-right: 4px; padding-left: 4px;}
 span.heading{font-weight: bold; text-align: center;}
