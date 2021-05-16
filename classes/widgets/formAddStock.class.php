@@ -105,6 +105,7 @@
 				$stock->insert();
 				
 				# get data for symbol from yahoo
+				getStaticData($symbol);
 				getData($symbol);
 				
 				# display a success message and the home page

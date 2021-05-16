@@ -1,6 +1,6 @@
 <?php
 	/**
-	 * fetches available data from the yahoo csv web service
+	 * fetches available data from the yahoo web service
 	 */
 	class stockdataapi
 	{
@@ -93,7 +93,8 @@
 		 * @access private
 		 * @return the list of codes passed to retrieve specific information from the service
 		 */
-		private $codes;
+		private $codes1;
+		private $codes2;
 	
 		/**
 		 * @var string
@@ -970,6 +971,66 @@
 		{
 			$newValue = str_replace('"', "", $value);
 			return $newValue;
+		}
+
+		/**
+		 * @method getStaticStockData()
+		 * @return sets the values from the yahoo web service for the symbol into an array and return it
+		 * @param requires symbol attribute to be set
+
+{
+  "quoteSummary": {
+    "result": [
+      {
+        "summaryProfile": {
+          "address1": "Skelagervej 15",
+          "address2": "PO Box 162",
+          "city": "Aalborg",
+          "zip": "9100",
+          "country": "Denmark",
+          "phone": "45 96 34 40 00",
+          "fax": "45 96 34 45 60",
+          "website": "http://www.sparnord.com",
+>>          "industry": "Banks—Regional",
+>>          "sector": "Financial Services",
+          "longBusinessSummary": "Spar Nord Bank A/S provides various banking products and services to retail, business, and public sector customers in Denmark. .... yada yada yada",
+          "fullTimeEmployees": 1545,
+          "companyOfficers": [],
+          "maxAge": 86400
+        }
+      }
+    ],
+    "error": null
+  }
+}
+
+		 */
+		function getStaticStockData($symbol) {
+			$url   = "https://query2.finance.yahoo.com/v11/finance/quoteSummary/";
+			$code  = "?modules=summaryProfile";
+
+			$result = array();
+			if ($symbol == NULL)
+			{
+				return $result;
+			}
+
+			$yData = file_get_contents($url . $symbol . $code);
+			$sData = json_decode($yData, true);
+
+			// Example: "website": "http://www.sparensie.com",
+			if (isset($sData["quoteSummary"]["result"][0]["summaryProfile"]["website"]))
+			  $result["website"]=$sData["quoteSummary"]["result"][0]["summaryProfile"]["website"];
+			// Example: "industry": "Banks—Regional",
+			if (isset($sData["quoteSummary"]["result"][0]["summaryProfile"]["industry"]))
+			  $result["industry"]=$sData["quoteSummary"]["result"][0]["summaryProfile"]["industry"];
+			// Example: "sector": "Financial Services",
+			if (isset($sData["quoteSummary"]["result"][0]["summaryProfile"]["sector"]))
+			  $result["sector"]=$sData["quoteSummary"]["result"][0]["summaryProfile"]["sector"];
+			// Example: "maxAge": 86400
+			if (isset($sData["quoteSummary"]["result"][0]["summaryProfile"]["maxAge"]))
+			  $result["maxAge"]=$sData["quoteSummary"]["result"][0]["summaryProfile"]["maxAge"];
+			return $result;
 		}
 	}
 ?>

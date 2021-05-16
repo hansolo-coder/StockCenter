@@ -172,7 +172,7 @@
 		/**
 		 * inserts a stock's data from yahoo
 		 */
-		public function insert()
+		public function insert($category)
 		{
 			# connect to the database
 			include_once './classes/db.class.php';
@@ -199,11 +199,16 @@
 			
 
 			# load the new data in
+			$sqlInsert = "INSERT INTO stockData (symbol, market, attribute, value, lastUpdated, category) ";
+			$sqlInsert .= "VALUES(:symbol, '', :key, :value, :lastupdated, :category)";
+			$rsInsert = $db->prepare($sqlInsert);
 			foreach($stock as $key => $value)
 			{
-				$sqlInsert = "INSERT INTO stockData (symbol, market, attribute, value, lastUpdated) ";
-				$sqlInsert .= "VALUES('" . strtoupper($this->symbol) . "','','" . $key . "','" . $value . "','" . time() . "')";
-				$rsInsert = $db->prepare($sqlInsert);
+				$rsInsert->bindValue(':symbol', strtoupper($this->symbol));
+				$rsInsert->bindValue(':key', $key);
+				$rsInsert->bindValue(':value', $value);
+				$rsInsert->bindValue(':lastupdated', time());
+				$rsInsert->bindValue(':category', strtoupper($category));
 				$rsInsert->execute();
 			}
 			
@@ -214,9 +219,58 @@
 		}
 
 		/**
+		 * inserts a stock's static data from yahoo
+		 */
+		public function insertStaticData($category)
+		{
+			# connect to the database
+			include_once './classes/db.class.php';
+			 
+			$conn = new db();
+			$conn->fileName = $_SESSION['userId'];
+			$db=$conn->connect();
+		
+			$sqlSettings = "SELECT * FROM settings WHERE settingName='stockdataclass'";
+			$rsSettings  = $db->prepare($sqlSettings);
+			$rsSettings->execute();
+			$rowSettings = $rsSettings->fetch();
+			$stockdataclass = $rowSettings['settingValue'];
+
+			# get the stock data from yahoo
+			if (strtoupper($stockdataclass) == 'MOCK')
+				include_once './classes/yahoo.MOCK.class.php';
+			else
+				include_once './classes/yahoo2020.class.php';
+			
+			$stock = new stockdataapi();
+			$staticData = $stock->getStaticStockData($this->symbol);
+			
+
+			# load the new data in
+			$sqlInsert = "INSERT INTO stockData (symbol, market, attribute, value, lastUpdated, category) ";
+			$sqlInsert .= "VALUES(:symbol, '', :key, :value, :lastupdated, :category)";
+			$rsInsert = $db->prepare($sqlInsert);
+			foreach($staticData as $key => $value)
+			{
+				$rsInsert->bindValue(':symbol', strtoupper($this->symbol));
+				$rsInsert->bindValue(':key', $key);
+				$rsInsert->bindValue(':value', $value);
+				$rsInsert->bindValue(':lastupdated', time());
+				$rsInsert->bindValue(':category', strtoupper($category));
+				$rsInsert->execute();
+			}
+			
+			# disconnect from the database
+			$rsInsert = null;
+			$db = null;
+			$conn = null;
+		}
+
+
+		/**
 		 * insert the current stockprice directly in the stockData table
 		 */
-		public function insertSimple()
+		public function insertSimple($category)
 		{
 			# connect to the database
 			include_once './classes/db.class.php';
@@ -225,14 +279,19 @@
 			$conn->fileName = $_SESSION['userId'];
 			$db=$conn->connect();
 
-			$sqlInsert = "INSERT INTO stockData (symbol, market, attribute, value, lastUpdated) ";
-			$sqlInsert .= "VALUES('" . $this->symbol . "','','ask','" . $this->currentPrice . "','" . time() . "')";
+			$sqlInsert = "INSERT INTO stockData (symbol, market, attribute, value, lastUpdated, category) ";
+			$sqlInsert .= "VALUES(:symbol, '', :key , :value, :lastupdated, :category)";
 			$rsInsert = $db->prepare($sqlInsert);
+			$rsInsert->bindValue(':symbol', strtoupper($this->symbol));
+			$rsInsert->bindValue(':category', strtoupper($category));
+			$rsInsert->bindValue(':lastupdated', time());
+
+			$rsInsert->bindValue(':key', 'ask');
+			$rsInsert->bindValue(':value', $this->currentPrice);
 			$rsInsert->execute();
 
-			$sqlInsert = "INSERT INTO stockData (symbol, market, attribute, value, lastUpdated) ";
-			$sqlInsert .= "VALUES('" . $this->symbol . "','','name','" . $this->name . "','" . time() . "')";
-			$rsInsert = $db->prepare($sqlInsert);
+			$rsInsert->bindValue(':key', 'name');
+			$rsInsert->bindValue(':value', $this->name);
 			$rsInsert->execute();
 		
 			# disconnect from the database
@@ -254,8 +313,33 @@
 			$db=$conn->connect();
 				
 			# purge existing data for the stock
-			$sqlPurge = "DELETE FROM stockData WHERE symbol='" . strtoupper($this->symbol) . "'";
+			$sqlPurge = "DELETE FROM stockData WHERE symbol=:symbol AND CanDelete='Y'";
 			$rsPurge = $db->prepare($sqlPurge);
+			$rsPurge->bindValue(':symbol', strtoupper($this->symbol));
+			$rsPurge->execute();
+			
+			# disconnect from the database
+			$rsPurge = null;
+			$db = null;
+			$conn = null;
+		}
+		/**
+		 * deletes a stock's data for a specific category, requires symbol
+		 */
+		public function deleteCategory($category)
+		{
+			# connect to the database
+			include_once './classes/db.class.php';
+			 
+			$conn = new db();
+			$conn->fileName = $_SESSION['userId'];
+			$db=$conn->connect();
+				
+			# purge existing data for the stock
+			$sqlPurge = "DELETE FROM stockData WHERE symbol=:symbol AND category=:category AND CanDelete='Y'";
+			$rsPurge = $db->prepare($sqlPurge);
+			$rsPurge->bindValue(':symbol', strtoupper($this->symbol));
+			$rsPurge->bindValue(':category', strtoupper($category));
 			$rsPurge->execute();
 			
 			# disconnect from the database

@@ -930,5 +930,9 @@
 			$newValue = str_replace('"', "", $value);
 			return $newValue;
 		}
+
+		function getStaticStockData($symbol) {
+			return array();
+		}
 	}
 ?>
