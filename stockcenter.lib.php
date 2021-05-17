@@ -954,7 +954,7 @@
 
 	print "<div class='spacer'></div>\n";
 
-	include_once './classes/widgets/formCharts.php';
+	include_once './classes/widgets/formCharts.class.php';
 	$charts = new formCharts();
 
 	print "<table width='100%'>\n";
