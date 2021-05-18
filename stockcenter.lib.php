@@ -654,8 +654,6 @@
         
 	$rsStockList = NULL;
 	$sqlStockList = NULL;
-	$db = NULL;
-	$conn = NULL;
         
 	dividendEvents();
 	print "<div class='spacer'></div>\n";
@@ -725,10 +723,6 @@
 	    	
 	    include_once './classes/db.class.php';
 	        
-	    $conn = new db();
-	    $conn->fileName = $_SESSION['userId'];
-	    $db=$conn->connect();
-
             $sql = "SELECT sum(shares) as s FROM transactions where (activity IN ('BUY','BONUS','SPLIT') OR (activity = 'MOVE' AND shares > 0)) AND symbol=:symbol AND (:accountId IS NULL OR :accountId = accountId)";
             $rs = $db->prepare($sql);
             $rs->bindValue(':symbol', $rowStocklist['symbol']);
@@ -913,8 +907,6 @@
             
             $row = null;
             $rs = null;
-            $db = null;
-            $conn = null;
        }
 
         if(toCash($totalCurrentValueLocal) > toCash($totalCurrentlyInvestedLocal))
@@ -982,10 +974,10 @@
         print "    }\n";
         print "    window.onload = start();\n";
         print "</script>\n";
+
+            $db = null;
+            $conn = null;
     }
-    
-    
-    
     
     
     

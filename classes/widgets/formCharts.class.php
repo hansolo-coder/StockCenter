@@ -36,6 +36,8 @@
 				$this->holdingsValueChart();
 			} else if ($this->action == 'sharesOwnedChart') {
 				$this->sharesOwnedChart();
+			} else if ($this->action == 'marketChart') {
+				$this->marketChart();
 			} else {
 				$this->error = 'Unknown action: ' . $this->action;
 			}
@@ -282,6 +284,79 @@
         print "</script>";
         print "</fieldset>";
     }
-		
+
+		/*
+	 	* Show value split per market
+		 */
+		function marketChart($db) {
+  			if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
+
+/*
+			$sql = "SELECT t.symbol," .
+			" SUM(CASE WHEN t.activity IN ('BUY', 'BONUS', 'SPLIT') THEN t.shares ELSE 0 END) AS boughtshares," .
+			" SUM(CASE WHEN t.activity IN ('SELL', 'MOVE') THEN t.shares ELSE 0 END) AS soldshares, COALESCE(sd.value, 'Unknown') AS market" .
+			" FROM transactions t LEFT OUTER JOIN stockData sd ON t.symbol = sd.symbol AND sd.attribute = 'market'" .
+			" GROUP BY t.symbol ORDER BY t.symbol";
+*/
+			$sql = "SELECT market, SUM((boughtshares - soldshares) * price) AS marketValue, currency as value FROM (" .
+			"SELECT innerdata.*, COALESCE(sd.value, 'Unknown') AS market,COALESCE(sdp.value, sdb.value, 0) AS price,sdp.value, sdb.value FROM (" .
+			"SELECT t.symbol,SUM(CASE WHEN t.activity IN ('BUY', 'BONUS', 'SPLIT') THEN t.shares ELSE 0 END) AS boughtshares" .
+			",SUM(CASE WHEN t.activity IN ('SELL', 'MOVE') THEN t.shares ELSE 0 END) AS soldshares, t.currency" .
+			" FROM transactions t" .
+			" GROUP BY t.symbol, t.currency" .
+			") innerdata" .
+			" LEFT OUTER JOIN stockData sd ON innerdata.symbol = sd.symbol AND sd.attribute = 'market'" .
+			" LEFT OUTER JOIN stockData sdp ON innerdata.symbol = sdp.symbol AND sdp.attribute = 'ask' and sdp.value <> 0" .
+			" LEFT OUTER JOIN stockData sdb ON innerdata.symbol = sdb.symbol AND sdb.attribute = 'bid' and sdb.value <> 0" .
+			") innerdata GROUP BY market ORDER BY 1";
+
+			$rsStocks = $db->prepare($sql);
+			$rsStocks->execute();
+			$stocks = $rsStocks->fetchAll();
+
+			$rsStocks = null;
+         
+			$data = '[';
+
+			#               Red        Green      Yellow     Grey       DarkGrey
+			$fcolor = array("#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360");
+			$hcolor = array("#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774");
+
+			$idx = 0;
+			foreach($stocks as $stock) {
+		                $data .= '{value: ' . $stock['marketValue'] . ', color:"' . $fcolor[$idx] . '", highlight: "' . $hcolor[$idx] . '", label: "' . $stock['market'] . '" }' . ',';
+				if (++$idx >= count($fcolor))
+					$idx = 0;
+			}
+
+			# trim off the last comma
+			$data = rtrim($data, ",");
+
+			# cap off the dataset
+			$data .= "]";
+
+			# prepare the chart
+			print "<script src='javascript/chart/Chart.js'></script>";
+			print "<fieldset>";
+			print "  <legend>Market Value</legend>";
+			print "  <div style='width:100%; margins: auto;'>";
+			print "	   <div>";
+			print "		   <canvas id='marketCanvas' height='240' width='auto'></canvas>";
+			print "	   </div>";
+			print "  </div>";
+			print "  <script>";
+			?>
+			var pieData = <?php print $data; ?>;
+
+			function showMarketValueChart(){
+				var ctx = document.getElementById("marketCanvas").getContext("2d");
+				window.myPie = new Chart(ctx).Pie(pieData);
+			}
+			<?php
+			print "  </script>";
+			print "</fieldset>";
+
+			if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: " . __LINE__ . "</span><br>";}
+		}		
 	}
 ?>
