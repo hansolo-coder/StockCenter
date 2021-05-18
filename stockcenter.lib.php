@@ -954,13 +954,13 @@
 	print "        <td width='50%'>\n";
         
 	$charts->action = "holdingsValueChart";
-	$charts->display();
+	$charts->display($db);
 
 	print "        </td>\n";
 	print "        <td width='50%'>\n";
 
 	$charts->action = "sharesOwnedChart";
-	$charts->display();
+	$charts->display($db);
 
         print "        </td>\n";
         print "    </tr>\n";
