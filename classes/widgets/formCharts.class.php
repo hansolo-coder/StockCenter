@@ -43,6 +43,49 @@
 			}
 		}
 
+		function displayAll() {
+			include_once './classes/db.class.php';
+	
+			$conn = new db();
+			$conn->fileName = $_SESSION['userId'];
+			$db = $conn->connect();
+
+			print "<div>\n";
+				$this->holdingsValueChart($db);
+			print "</div>\n";
+			print "<div>\n";
+				$this->sharesOwnedChart($db);
+			print "</div>\n";
+			print "<div>\n";
+				$this->marketChart($db);
+			print "</div>\n";
+
+			$db = null;
+			$conn = null;
+		}
+
+		function executeScriptFrontpage() {
+			print "<script>\n";
+			print "    function start()\n";
+			print "    {\n";
+			print "        showSharesOwnedChart();\n";
+			print "        showHoldingsValueChart();\n";
+			print "    }\n";
+			print "    window.onload = start();\n";
+			print "</script>\n";
+		}
+
+		function executeScriptAll() {
+			print "<script>\n";
+			print "    function start()\n";
+			print "    {\n";
+			print "        showSharesOwnedChart();\n";
+			print "        showHoldingsValueChart();\n";
+			print "        showMarketValueChart();\n";
+			print "    }\n";
+			print "    window.onload = start();\n";
+			print "</script>\n";
+		}
 		
 		/**
 		 * shares value chart

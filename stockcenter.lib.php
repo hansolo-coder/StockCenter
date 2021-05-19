@@ -966,14 +966,7 @@
         print "    </tr>\n";
         print "</table>\n";
         
-        print "<script>\n";
-        print "    function start()\n";
-        print "    {\n";
-        print "        showSharesOwnedChart();\n";
-        print "        showHoldingsValueChart();\n";
-        print "    }\n";
-        print "    window.onload = start();\n";
-        print "</script>\n";
+	$charts->executeScriptFrontpage();
 
             $db = null;
             $conn = null;
