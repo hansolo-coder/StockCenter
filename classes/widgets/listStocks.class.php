@@ -4,6 +4,9 @@
      */
     class listStocks
     {
+	public $action;
+	public $updateStock;
+
         /**
          * display the stocks
          */
@@ -32,9 +35,24 @@
             include_once './classes/pageHeader.class.php';
             $header = new pageHeader();
             $header->display();
-                
+
             print "<div class='spacer'></div>\n";
+
+	    if ($this->updateStock) {
+		if (!isset($_REQUEST['id'])) {
+			$this->updateStock = FALSE;
+		}
+	    }
+	    if ($this->updateStock) {
+          	include_once './classes/tc/stocks.class.php';
     
+           	$updstock = new stocks();
+		$updstock->symbolId = $_REQUEST['id'];
+		$updstock->select();
+		if ($updstock->inError)
+		  $this->updateStock = FALSE;
+	    }
+
             print "<fieldset>\n";
             print "    <legend>\n";
             print "        Stocks\n";
@@ -64,19 +82,39 @@
             print "    </tr>\n";
             print "  </thead>\n";
             print "  <tbody>\n";
-            print "    <form action='" . htmlentities($_SERVER['PHP_SELF']) . "?action=addStock2' method='post'>\n";
+            print "    <form action='" . htmlentities($_SERVER['PHP_SELF']) . "' method='post'>\n";
             print "    <tr>\n";
+            print "        <input type='hidden' name='action' value='addStock2'>\n";
+	    if ($this->updateStock) {
+	        print "        <input type='hidden' name='id' value='" . $updstock->symbolId . "'>\n";
+	    }
             print "        <td class='data'>\n";
-            print "            <input type='text' name='symbol' class='date'>\n";
+            print "            <input type='text' name='symbol' class='date'";
+	    if ($this->updateStock) {
+		print " value='" . $updstock->symbol . "'"; // TODO
+	    }
+	    print ">\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='ISIN' class='medium'>\n";
+            print "            <input type='text' name='ISIN' class='medium'";
+	    if ($this->updateStock) {
+		print " value='" . $updstock->ISIN . "'"; // TODO
+	    }
+	    print ">\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='name' class='large'>\n";
+            print "            <input type='text' name='name' class='large'";
+	    if ($this->updateStock) {
+		print " value='" . $updstock->name . "'"; // TODO
+	    }
+	    print ">\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='skipLookup' class='mini' maxlength='1'>\n";
+            print "            <input type='text' name='skipLookup' class='mini' maxlength='1'";
+	    if ($this->updateStock) {
+		print " value='" . $updstock->skipLookup . "'"; // TODO
+	    }
+	    print ">\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
             print "            -\n";
@@ -93,9 +131,9 @@
             {
                 $lineno = $lineno + 1;
                 if ($lineno % 2 == 0)
-                  print "    <tr class='data even'>\n";
+                    print "    <tr class='data even'>\n";
                 else
-                  print "    <tr class='data odd'>\n";
+                    print "    <tr class='data odd'>\n";
                 print "        <td class='data'>\n";
                 print "            <a href='index.php?action=activityLog&symbol=" . $row['symbol'] ."'>" . $row['symbol'] ."</a>";
                 print "        </td>\n";
@@ -124,48 +162,44 @@
         
         
         
-    /**
-     * adds a new stock
-     */
-    function addStock()
-    {
-        if ($_SESSION['debug'] == "on"){print "<span class='debug'>listStocks-> addStock()</span><br>";}
+        /**
+         * adds a new stock
+         */
+        function addStock()
+        {
+            if ($_SESSION['debug'] == "on"){print "<span class='debug'>listStocks-> addStock()</span><br>";}
     
-	$inError = false;
-        if(!(isset($_REQUEST['symbol']) and trim($_REQUEST['symbol']) != ''))
-		{
-            message("error", "Symbol must be provided");
-			$inError = true;
-		} elseif (!(isset($_REQUEST['name']) and trim($_REQUEST['name']) != ''))
-		{
-            message("error", "Name must be provided");
-			$inError = true;
-		}
-        if($inError)
-		{
-            $log = new listStocks();
-            $log->show();
-		}
-		else {
-          	include_once './classes/tc/stocks.class.php';
+            $inError = false;
+            if(!(isset($_REQUEST['symbol']) and trim($_REQUEST['symbol']) != ''))
+            {
+                message("error", "Symbol must be provided");
+                $inError = true;
+            } elseif (!(isset($_REQUEST['name']) and trim($_REQUEST['name']) != '')) {
+                message("error", "Name must be provided");
+                $inError = true;
+            }
+            if(!$inError) {
+                include_once './classes/tc/stocks.class.php';
     
-           	$trans = new stock();
-           	$trans->symbol = trim($_REQUEST['symbol']);
-           	$trans->name = trim($_REQUEST['name']);
-           	$trans->ISIN = trim($_REQUEST['ISIN']);
-			if (isset($_REQUEST['skipLookup']) and trim($_REQUEST['skipLookup']) != '')
-				$trans->skipLookup = trim($_REQUEST['skipLookup']);
-			else
-				$trans->skipLookup = 0; // Lookup stock in stock API
+                $trans = new stocks();
+                $trans->symbol = trim($_REQUEST['symbol']);
+                if (isset($_REQUEST['id']) && trim($_REQUEST['id']) != '')
+                    $trans->symbolId = $_REQUEST['id'];
+                $trans->name = trim($_REQUEST['name']);
+                $trans->ISIN = trim($_REQUEST['ISIN']);
+                if (isset($_REQUEST['skipLookup']) and trim($_REQUEST['skipLookup']) != '')
+                    $trans->skipLookup = trim($_REQUEST['skipLookup']);
+                else
+                    $trans->skipLookup = 0; // Lookup stock in stock API
 
-           	$trans->insert();
+                if (isset($_REQUEST['id']) && trim($_REQUEST['id']) != '')
+                    $trans->update();
+                else
+                    $trans->insert();
     
-            message("success", "Stock added");
-                    
-            $log = new listStocks();
-            $log->show();
-		}
-    } // addStock
+                message("success", "Stock added");
+            }
+        } // addStock
     
 
 
@@ -178,10 +212,11 @@
     
             include_once './classes/tc/stocks.class.php';
     
-            $trans = new stock();
+            $trans = new stocks();
             $trans->symbolId = trim($_REQUEST['id']);
     
             $trans->delete();
-    	} // deleteAccount
+            message("success", "Stock deleted");
+    	} // deleteStock
     } // class
 ?>
