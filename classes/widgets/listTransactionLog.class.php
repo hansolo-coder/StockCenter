@@ -160,10 +160,12 @@
 		}
                 print "            </select>\n";
                 print "        </td>\n";
-		/* TODO should be possible to mark an approximate date */
                 print "        <td class='data'>\n";
                 print "          <span class='nobreakcenterv'>\n";
-                print "            <input type='checkbox' name='approxdate' id='approxdate' class='mini'>\n";
+                print "            <div class='tooltip'>\n";
+                print "              <input type='checkbox' name='approxdate' id='approxdate' class='mini'>\n";
+                print "              <div class='tooltiptext'>Select this to mark date as approximate</div>\n";
+                print "            </div>\n";
                 print "            <input type='text' name='date' id='date' required class='date'>\n";
                 print "            <script>\n";
                 print "                $(function(){\n";
@@ -418,13 +420,13 @@
     
             $sd = new stockData();
 	    $sd->symbol = trim($_REQUEST['symbol']);
-	    $sd->delete();
+	    $sd->deleteCategory('MANUAL');
 
 	    $sd = new stockData();
 	    $sd->symbol = trim($_REQUEST['symbol']);
 	    $sd->currentPrice = trim($_REQUEST['price']);
 	    $sd->name = trim($_REQUEST['name']);
-	    $sd->insertSimple();
+	    $sd->insertSimple('MANUAL');
 	}
     }
 ?>
