@@ -37,7 +37,9 @@
 			} else if ($this->action == 'sharesOwnedChart') {
 				$this->sharesOwnedChart($db);
 			} else if ($this->action == 'marketChart') {
-				$this->marketChart($db);
+				$this->stockdataChart($db, 'market', 'Market Value');
+			} else if ($this->action == 'sectorChart') {
+				$this->stockdataChart($db, 'sector', 'Sector Value');
 			} else {
 				$this->error = 'Unknown action: ' . $this->action;
 			}
@@ -57,7 +59,10 @@
 				$this->sharesOwnedChart($db);
 			print "</div>\n";
 			print "<div>\n";
-				$this->marketChart($db);
+				$this->stockdataChart($db, 'market', 'Market Value');
+			print "</div>\n";
+			print "<div>\n";
+				$this->stockdataChart($db, 'sector', 'Sector Value');
 			print "</div>\n";
 
 			$db = null;
@@ -81,7 +86,8 @@
 			print "    {\n";
 			print "        showSharesOwnedChart();\n";
 			print "        showHoldingsValueChart();\n";
-			print "        showMarketValueChart();\n";
+			print "        showmarketValueChart();\n";
+			print "        showsectorValueChart();\n";
 			print "    }\n";
 			print "    window.onload = start();\n";
 			print "</script>\n";
@@ -272,9 +278,9 @@
 		}
 
 		/*
-	 	* Show value split per market
+	 	* Show value split per selected stockData attribute
 		 */
-		function marketChart($db) {
+		function stockdataChart($db, $stockdataAttribute, $headerText) {
 /*
 			$sql = "SELECT t.symbol," .
 			" SUM(CASE WHEN t.activity IN ('BUY', 'BONUS', 'SPLIT') THEN t.shares ELSE 0 END) AS boughtshares," .
@@ -289,12 +295,13 @@
 			" FROM transactions t" .
 			" GROUP BY t.symbol, t.currency" .
 			") innerdata" .
-			" LEFT OUTER JOIN stockData sd ON innerdata.symbol = sd.symbol AND sd.attribute = 'market'" .
+			" LEFT OUTER JOIN stockData sd ON innerdata.symbol = sd.symbol AND sd.attribute = :attribute" .
 			" LEFT OUTER JOIN stockData sdp ON innerdata.symbol = sdp.symbol AND sdp.attribute = 'ask' and sdp.value <> 0" .
 			" LEFT OUTER JOIN stockData sdb ON innerdata.symbol = sdb.symbol AND sdb.attribute = 'bid' and sdb.value <> 0" .
 			") innerdata GROUP BY market ORDER BY 1";
 
 			$rsStocks = $db->prepare($sql);
+			$rsStocks->bindValue(':attribute', $stockdataAttribute);
 			$rsStocks->execute();
 			$stocks = $rsStocks->fetchAll();
 
@@ -322,19 +329,19 @@
 			# prepare the chart
 			print "<script src='javascript/chart/Chart.js'></script>";
 			print "<fieldset>";
-			print "  <legend>Market Value</legend>";
+			print "  <legend>" . $headerText . "</legend>";
 			print "  <div style='width:100%; margins: auto;'>";
 			print "	   <div>";
-			print "		   <canvas id='marketCanvas' height='240' width='auto'></canvas>";
+			print "		   <canvas id='" . $stockdataAttribute . "Canvas' height='240' width='auto'></canvas>";
 			print "	   </div>";
 			print "  </div>";
 			print "  <script>";
 			?>
-			var pieData = <?php print $data; ?>;
+			var <?php print $stockdataAttribute; ?>PieData = <?php print $data; ?>;
 
-			function showMarketValueChart(){
-				var ctx = document.getElementById("marketCanvas").getContext("2d");
-				window.myPie = new Chart(ctx).Pie(pieData);
+			function show<?php print $stockdataAttribute; ?>ValueChart(){
+				var ctx = document.getElementById("<?php print $stockdataAttribute; ?>Canvas").getContext("2d");
+				window.my<?php print $stockdataAttribute; ?>Pie = new Chart(ctx).Pie(<?php print $stockdataAttribute; ?>PieData);
 			}
 			<?php
 			print "  </script>";
