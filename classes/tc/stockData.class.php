@@ -336,7 +336,7 @@
 			$db=$conn->connect();
 				
 			# purge existing data for the stock
-			$sqlPurge = "DELETE FROM stockData WHERE symbol=:symbol AND category=:category AND CanDelete='Y'";
+			$sqlPurge = "DELETE FROM stockData WHERE symbol=:symbol AND UPPER(category)=:category AND CanDelete='Y'";
 			$rsPurge = $db->prepare($sqlPurge);
 			$rsPurge->bindValue(':symbol', strtoupper($this->symbol));
 			$rsPurge->bindValue(':category', strtoupper($category));
