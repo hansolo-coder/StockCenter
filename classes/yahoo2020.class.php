@@ -907,9 +907,6 @@
 				# shares outstanding
 				#$this->sharesOutstanding = $this->removeQuotes(trim($sData[55]));
 				
-				# earnings per share
-				$this->earningsPerShare = 0.06;
-					
 				# earnings per share estimate current year
 				#$this->earningsPerShareEstimateCurrentYear = $this->removeQuotes(trim($sData[57]));
 					
@@ -963,6 +960,11 @@
 
 				# P/E Forward
 				$this->peForward = $sData["quoteSummary"]["result"][0]["summaryDetail"]["forwardPE"]["raw"];
+
+				# earnings per share
+				if (isset($this->ask) && isset($this->peTrailing) && $this->peTrailing <> 0)
+					$this->earningsPerShare = $this->ask / $this->peTrailing;
+					
 			}
 		}
 
@@ -1010,7 +1012,7 @@
 			$code  = "?modules=summaryProfile";
 
 			$result = array();
-			if ($symbol == NULL)
+			if (!isset($symbol))
 			{
 				return $result;
 			}
