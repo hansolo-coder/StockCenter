@@ -1626,7 +1626,7 @@
 		print "<div class='tooltiptext'>The companys earning per share</div></div>";
 		print "                        </td>";
 		print "                        <td class='data'>";
-		print "                        	   " . $eps;
+		print "                        	   " . toCash($eps);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
