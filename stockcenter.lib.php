@@ -857,7 +857,7 @@
                   print "    <td class='data colneg'>\n"; 
                 print "       " . formatCashWCurr($currentPrice, $scurrency);
                 if (strlen($change) > 0) {
-                  print " (" . toCash($change) . ")";
+                  print " (" . formatCashBase($change) . ")";
                 }
                 print "    </td>\n";
                 print "    <td class='data'>\n";
@@ -974,7 +974,7 @@
     
     
     
-    # portfolio signals block
+	# portfolio signals block
 	function signals()
 	{
     	if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: " . __LINE__ . "</span><br>";}
@@ -1092,7 +1092,7 @@
 			# calculate bought share count
 			$sqlBought = "SELECT sum(shares) as s FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
 			$rsBought = $db->prepare($sqlBought);
-            $rsBought->bindValue(':symbol', $row['symbol']);
+			$rsBought->bindValue(':symbol', $row['symbol']);
 			$rsBought->execute();
 			$rowBought = $rsBought->fetch();
 			$boughtShares = $rowBought['s'];
@@ -1100,7 +1100,7 @@
 			# calculate sold share count
 			$sqlSold = "SELECT sum(shares) as s FROM transactions where activity='SELL' AND symbol=:symbol";
 			$rsSold = $db->prepare($sqlSold);
-            $rsSold->bindValue(':symbol', $row['symbol']);
+			$rsSold->bindValue(':symbol', $row['symbol']);
 			$rsSold->execute();
 			$rowSold = $rsSold->fetch();
 			$soldShares = $rowSold['s'];
@@ -1108,7 +1108,7 @@
 			# calculate total spent
 			$sqlTs = "SELECT cost, shares FROM transactions where activity IN ('BUY','BONUS','SPLIT') AND symbol=:symbol";
 			$rsTs = $db->prepare($sqlTs);
-            $rsTs->bindValue(':symbol', $row['symbol']);
+			$rsTs->bindValue(':symbol', $row['symbol']);
 			$rsTs->execute();
 
 			$totalSpent = 0;
@@ -1159,19 +1159,19 @@
 				print "            " . $sData->symbol;
 				print "        </td>";
 				print "        <td class='data'>";
-				print "            " . toCash($sData->currentPrice2);
+				print "            " . formatCashBase($sData->currentPrice2);
 				print "        </td>";
 				print "        <td class='data'>";
-				print "            " . toCash($pps);
+				print "            " . formatCashBase($pps);
 				print "        </td>";
 				print "        <td class='data'>";
-				print "            " . toCash($sData->yearLow);
+				print "            " . formatCashBase($sData->yearLow);
 				print "        </td>";
 				print "        <td class='data'>";
-				print "            " . toCash($sData->yearHigh);
+				print "            " . formatCashBase($sData->yearHigh);
 				print "        </td>";
 				print "        <td class='data'>";
-				print "            " . toCash(($sellTrigger * $pps) + $pps);
+				print "            " . formatCashBase(($sellTrigger * $pps) + $pps);
 				
 				if ($sData->currentPrice2 - (($sellTrigger * $pps) + $pps) > 0)
 				{
@@ -1182,7 +1182,7 @@
 				    print "            <span style='color: #FF2F14;'>";
 				}
 				
-				print "                (" . toCash($sData->currentPrice2 - (($sellTrigger * $pps) + $pps)) . ")";
+				print "                (" . formatCashBase($sData->currentPrice2 - (($sellTrigger * $pps) + $pps)) . ")";
 				print "            </span>";
 				print "        </td>";
 				print "        <td class='data' style='background-color: " . $signalColor . ";'>";
@@ -1617,7 +1617,7 @@
 		print "<div class='tooltiptext'>The companys annual dividend payment per share</div></div>";
 		print "                        </td>";
 		print "                        <td class='data'>";
-		print "                			   " . $dps;
+		print "                			   " . formatCashBase($dps);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1626,7 +1626,7 @@
 		print "<div class='tooltiptext'>The companys earning per share</div></div>";
 		print "                        </td>";
 		print "                        <td class='data'>";
-		print "                        	   " . toCash($eps);
+		print "                        	   " . formatCashBase($eps);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1635,7 +1635,7 @@
 		print "<div class='tooltiptext'>A stock's annual dividend payments to shareholders expressed as a percentage of the stock's current price</div></div>";
 		print "                        </td>";
 		print "                        <td class='data'>";
-		print "                			   " . $dividendYield;
+		print "                			   " . formatCashBase($dividendYield, 4);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                    <tr>";
@@ -1644,7 +1644,7 @@
 		print "<div class='tooltiptext'>The relationship between a company’s stock price and earnings per share (EPS)</div></div>";
 		print "                        </td>";
 		print "                        <td class='data'>";
-		print "                			   " . $peTrailing;
+		print "                			   " . formatCashBase($peTrailing, 1);
 		print "                        </td>";
 		print "                    </tr>";
 		print "                </table>";
@@ -1665,6 +1665,7 @@
 	
 	
 	# converts values to cash format (2 decimal places)
+	# Use this function to round values for further calculation. No regional formatting is done here
 	function toCash($value)
 	{
         # if ($_SESSION['debug'] == "on"){print "<span class='debug'>toCash($value)</span><br>\n";}
@@ -1673,10 +1674,19 @@
 	}
 
 	# formats a cash value including currency
+	# Format an amount with regional formatting. Always use default currency
+	# Avoid using this function whenever possible - use formatCashWCurr() instead
 	function formatCash($value)
 	{
         # if ($_SESSION['debug'] == "on"){print "<span class='debug'>formatCash($value)</span><br>\n";}
 		return formatCashWCurr($value, $_SESSION['DefaultCurrency']);
+	}
+
+	# formats a cash value regionally
+	# Use this function for display on screen - do not use it for further calculations
+	function formatCashBase($value, $decimals = 2)
+	{
+		return number_format((float)$value, $decimals, $_SESSION['DecimalPoint'], $_SESSION['ThousandSep']);
 	}
 
 	# formats a cash value including currency
@@ -1684,9 +1694,9 @@
 	{
         # if ($_SESSION['debug'] == "on"){print "<span class='debug'>formatCashWCurr($value)</span><br>\n";}
 		if (strlen($currency) > 1)
-		  return number_format((float)$value, 2, $_SESSION['DecimalPoint'], $_SESSION['ThousandSep']) . "&nbsp;" . $currency;
+		  return formatCashBase($value, 2) . "&nbsp;" . $currency;
 		else
-		  return $currency . "&nbsp;" . number_format((float)$value, 2, $_SESSION['DecimalPoint'], $_SESSION['ThousandSep']);
+		  return $currency . "&nbsp;" . formatCashBase($value, 2);
 	}
 
 	/* Separate amount and currency if they was both specified in the amount */
