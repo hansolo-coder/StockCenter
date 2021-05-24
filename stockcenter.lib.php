@@ -966,7 +966,7 @@
         print "    </tr>\n";
         print "</table>\n";
         
-	$charts->executeScriptFrontpage();
+	$charts->printExecuteScripts();
 
             $db = null;
             $conn = null;

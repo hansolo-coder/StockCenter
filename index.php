@@ -274,7 +274,17 @@
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "charts")
             {
-                charts();
+		include_once './classes/pageHeader.class.php';
+		$header = new pageHeader();
+		$header->display();
+
+		include_once './classes/widgets/formCharts.class.php';
+		$charts = new formCharts();
+
+		$charts->action = "showAll";
+		$charts->displayAll();
+
+		$charts->printExecuteScripts();
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "showTax")
             {

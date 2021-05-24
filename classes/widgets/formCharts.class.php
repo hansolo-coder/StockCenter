@@ -16,15 +16,19 @@
 		 */
 		public $errors;
 		
-		
+			#               Red        Cyan       Yellow     Grey       DarkGrey   Green      Blue       Yellow     Pink
+		private $fcolor = array("#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360", "#33ff33", "#4d4dff", "#ffff00", "#ff66ff");
+		private $hcolor = array("#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774", "#80ff80", "#8080ff", "#ffff80", "#ffb3ff");
+
+		private $displayedCharts = 0;
 		
 		function __construct()
 		{
 			$this->action = '';
 			$this->errors = '';
 		}
-		
-		
+
+
 		/**
 		 * displays the form
 		 */
@@ -33,13 +37,20 @@
 			if ($_SESSION['debug'] == "on"){print "<span class='debug'>showChart($this->action)</span><br>\n";}
 
 			if ($this->action == 'holdingsValueChart') {
+				$this->displayedCharts |= 1;
 				$this->holdingsValueChart($db);
 			} else if ($this->action == 'sharesOwnedChart') {
+				$this->displayedCharts |= 2;
 				$this->sharesOwnedChart($db);
 			} else if ($this->action == 'marketChart') {
+				$this->displayedCharts |= 4;
 				$this->stockdataChart($db, 'market', 'Market Value');
 			} else if ($this->action == 'sectorChart') {
+				$this->displayedCharts |= 8;
 				$this->stockdataChart($db, 'sector', 'Sector Value');
+			} else if ($this->action == 'industryChart') {
+				$this->displayedCharts |= 16;
+				$this->stockdataChart($db, 'industry', 'Industry Value');
 			} else {
 				$this->error = 'Unknown action: ' . $this->action;
 			}
@@ -53,41 +64,44 @@
 			$db = $conn->connect();
 
 			print "<div>\n";
-				$this->holdingsValueChart($db);
+			$this->displayedCharts |= 1;
+			$this->holdingsValueChart($db);
 			print "</div>\n";
 			print "<div>\n";
-				$this->sharesOwnedChart($db);
+			$this->displayedCharts |= 2;
+			$this->sharesOwnedChart($db);
 			print "</div>\n";
 			print "<div>\n";
-				$this->stockdataChart($db, 'market', 'Market Value');
+			$this->displayedCharts |= 4;
+			$this->stockdataChart($db, 'market', 'Market Value');
 			print "</div>\n";
 			print "<div>\n";
-				$this->stockdataChart($db, 'sector', 'Sector Value');
+			$this->displayedCharts |= 8;
+			$this->stockdataChart($db, 'sector', 'Sector Value');
+			print "</div>\n";
+			print "<div>\n";
+			$this->displayedCharts |= 16;
+			$this->stockdataChart($db, 'industry', 'Industry Value');
 			print "</div>\n";
 
 			$db = null;
 			$conn = null;
 		}
 
-		function executeScriptFrontpage() {
+		function printExecuteScripts() {
 			print "<script>\n";
 			print "    function start()\n";
 			print "    {\n";
-			print "        showSharesOwnedChart();\n";
-			print "        showHoldingsValueChart();\n";
-			print "    }\n";
-			print "    window.onload = start();\n";
-			print "</script>\n";
-		}
-
-		function executeScriptAll() {
-			print "<script>\n";
-			print "    function start()\n";
-			print "    {\n";
-			print "        showSharesOwnedChart();\n";
-			print "        showHoldingsValueChart();\n";
-			print "        showmarketValueChart();\n";
-			print "        showsectorValueChart();\n";
+			if (($this->displayedCharts & 1) == 1)
+				print "        showHoldingsValueChart();\n";
+			if (($this->displayedCharts & 2) == 2)
+				print "        showSharesOwnedChart();\n";
+			if (($this->displayedCharts & 4) == 4)
+				print "        showmarketValueChart();\n";
+			if (($this->displayedCharts & 8) == 8)
+				print "        showsectorValueChart();\n";
+			if (($this->displayedCharts & 16) == 16)
+				print "        showindustryValueChart();\n";
 			print "    }\n";
 			print "    window.onload = start();\n";
 			print "</script>\n";
@@ -309,14 +323,10 @@
          
 			$data = '[';
 
-			#               Red        Cyan       Yellow     Grey       DarkGrey   Green      Blue       Yellow     Pink
-			$fcolor = array("#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360", "#33ff33", "#4d4dff", "#ffff00", "#ff66ff");
-			$hcolor = array("#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774", "#80ff80", "#8080ff", "#ffff80", "#ffb3ff");
-
 			$idx = 0;
 			foreach($stocks as $stock) {
-		                $data .= '{value: ' . $stock['marketValue'] . ', color:"' . $fcolor[$idx] . '", highlight: "' . $hcolor[$idx] . '", label: "' . $stock['market'] . '" }' . ',';
-				if (++$idx >= count($fcolor))
+		                $data .= '{value: ' . $stock['marketValue'] . ', color:"' . $this->fcolor[$idx] . '", highlight: "' . $this->hcolor[$idx] . '", label: "' . $stock['market'] . '" }' . ',';
+				if (++$idx >= count($this->fcolor))
 					$idx = 0;
 			}
 
