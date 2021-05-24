@@ -309,9 +309,9 @@
          
 			$data = '[';
 
-			#               Red        Green      Yellow     Grey       DarkGrey
-			$fcolor = array("#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360");
-			$hcolor = array("#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774");
+			#               Red        Cyan       Yellow     Grey       DarkGrey   Green      Blue       Yellow     Pink
+			$fcolor = array("#F7464A", "#46BFBD", "#FDB45C", "#949FB1", "#4D5360", "#33ff33", "#4d4dff", "#ffff00", "#ff66ff");
+			$hcolor = array("#FF5A5E", "#5AD3D1", "#FFC870", "#A8B3C5", "#616774", "#80ff80", "#8080ff", "#ffff80", "#ffb3ff");
 
 			$idx = 0;
 			foreach($stocks as $stock) {
