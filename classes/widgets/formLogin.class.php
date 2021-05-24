@@ -16,7 +16,15 @@
 		 */
 		public $errors;
 
-		
+		/**
+		 * Default username
+		 */
+		public $username;
+
+		function __construct()
+		{
+			$this->username = '';
+		}
 		
 		/**
 		 * displays the login form
@@ -51,11 +59,19 @@
 			print "        Stock Center\n";
 			print "        </div>\n";
 			print "        <div style='width: 260px; background-color: #E6E6E6; padding: 10px; margin: auto;'>\n";
-			print "            <form action='" . $_SERVER['PHP_SELF'] . "' method='post'>\n";
+			print "            <form action='" . $_SERVER['PHP_SELF'] . "' method='post' autocomplete='off' onsubmit='return(validate());'>\n";
 			print "                User ID<br>\n";
-			print "                <input type='text' name='userId' autofocus style='width: 90%;'><br>\n";
+			print "                <input type='text' name='userId' style='width: 90%;'";
+			if (strlen($this->username) > 0)
+			  print " value='" . strip_tags(htmlspecialchars($this->username)) . "'";
+			else
+			  print " autofocus";
+			print "><br>\n";
 			print "                Password<br>\n";
-			print "                <input type='password' name='pass' style='width: 90%;'><br>\n";
+			print "                <input type='password' name='pass' style='width: 90%;'";
+			if (strlen($this->username) > 0)
+			  print " autofocus";
+			print "><br>\n";
 			print "                <input type='hidden' name='action' value='" . $this->action . "'>\n";
 			print "                <br>\n";
 			print "                <div style='text-align: right;'>\n";
@@ -153,7 +169,8 @@
 				    $db=$conn->connect();
 	
 				    # upgrade the database if needed
-				    dbUpgrade($db);
+				    // TODO re-enable automatic database-upgrade at some later time
+				    //dbUpgrade($db);
 
 				    # get the settings from the settings table
 				    $sqlSettings = "SELECT * FROM settings";
@@ -193,11 +210,25 @@
 						$_SESSION['chgPctMarkUnchanged'] = $rowSettings['settingValue'];
 					}
 				    }
+				    if ($_SESSION['region'] == 'US') {
+					$_SESSION['DecimalPoint'] = '.';
+					$_SESSION['ThousandSep'] = ',';
+				    } else {
+					$_SESSION['DecimalPoint'] = ',';
+					$_SESSION['ThousandSep'] = '.';
+				    }
+
+				    include_once './classes/tc/exchangeRates.class.php';
+				    $exchangeRates = new exchangeRates();
+				    $_SESSION['Rates'] = $exchangeRates->select($_SESSION['DefaultCurrency']);
 	
 				    # display the home page
 				    include_once './classes/page.class.php';
 				    $page = new page();
 				    $page->start();
+
+				    if ($exchangeRates->errors != '')
+				        message('error', $exchangeRates->errors);
 
 				    homePage();
 					

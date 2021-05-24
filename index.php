@@ -93,20 +93,28 @@
                 $log = new listStocks();
                 $log->show();
             }
-			elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "addStock2")
+            elseif (isset($_REQUEST['action']) and ($_REQUEST['action'] == "addStock2" or $_REQUEST['action'] == "updateStock2"))
             {
             	include_once 'classes/widgets/listStocks.class.php';
 
             	$form = new listStocks();
-            	$form->process();
+                $form->action = $_REQUEST['action'];
+		$form->updateStock = FALSE;
+		if ($_REQUEST['action'] == "updateStock2") {
+		  $form->updateStock = TRUE;
+		} else {
+            	  $form->addStock();
+		}
+		$form->show();
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "deleteStock2")
             {
                 include_once 'classes/widgets/listStocks.class.php';
                 
                 $stock = new listStocks();
+                $stock->action = $_REQUEST['action'];
                 $stock->deleteStock();
-                homePage();
+                $stock->show();
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "overview")
             {
@@ -288,7 +296,7 @@
                 include_once './classes/login.class.php';
                 
                 $login = new login();
-                $login->displayLogin();
+                $login->displayLogin(NULL);
                 
                 exit();
             }
@@ -326,7 +334,11 @@
         # user is not logged in, display the login form
         include_once './classes/login.class.php';
 
+	$username = NULL;
+	if (isset($_REQUEST['user']))
+	  $username = $_REQUEST['user'];
+
         $login = new login();
-        $login->displayLogin();
+        $login->displayLogin($username);
     }
 ?>

@@ -7,12 +7,14 @@
 		/**
 		 * displays the login form
 		 */
-		function displayLogin()
+		function displayLogin($username)
 		{
 			include_once './classes/widgets/formLogin.class.php';
 
 			$form = new formLogin();
 			$form->action = "login";
+			if (isset($username))
+			  $form->username = $username;
 			$form->display();
 		}
 
