@@ -51,6 +51,9 @@
 			} else if ($this->action == 'industryChart') {
 				$this->displayedCharts |= 16;
 				$this->stockdataChart($db, 'industry', 'Industry Value');
+			} else if ($this->action == 'stockdataRadarChart') {
+				$this->displayedCharts |= 32;
+				$this->stockdataRadarChart($db, 'dps', 'earningsPerShare', 'Stock Data');
 			} else {
 				$this->error = 'Unknown action: ' . $this->action;
 			}
@@ -83,6 +86,11 @@
 			$this->displayedCharts |= 16;
 			$this->stockdataChart($db, 'industry', 'Industry Value');
 			print "</div>\n";
+			print "<div>\n";
+			$this->displayedCharts |= 32;
+			#$this->stockdataRadarChart($db, 'dps', 'earningsPerShare', 'Stock Data');
+			$this->stockdataRadarChart($db, 'dividendYield', 'earningsPerShare', 'Stock Data');
+			print "</div>\n";
 
 			$db = null;
 			$conn = null;
@@ -102,6 +110,9 @@
 				print "        showsectorValueChart();\n";
 			if (($this->displayedCharts & 16) == 16)
 				print "        showindustryValueChart();\n";
+			if (($this->displayedCharts & 32) == 32)
+				#print "        showdpsValueChart();\n";
+				print "        showdividendYieldValueChart();\n";
 			print "    }\n";
 			print "    window.onload = start();\n";
 			print "</script>\n";
@@ -356,6 +367,93 @@
 			<?php
 			print "  </script>";
 			print "</fieldset>";
-		}		
+		}
+
+		/*
+	 	* Show selected stockData attribute values for stocks
+		 */
+		function stockdataRadarChart($db, $stockdataAttribute1, $stockdataAttribute2, $headerText) {
+			$sql = "SELECT s.symbol, COALESCE(NULLIF(sd1.value, ''), 0) AS value1, COALESCE(NULLIF(sd2.value, ''), 0) AS value2, sdc.value as currency" .
+			" FROM stocks s" .
+			" LEFT OUTER JOIN stockData sd1 ON s.symbol = sd1.symbol AND sd1.attribute = :attribute1" .
+			" LEFT OUTER JOIN stockData sd2 ON s.symbol = sd2.symbol AND sd2.attribute = :attribute2" .
+			" LEFT OUTER JOIN stockData sdc ON s.symbol = sdc.symbol AND sdc.attribute = 'currency'" .
+			" ORDER BY 1";
+
+			$rsStocks = $db->prepare($sql);
+			$rsStocks->bindValue(':attribute1', $stockdataAttribute1);
+			$rsStocks->bindValue(':attribute2', $stockdataAttribute2);
+			$rsStocks->execute();
+			$stocks = $rsStocks->fetchAll();
+
+			$rsStocks = null;
+         
+			$labels = '[';
+			$data1 = '[';
+			$data2 = '[';
+
+			foreach($stocks as $stock) {
+				$labels .= '"' . $stock['symbol'] . '",';
+				$data1 .= $stock['value1'] . ',';
+				$data2 .= $stock['value2'] . ',';
+			}
+
+			# trim off the last comma
+			$labels = rtrim($labels, ",");
+			$data1 = rtrim($data1, ",");
+			$data2 = rtrim($data2, ",");
+
+			# cap off the dataset
+			$labels .= "]";
+			$data1 .= "]";
+			$data2 .= "]";
+
+			# prepare the chart
+			print "<script src='javascript/chart/Chart.js'></script>";
+			print "<fieldset>";
+			print "  <legend>" . $headerText . "</legend>";
+			print "  <div style='width:100%; margins: auto;'>";
+			print "	   <div>";
+			print "		   <canvas id='" . $stockdataAttribute1 . "Canvas' height='240' width='auto'></canvas>";
+			print "	   </div>";
+			print "  </div>";
+			print "  <script>";
+			?>
+			var <?php print $stockdataAttribute1; ?>RadarChartData = {
+				labels: <?php print $labels; ?>,
+				datasets: [
+					{
+						label: "<?php print $stockdataAttribute1; ?>",
+						fillColor: "rgba(220,220,220,0.2)",
+						strokeColor: "rgba(220,220,220,1)",
+						pointColor: "rgba(220,220,220,1)",
+						pointStrokeColor: "#fff",
+						pointHighlightFill: "#fff",
+						pointHighlightStroke: "rgba(220,220,220,1)",
+						data: <?php print $data1; ?>
+					},
+					{
+						label: "<?php print $stockdataAttribute2; ?>",
+						fillColor: "rgba(151,187,205,0.2)",
+						strokeColor: "rgba(151,187,205,1)",
+						pointColor: "rgba(151,187,205,1)",
+						pointStrokeColor: "#fff",
+						pointHighlightFill: "#fff",
+						pointHighlightStroke: "rgba(151,187,205,1)",
+						data: <?php print $data2; ?>
+					}
+				]
+			};
+
+			function show<?php print $stockdataAttribute1; ?>ValueChart(){
+				var ctx = document.getElementById("<?php print $stockdataAttribute1; ?>Canvas").getContext("2d");
+				window.my<?php print $stockdataAttribute1; ?>Radar = new Chart(ctx).Radar(<?php print $stockdataAttribute1; ?>RadarChartData, {
+					responsive: true
+				});
+			}
+			<?php
+			print "  </script>";
+			print "</fieldset>";
+		}
 	}
 ?>
