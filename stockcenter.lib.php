@@ -662,24 +662,24 @@
         print "<table class='display' id='overview'>\n";
 	print "    <thead>\n";
         print "    <tr>\n";
-        print "        <th class='data' width='17.6%'>\n";
-        print "            Stock\n";
-        print "        </th>\n";
-        print "        <th class='data' width='19.6%'>\n";
-        print "            Current Price\n";
-        print "        </th>\n";
-        print "        <th class='data' width='10.6%'>\n";
-        print "            Shares Owned\n";
-        print "        </th>\n";
-        print "        <th class='data' width='16.6%'>\n";
-        print "            Currently Invested\n";
-        print "        </th>\n";
-        print "        <th class='data' width='16.6%'>\n";
-        print "            Current Value\n";
-        print "        </th>\n";
-        print "        <th class='data' width='16.6%'>\n";
-        print "            Dividends Earned\n";
-        print "        </th>\n";
+        print "        <th class='data' width='17.6%'>";
+        print             "Stock";
+        print         "</th>\n";
+        print "        <th class='data' width='19.6%'>";
+        print             "Current Price";
+        print         "</th>\n";
+        print "        <th class='data' width='10.6%'>";
+        print             "Shares Owned";
+        print         "</th>\n";
+        print "        <th class='data' width='16.6%'>";
+        print             "Currently Invested";
+        print         "</th>\n";
+        print "        <th class='data' width='16.6%'>";
+        print             "Current Value";
+        print         "</th>\n";
+        print "        <th class='data' width='16.6%'>";
+        print             "Dividends Earned";
+        print         "</th>\n";
         print "    </tr>\n";
 	print "    </thead>\n";
 	print "    <tbody>\n";
@@ -846,52 +846,52 @@
                 $currentlyInvestedLocal = toCash($totalSpentLocal) - toCash($totalSalesLocal);
 
                 print "<tr>\n";
-                print "    <td class='data'>\n";
-                print "        " . $rowStocklist['symbol'];
-                print "    </td>\n";
+                print "    <td class='data task' data-id='" . $rowStocklist['symbolId'] . "'>";
+                print          $rowStocklist['symbol'];
+                print     "</td>\n";
                 if (strlen($change) == 0 || $change == 0)
-                  print "    <td class='data'>\n";
+                  print "    <td class='data'>";
                 else if ($change > 0)
-                  print "    <td class='data colpos'>\n";
+                  print "    <td class='data colpos'>";
                 else
-                  print "    <td class='data colneg'>\n"; 
-                print "       " . formatCashWCurr($currentPrice, $scurrency);
+                  print "    <td class='data colneg'>"; 
+                print          formatCashWCurr($currentPrice, $scurrency);
                 if (strlen($change) > 0) {
                   print " (" . formatCashBase($change) . ")";
                 }
-                print "    </td>\n";
-                print "    <td class='data'>\n";
-                print "        " . ($boughtShares - $soldShares);
-                print "    </td>\n";
-                print "    <td class='data'>\n";
-                print "        " . formatCashWCurr($currentlyInvested, $scurrency);
+                print     "</td>\n";
+                print "    <td class='data'>";
+                print           ($boughtShares - $soldShares);
+                print     "</td>\n";
+                print "    <td class='data'>";
+                print          formatCashWCurr($currentlyInvested, $scurrency);
                 if ($currentlyInvested <> $currentlyInvestedLocal)
                   print "\n        (" . formatCashWCurr($currentlyInvestedLocal, $totalSpentLocalCurr) . ")";
-                print "    </td>\n";
+                print     "</td>\n";
 
                 if($currentlyInvested > 0 && (abs($currentlyInvested - $currentValue) / $currentlyInvested < $chgPctMarkUnchanged))
                 {
-                    print "    <td class='data colunchg'>\n"; // Dark Yellow #9B870C / Pale Yellow #F3E5AB
+                    print "    <td class='data colunchg'>"; // Dark Yellow #9B870C / Pale Yellow #F3E5AB
                 }
                 else if($currentValue > $currentlyInvested)
                 {
-                    print "    <td class='data colpos'>\n";
+                    print "    <td class='data colpos'>";
                 }
                 else
                 {
-                    print "    <td class='data colneg'>\n";
+                    print "    <td class='data colneg'>";
                 }
 
-                print "        " . formatCashWCurr($currentValue, $scurrency);
+                print          formatCashWCurr($currentValue, $scurrency);
 		  if ($currentValue <> $currentValueLocal) {
 		    print "\n        (" . formatCashWCurr($currentValueLocal, $_SESSION['DefaultCurrency']) . ")";
 		  }
-                print "    </td>\n";
-                print "    <td class='data'>\n";
-                print "        " . formatCashWCurr($dividends, $divcurrency);
+                print     "</td>\n";
+                print "    <td class='data'>";
+                print         formatCashWCurr($dividends, $divcurrency);
                 if ($dividends <> $dividendsLocal)
                   print "\n        (" . formatCashWCurr($dividendsLocal, $divcurrencyLocal) . ")";
-                print "    </td>\n";
+                print     "</td>\n";
                 print "</tr>\n";
 
                 $totalCurrentlyInvested = toCash($totalCurrentlyInvested + $currentlyInvested);
@@ -943,6 +943,21 @@
 		print "        $('#overview').DataTable();\n";
 		print "    });\n";
 		print "</script>\n";
+
+                print "  <nav id='context-menu' class='context-menu'>\n";
+                print "    <ul class='context-menu__items'>\n";
+                print "      <li class='context-menu__item'>\n";
+                print "        <a href='#' class='context-menu__link' data-action='Yahoo'><i class='fa fa-yahoo'></i> Yahoo</a>\n";
+                print "      </li>\n";
+                print "      <li class='context-menu__item'>\n";
+                print "        <a href='#' class='context-menu__link' data-action='Website'><i class='fa fa-website'></i> Website</a>\n";
+                print "      </li>\n";
+                print "      <li class='context-menu__item'>\n";
+                print "        <a href='#' class='context-menu__link' data-action='Delete'><i class='fa fa-times'></i> Delete Task</a>\n";
+                print "      </li>\n";
+                print "    </ul>\n";
+                print "  </nav>\n";
+                print "  <script src='javascript/contextmenu4.js'></script>\n";
 
 	print "<div class='spacer'></div>\n";
 

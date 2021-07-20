@@ -21,6 +21,7 @@
 			print "        <meta http-equiv='Expires' content='0'>\n";
 			print "        <link rel='stylesheet' media='screen and (min-device-width: 1001px)' type='text/css' href='assets/style.css'>\n";
 			print "        <link rel='stylesheet' media='screen and (max-device-width: 1000px)' type='text/css' href='assets/style800.css'>\n";
+			print "        <link rel='stylesheet' media='screen' type='text/css' href='assets/contextmenu4.css'>\n";
 			print "\n";
 			print "        <link rel='stylesheet' href='./javascript/jquery-ui/jquery-ui.min.css'>\n";
 			print "        <script src='./javascript/jquery-ui/external/jquery/jquery.js'></script>\n";
