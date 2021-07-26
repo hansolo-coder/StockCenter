@@ -21,6 +21,7 @@
 		public $name;
 		public $currency;       // currency of stock
 		public $lastUpdated;
+		public $companywebsite;
 		public $errors;
 
 		
@@ -47,6 +48,7 @@
 			$this->peTrailing = '';
 			$this->currency = '';
 			$this->lastUpdated = 0;
+			$this->companywebsite = '';
 			$this->errors = 'none';
 		}
 
@@ -137,6 +139,10 @@
 				elseif($row['attribute'] == "changeInPercent")
 				{
 					$this->changePercent = $row['value'];
+				}
+				elseif($row['attribute'] == "website")
+				{
+					$this->companywebsite = $row['value'];
 				}
     
 				$this->lastUpdated = $row['lastUpdated'];
