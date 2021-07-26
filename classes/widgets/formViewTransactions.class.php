@@ -33,8 +33,8 @@
     
     		# view stock combo box
     		print "<h3>Manage Stock Activity</h3>\n";
-    		print "<form method='post' action='" . htmlentities($_SERVER['PHP_SELF']) . "'>\n";
-    		print "    <select name='symbol' style='width: 130px;'>\n";
+    		print "<form id='formManageStock' method='post' action='" . htmlentities($_SERVER['PHP_SELF']) . "'>\n";
+    		print "    <select id='formManageStockSymbol' name='symbol' style='width: 130px;'>\n";
     		print "        <option selected value=''>Select Symbol</option>\n";
     
     		while ($row = $rs->fetch())

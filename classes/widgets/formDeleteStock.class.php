@@ -38,8 +38,8 @@
     
     		# build the delete stock combo box
     		print "<h3>Delete Stock Data</h3>\n";
-    		print "<form method='post' action='" . htmlentities($_SERVER['PHP_SELF']) . "'>\n";
-    		print "    <select name='symbol' style='width: 130px;'>\n";
+    		print "<form id='formDeleteStock' method='post' action='" . htmlentities($_SERVER['PHP_SELF']) . "'>\n";
+    		print "    <select id='formDeleteStockSymbol' name='symbol' style='width: 130px;'>\n";
     		print "        <option selected value=''>Select Symbol</option>\n";
     
     		while ($row = $rs->fetch())

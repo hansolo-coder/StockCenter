@@ -33,9 +33,9 @@
 			if ($_SESSION['debug'] == "on"){print "<span class='debug'>addStockForm($this->action)</span><br>\n";}
 
 			print "<h3>Add Stock</h3>\n";
-			print "<form method='post' action='" . htmlentities($_SERVER['PHP_SELF']) . "'>\n";
+			print "<form id='formAddStock' method='post' action='" . htmlentities($_SERVER['PHP_SELF']) . "'>\n";
 			print "Symbol or Symbol/ISIN/Name\n";
-			print "    <input type='text' name='symbol'>\n";
+			print "    <input type='text' id='formAddStockSymbol' name='symbol'>\n";
 			print "    <input type='submit' value='Add'>\n";
 			print "    <input type='hidden' name='action' value='" . $this->action . "'>\n";
 			print "</form>\n";
