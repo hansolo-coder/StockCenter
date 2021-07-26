@@ -641,6 +641,10 @@
 	$set->select();
 	$chgPctMarkUnchanged = $set->settingValue + 0;
 
+	$set->settingName = "yahooFinanceBaseUrl";
+	$set->select();
+	$yahooFinanceBaseUrl = $set->settingValue;
+
 	$conn = new db();
 	$conn->fileName = $_SESSION['userId'];
 	$db=$conn->connect();
@@ -661,7 +665,7 @@
         print "<legend>Portfolio Overview</legend>\n";
         print "<table class='display' id='overview'>\n";
 	print "    <thead>\n";
-        print "    <tr>\n";
+        print "      <tr>\n";
         print "        <th class='data' width='17.6%'>";
         print             "Stock";
         print         "</th>\n";
@@ -680,7 +684,7 @@
         print "        <th class='data' width='16.6%'>";
         print             "Dividends Earned";
         print         "</th>\n";
-        print "    </tr>\n";
+        print "      </tr>\n";
 	print "    </thead>\n";
 	print "    <tbody>\n";
 
@@ -714,6 +718,7 @@
             if ($scurrency == '') {
                $scurrency = $_SESSION['DefaultCurrency'];
             }
+            $companywebsite = $sData->companywebsite;
 
             $sData = null;
             
@@ -845,25 +850,28 @@
                 $currentlyInvested = toCash($totalSpent) - toCash($totalSales);
                 $currentlyInvestedLocal = toCash($totalSpentLocal) - toCash($totalSalesLocal);
 
-                print "<tr>\n";
-                print "    <td class='data task' data-id='" . $rowStocklist['symbolId'] . "'>";
+                print "      <tr>\n";
+                print "        <td class='data task' data-id='" . $rowStocklist['symbolId'] . "'";
+                print            " data-url1='" . urlencode(str_replace('{}', $rowStocklist['symbol'], $yahooFinanceBaseUrl)) . "'";
+                print            " data-url2='" . urlencode($rowStocklist['URL']) . "'";
+		print            " data-url3='" . urlencode($companywebsite) . "'>";
                 print          $rowStocklist['symbol'];
                 print     "</td>\n";
                 if (strlen($change) == 0 || $change == 0)
-                  print "    <td class='data'>";
+                  print "        <td class='data'>";
                 else if ($change > 0)
-                  print "    <td class='data colpos'>";
+                  print "        <td class='data colpos'>";
                 else
-                  print "    <td class='data colneg'>"; 
+                  print "        <td class='data colneg'>"; 
                 print          formatCashWCurr($currentPrice, $scurrency);
                 if (strlen($change) > 0) {
                   print " (" . formatCashBase($change) . ")";
                 }
                 print     "</td>\n";
-                print "    <td class='data'>";
+                print "        <td class='data'>";
                 print           ($boughtShares - $soldShares);
                 print     "</td>\n";
-                print "    <td class='data'>";
+                print "        <td class='data'>";
                 print          formatCashWCurr($currentlyInvested, $scurrency);
                 if ($currentlyInvested <> $currentlyInvestedLocal)
                   print "\n        (" . formatCashWCurr($currentlyInvestedLocal, $totalSpentLocalCurr) . ")";
@@ -871,15 +879,15 @@
 
                 if($currentlyInvested > 0 && (abs($currentlyInvested - $currentValue) / $currentlyInvested < $chgPctMarkUnchanged))
                 {
-                    print "    <td class='data colunchg'>"; // Dark Yellow #9B870C / Pale Yellow #F3E5AB
+                    print "        <td class='data colunchg'>"; // Dark Yellow #9B870C / Pale Yellow #F3E5AB
                 }
                 else if($currentValue > $currentlyInvested)
                 {
-                    print "    <td class='data colpos'>";
+                    print "        <td class='data colpos'>";
                 }
                 else
                 {
-                    print "    <td class='data colneg'>";
+                    print "        <td class='data colneg'>";
                 }
 
                 print          formatCashWCurr($currentValue, $scurrency);
@@ -887,12 +895,12 @@
 		    print "\n        (" . formatCashWCurr($currentValueLocal, $_SESSION['DefaultCurrency']) . ")";
 		  }
                 print     "</td>\n";
-                print "    <td class='data'>";
+                print "        <td class='data'>";
                 print         formatCashWCurr($dividends, $divcurrency);
                 if ($dividends <> $dividendsLocal)
                   print "\n        (" . formatCashWCurr($dividendsLocal, $divcurrencyLocal) . ")";
                 print     "</td>\n";
-                print "</tr>\n";
+                print "      </tr>\n";
 
                 $totalCurrentlyInvested = toCash($totalCurrentlyInvested + $currentlyInvested);
                 $totalCurrentlyInvestedLocal = toCash($totalCurrentlyInvestedLocal + $currentlyInvestedLocal);
@@ -947,13 +955,16 @@
                 print "  <nav id='context-menu' class='context-menu'>\n";
                 print "    <ul class='context-menu__items'>\n";
                 print "      <li class='context-menu__item'>\n";
-                print "        <a href='#' class='context-menu__link' data-action='Yahoo'><i class='fa fa-yahoo'></i> Yahoo</a>\n";
+                print "        <a href='#' class='context-menu__link' data-action='manage'><i class='fa fa-manage'></i> Manage</a>\n";
                 print "      </li>\n";
                 print "      <li class='context-menu__item'>\n";
-                print "        <a href='#' class='context-menu__link' data-action='Website'><i class='fa fa-website'></i> Website</a>\n";
+                print "        <a href='#' class='context-menu__link' data-action='yahoo'><i class='fa fa-yahoo'></i> Yahoo</a>\n";
                 print "      </li>\n";
                 print "      <li class='context-menu__item'>\n";
-                print "        <a href='#' class='context-menu__link' data-action='Delete'><i class='fa fa-times'></i> Delete Task</a>\n";
+                print "        <a href='#' class='context-menu__link' data-action='compinvestor'><i class='fa fa-compinvestor'></i> Investor</a>\n";
+                print "      </li>\n";
+                print "      <li class='context-menu__item'>\n";
+                print "        <a href='#' class='context-menu__link' data-action='compwebsite'><i class='fa fa-compwebsite'></i> Website</a>\n";
                 print "      </li>\n";
                 print "    </ul>\n";
                 print "  </nav>\n";
@@ -1310,6 +1321,23 @@
           $sql = NULL;
 
           return $key;
+        }
+
+        function getSettingValue($db, $key) {
+          $key = NULL;
+
+          $sql = "SELECT * FROM settings WHERE settingName=:settingName";
+	  $rs = $db->prepare($sql);
+	  $rs->bindValue(':settingName', $key);
+	  $rs->execute();
+	  $row = $rs->fetch();
+          $keyValue = $row['settingValue'];
+
+          $row = NULL;
+          $rs = NULL;
+          $sql = NULL;
+
+          return $keyValue;
         }
 
 	# displays summary bar

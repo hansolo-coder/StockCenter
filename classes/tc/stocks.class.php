@@ -8,6 +8,7 @@
 		public $symbolId;
 		public $ISIN;
 		public $name;
+		public $url;
 		public $skipLookup;
 		public $errors;
 		public $inError;
@@ -18,6 +19,7 @@
 			$this->symbolId = 0;
 			$this->ISIN = '';
 			$this->name = '';
+			$this->url  = '';
 			$this->skipLookup = 0; // 1 -> skip lookup in stock api - probably because it does not exist anymore
 			$this->errors = 'none';
 			$this->inError = FALSE;
@@ -62,6 +64,7 @@
 			$this->symbol = trim($row['symbol']);
 			$this->ISIN = trim($row['ISIN']);
 			$this->name = trim($row['name']);
+			$this->url  = trim($row['URL']);
 			$this->skipLookup = (int)$row['SkipLookup'];
 
 			if ($_SESSION['debug'] == "on"){
@@ -101,11 +104,12 @@
 
 			if($row['theCount'] == 0)
 			{
-				$sql = "INSERT INTO stocks (symbol, ISIN, name, SkipLookup) VALUES(:symbol, :ISIN, :name, :skipLookup)";
+				$sql = "INSERT INTO stocks (symbol, ISIN, name, URL, SkipLookup) VALUES(:symbol, :ISIN, :name, :url, :skipLookup)";
 				$rs = $db->prepare($sql);
 				$rs->bindValue(':symbol', trim(strtoupper($this->symbol)));
 				$rs->bindValue(':ISIN', trim(strtoupper($this->ISIN)));
 				$rs->bindValue(':name', trim($this->name));
+				$rs->bindValue(':url', trim($this->url));
 				$rs->bindValue(':skipLookup', $this->skipLookup);
 				$rs->execute();
 			}
@@ -147,16 +151,17 @@
 			$db = $conn->connect();
 
 			if ($this->symbolId > 0) {
-			  $sql = "UPDATE stocks SET symbol=:symbol, ISIN=:ISIN, name=:name, SkipLookup=:skipLookup WHERE symbolId=:symbolId";
+			  $sql = "UPDATE stocks SET symbol=:symbol, ISIN=:ISIN, name=:name, URL=:url, SkipLookup=:skipLookup WHERE symbolId=:symbolId";
 			  $rs = $db->prepare($sql);
 			  $rs->bindValue(':symbolId', $this->symbolId);
 			} else {
-			  $sql = "UPDATE stocks SET ISIN=:ISIN, name=:name, SkipLookup=:skipLookup WHERE symbol=:symbol";
+			  $sql = "UPDATE stocks SET ISIN=:ISIN, name=:name, URL=:url, SkipLookup=:skipLookup WHERE symbol=:symbol";
 			  $rs = $db->prepare($sql);
 			}
 			$rs->bindValue(':symbol', trim($this->symbol));
 			$rs->bindValue(':ISIN', trim(strtoupper($this->ISIN)));
 			$rs->bindValue(':name', trim($this->name));
+			$rs->bindValue(':url', trim($this->url));
 			$rs->bindValue(':skipLookup', $this->skipLookup);
 			$rs->execute();
 

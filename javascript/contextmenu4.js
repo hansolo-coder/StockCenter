@@ -217,8 +217,38 @@
    * @param {HTMLElement} link The link that was clicked
    */
   function menuItemListener( link ) {
+    var url;
     console.log( "Task ID - " + taskItemInContext.getAttribute("data-id") + ", Task action - " + link.getAttribute("data-action"));
+    if (link.getAttribute("data-action") == 'yahoo') {
+        url = taskItemInContext.getAttribute('data-url1');
+        if (url != '') openTab(decodeURIComponent(url));
+    } else if (link.getAttribute("data-action") == 'compinvestor') {
+        url = taskItemInContext.getAttribute('data-url2');
+        if (url != '') openTab(decodeURIComponent(url));
+    } else if (link.getAttribute("data-action") == 'compwebsite') {
+        url = taskItemInContext.getAttribute('data-url3');
+        if (url != '') openTab(decodeURIComponent(url));
+    } else if (link.getAttribute("data-action") == 'manage') {
+        // https://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
+        document.getElementById('formManageStockSymbol').value = taskItemInContext.textContent;
+        document.getElementById("formManageStock").submit();
+    }
+    
     toggleMenuOff();
+  }
+
+  function openTab(url){
+    window.open(url,'_blank');
+  }
+
+  function popUp(url,name,w,h,extra){
+    var str, win;
+    // onclick="window.open(this.href, 'haHowto', 'width=520,height=600,toolbar=no,address=no,resizable=yes,scrollbars'); return false"
+    str='height='+h+',width='+w+','+extra;
+    if(parseInt(navigator.appVersion)>3){
+       str+=',left='+(screen.width -w)/2+',top='+parseInt ((screen.height -h)/3);
+    }
+    win=window.open(url,name,str);
   }
 
   /**
