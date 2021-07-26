@@ -946,29 +946,13 @@
         print "</table>\n";
         print "</fieldset>\n";
 
-		print "<script>\n";
-		print "    $(document).ready(function(){\n";
-		print "        $('#overview').DataTable();\n";
-		print "    });\n";
-		print "</script>\n";
+	print "<script>\n";
+	print "    $(document).ready(function(){\n";
+	print "        $('#overview').DataTable();\n";
+	print "    });\n";
+	print "</script>\n";
 
-                print "  <nav id='context-menu' class='context-menu'>\n";
-                print "    <ul class='context-menu__items'>\n";
-                print "      <li class='context-menu__item'>\n";
-                print "        <a href='#' class='context-menu__link' data-action='manage'><i class='fa fa-manage'></i> Manage</a>\n";
-                print "      </li>\n";
-                print "      <li class='context-menu__item'>\n";
-                print "        <a href='#' class='context-menu__link' data-action='yahoo'><i class='fa fa-yahoo'></i> Yahoo</a>\n";
-                print "      </li>\n";
-                print "      <li class='context-menu__item'>\n";
-                print "        <a href='#' class='context-menu__link' data-action='compinvestor'><i class='fa fa-compinvestor'></i> Investor</a>\n";
-                print "      </li>\n";
-                print "      <li class='context-menu__item'>\n";
-                print "        <a href='#' class='context-menu__link' data-action='compwebsite'><i class='fa fa-compwebsite'></i> Website</a>\n";
-                print "      </li>\n";
-                print "    </ul>\n";
-                print "  </nav>\n";
-                print "  <script src='javascript/contextmenu4.js'></script>\n";
+	require_once 'contextmenu.php';
 
 	print "<div class='spacer'></div>\n";
 
@@ -994,8 +978,8 @@
         
 	$charts->printExecuteScripts();
 
-            $db = null;
-            $conn = null;
+		$db = null;
+		$conn = null;
     }
     
     

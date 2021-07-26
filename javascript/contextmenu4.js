@@ -114,6 +114,7 @@
 
       if ( taskItemInContext ) {
         e.preventDefault();
+        document.getElementById('contextheader').textContent = taskItemInContext.textContent;
         toggleMenuOn();
         positionMenu(e);
       } else {
