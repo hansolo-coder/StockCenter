@@ -324,9 +324,9 @@
 
         $page->end();
     } // NOT logged in
-    elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == 'dailyStatus' and isset($_REQUEST['user']) and isset($_REQUEST['access']))
+    elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == 'dailyStatus' and isset($_REQUEST['xuserz']) and isset($_REQUEST['access']))
     {
-        if (logDailyStatus($_REQUEST['action'], $_REQUEST['user'], $_REQUEST['access']))
+        if (logDailyStatus($_REQUEST['action'], $_REQUEST['xuserz'], $_REQUEST['access']))
           http_response_code(200);
         else
           http_response_code(403);
@@ -345,8 +345,8 @@
         include_once './classes/login.class.php';
 
 	$username = NULL;
-	if (isset($_REQUEST['user']))
-	  $username = $_REQUEST['user'];
+	if (isset($_REQUEST['xuserz']))
+	  $username = $_REQUEST['xuserz'];
 
         $login = new login();
         $login->displayLogin($username);

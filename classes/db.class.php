@@ -99,7 +99,7 @@
 			$sql .= "[symbol] varchar(20),";
 			$sql .= "[ISIN] varchar(20),";
 			$sql .= "[name] varchar(100),";
-			$sql .= "[URL] varchar(500),";
+			$sql .= "[URL] varchar(500) DEFAULT '',";
 			$sql .= "[SkipLookup] BIT NOT NULL DEFAULT 0)";
 			$rs = $db->prepare($sql);
 			$rs->execute();
@@ -140,6 +140,8 @@
 			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('accessKey', null, 'Key for authorizing remote access')");
 			// TODO classes doing deletes should take this into account
 			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('enableDeletes', 'No', 'Enable deletion of accounts and stocks')");
+			// base url for Yahoo finance website
+			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('yahooFinanceBaseUrl', 'https://finance.yahoo.com/quote/{}?p={}&.tsrc=fin-srch', 'Base Url for showing Yahoo finance information for stock')");
 
 			# dailystatus table
 			$sql = "CREATE TABLE [dailystatus] (";
