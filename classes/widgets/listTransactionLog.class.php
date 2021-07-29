@@ -55,8 +55,6 @@
                 if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: transaction.class.php " . __LINE__ . "</span><br>";}
                 
                 $rs = NULL;
-                $db = NULL;
-                $conn = NULL;
     
                 include_once './classes/pageHeader.class.php';
                 $header = new pageHeader();
@@ -121,8 +119,13 @@
                   print "</fieldset>\n";
                   print "<div class='spacer'></div>\n";
 		}
-    
-                dividendEarningsChart($_REQUEST['symbol']);
+
+		include_once './classes/widgets/formCharts.class.php';
+		$charts = new formCharts();
+
+		$charts->action = "dividendEarnings";
+		$charts->parm1  = $this->symbol;
+		$charts->display($db);
     
                 print "<div class='spacer'></div>\n";
                 print "<a name='transactions'>\n";
@@ -281,6 +284,15 @@
                 print "   </tbody>\n";
                 print "</table>\n";
                 print "</fieldset>\n";
+
+		$charts->action = "stockPriceHistory";
+		$charts->parm1  = $this->symbol;
+		$charts->display($db);
+
+		$charts->printExecuteScripts();
+
+                $db = NULL;
+                $conn = NULL;
             }
             else
             {

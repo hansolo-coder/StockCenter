@@ -11,6 +11,12 @@
 		public $action;
 
 		/**
+		 * parameter used for some charts
+		 * @var string
+		 */
+		public $parm1;
+
+		/**
 		 * holds any errors from check function
 		 * @var string
 		 */
@@ -54,6 +60,12 @@
 			} else if ($this->action == 'stockdataRadarChart') {
 				$this->displayedCharts |= 32;
 				$this->stockdataRadarChart($db, 'dps', 'earningsPerShare', 'Stock Data');
+			} else if ($this->action == 'stockPriceHistory') {
+				$this->displayedCharts |= 64;
+				$this->symbolPriceHistoryChart($db, $this->parm1);
+			} else if ($this->action == 'dividendEarnings') {
+				$this->displayedCharts |= 128;
+				$this->dividendEarningsChart($db, $this->parm1);
 			} else {
 				$this->error = 'Unknown action: ' . $this->action;
 			}
@@ -113,6 +125,10 @@
 			if (($this->displayedCharts & 32) == 32)
 				#print "        showdpsValueChart();\n";
 				print "        showdividendYieldValueChart();\n";
+			if (($this->displayedCharts & 64) == 64)
+				print "        showStockPriceHistoryValueChart();\n";
+			if (($this->displayedCharts & 128) == 128)
+				print "        showDividendEarningsChart();\n";
 			print "    }\n";
 			print "    window.onload = start();\n";
 			print "</script>\n";
@@ -455,5 +471,133 @@
 			print "  </script>";
 			print "</fieldset>";
 		}
+
+		/*
+	 	* Show value split per selected stockData attribute
+		 */
+		function symbolPriceHistoryChart($db, $symbol) {
+			$sql = "select SUBSTR(tDate, 1, 10) AS tDate, shares, cost, currency from dailystatus where symbol = :symbol ORDER BY tDate";
+
+			$rsObs = $db->prepare($sql);
+			$rsObs->bindValue(':symbol', $symbol);
+			$rsObs->execute();
+			$observations = $rsObs->fetchAll();
+
+			$rsObs = null;
+         
+			$labels = '[';
+			$data = '[';
+
+			$idx = 0;
+			foreach($observations as $observation) {
+				$labels .= '"' . $observation['tDate'] . '",';
+				$data .= $observation['cost'] . ',';
+			}
+
+			# trim off the last comma
+			$labels = rtrim($labels, ",");
+			$data = rtrim($data, ",");
+
+			# cap off the dataset
+			$labels .= "]";
+			$data .= "]";
+
+			# prepare the chart
+			print "<script src='javascript/chart/Chart.js'></script>";
+			print "<fieldset>";
+			print "  <legend>Stock price history</legend>";
+			print "  <div style='width:100%; margins: auto;'>";
+			print "	   <div>";
+			print "		   <canvas id='stockPriceHistoryCanvas' height='240' width='auto'></canvas>";
+			print "	   </div>";
+			print "  </div>";
+			print "  <script>";
+			?>
+			var stockHistLineChartData = {
+				labels : <?php print $labels; ?>,
+				datasets : [
+					{
+						label: "My First dataset",
+						fillColor : "rgba(220,220,220,0.2)",
+						strokeColor : "rgba(220,220,220,1)",
+						pointColor : "rgba(220,220,220,1)",
+						pointStrokeColor : "#fff",
+						pointHighlightFill : "#fff",
+						pointHighlightStroke : "rgba(220,220,220,1)",
+						data : <?php print $data; ?>
+					}
+				]
+			}
+
+			function showStockPriceHistoryValueChart(){
+				var ctx = document.getElementById("stockPriceHistoryCanvas").getContext("2d");
+				window.myLine = new Chart(ctx).Line(stockHistLineChartData, {responsive: true});
+			}
+			<?php
+			print "  </script>";
+			print "</fieldset>";
+		}
+
+		/*
+		 * Dividend earnings chart
+		 */
+		function dividendEarningsChart($db, $symbol) {
+			# get the dividend data
+			$sql = "SELECT * FROM (SELECT t.tDate, t.symbol, t.activity, t.shares, case when t.currency = a.accountcurrency then t.cost else t.cost * t.exchangerate end as cost, t.currency, case when t.currency = a.accountcurrency then t.tax else t.tax * t.exchangerate end as tax, t.exchangerate, a.accountcurrency FROM transactions t inner join accounts a on a.accountid = t.accountid where t.activity='DIVIDEND' AND t.symbol=:symbol ORDER BY t.tdate DESC LIMIT 10) ORDER BY tdate;";
+			$rs = $db->prepare($sql);
+			$rs->bindValue(':symbol', $symbol);
+			$rs->execute();
+			$rows = $rs->fetchall();
+
+			$labels = '[';
+			$data = '[';
+
+			foreach($rows as $row) {
+				$labels .= '"' . $row['tDate'] . '",';
+				$data .= $row['cost'] . ',';
+			}
+
+			# trim off the last comma
+			$labels = rtrim($labels, ",");
+			$data = rtrim($data, ",");
+
+			# cap off the dataset
+			$labels .= "]";
+			$data .= "]";
+
+			# prepare the chart
+			print "<script src='javascript/chart/Chart.js'></script>";
+			print "<fieldset>";
+			print "<legend>Last 10 Dividend Payments</legend>";
+			print "<div style='width:100%; margins: auto;'>";
+			print "	   <div>";
+			print "		   <canvas id='dividendEarningsCanvas' height='15' width='100%'></canvas>";
+			print "	   </div>";
+			print "</div>";
+			print "<script>";
+			?>
+			var dividendLineChartData = {
+				labels : <?php print $labels; ?>,
+				datasets : [
+					{
+						label: "Dividend Payments",
+						fillColor : "rgba(220,220,220,0.2)",
+						strokeColor : "rgba(220,220,220,1)",
+						pointColor : "rgba(220,220,220,1)",
+						pointStrokeColor : "#fff",
+						pointHighlightFill : "#fff",
+						pointHighlightStroke : "rgba(220,220,220,1)",
+						data : <?php print $data; ?>
+					}
+                		]
+			}
+			function showDividendEarningsChart(){
+				var ctx = document.getElementById("dividendEarningsCanvas").getContext("2d");
+				 window.myLine = new Chart(ctx).Line(dividendLineChartData, {responsive: true});
+			}
+			<?php
+			print "  </script>";
+			print "</fieldset>";
+		} // dividendEarningsChart
 	}
 ?>
