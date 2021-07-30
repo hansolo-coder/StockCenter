@@ -508,7 +508,7 @@
 			print "  <legend>Stock price history</legend>";
 			print "  <div style='width:100%; margins: auto;'>";
 			print "	   <div>";
-			print "		   <canvas id='stockPriceHistoryCanvas' height='240' width='auto'></canvas>";
+			print "		   <canvas id='stockPriceHistoryCanvas' height='120' width='auto'></canvas>";
 			print "	   </div>";
 			print "  </div>";
 			print "  <script>";
