@@ -285,6 +285,8 @@
                 print "</table>\n";
                 print "</fieldset>\n";
 
+		print "        <div class='spacer'></div>\n";
+
 		$charts->action = "stockPriceHistory";
 		$charts->parm1  = $this->symbol;
 		$charts->display($db);
