@@ -1,5 +1,7 @@
 body{font-family: arial; font-size: 10pt;}
 div.page{width: 1024px; min-height: 600px; border: 0px solid #cfcfcf; margin: auto;}
+div.pageTop{position: fixed; top: 0; width: inherit; margin: auto; z-index:10;}
+div.pageContent{margin-top: 65px; width: inherit; margin-left: auto; margin-right: auto; margin-bottom: auto;}
 div.centered{width: 100%; margin: auto;}
 div.spacer{width: 100%; height: 20px;}
 div.footer{width: 1024px; text-align: center; margin: auto;}
@@ -9,7 +11,7 @@ table.data{width: 100%;}
 tr.odd{background-color: #f9f9f9}
 th.data{background-color: #E6E6E6; padding:3px; font-family: arial; font-size: 10pt; border: 1px solid #cfcfcf;}
 td.data{text-align: center; padding: 3px; font-family: arial; font-size: 10pt; border: 1px solid #cfcfcf;}
-table.menu{width: 100%;}
+table.menu{width: 100%; background-color: #333; border: 2px solid white;}
 td.menu{width: 14.3%; background-color: #E6E6E6; text-align: center; padding: 3px; font-family: arial; font-size: 10pt; border: 1px solid #cfcfcf;}
 td.colpos {background-color: #AFFFAB;}
 td.colneg {background-color: #FFB6AB;}

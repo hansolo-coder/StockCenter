@@ -1,5 +1,7 @@
 body{font-family: arial; font-size: 10pt;}
 div.page{width: 800px; min-height: 600px; border: 0px solid #cfcfcf; margin: auto;}
+div.pageTop{position: fixed; top: 0; width: inherit; margin: auto; z-index:10;}
+div.pageContent{margin-top: 65px; width: inherit; margin-left: auto; margin-right: auto; margin-bottom: auto;}
 div.centered{width: 100%; margin: auto;}
 div.spacer{width: 100%; height: 20px;}
 div.footer{width: 800px; text-align: center; margin: auto;}
@@ -9,12 +11,12 @@ table.data{width: 95%;}
 tr.odd{background-color: #f9f9f9}
 th.data{background-color: #E6E6E6; padding:3px; font-family: arial; font-size: 10pt; border: 1px solid #cfcfcf;}
 td.data{text-align: center; padding: 3px; font-family: arial; font-size: 10pt; border: 1px solid #cfcfcf;}
-table.menu{width: 100%;}
+table.menu{width: 100%; background-color: #333; border: 2px solid white;}
 td.menu{width: 14.3%; background-color: #E6E6E6; text-align: center; padding: 3px; font-family: arial; font-size: 10pt; border: 1px solid #cfcfcf;}
 td.colpos {background-color: #AFFFAB;}
 td.colneg {background-color: #FFB6AB;}
 td.colunchg {background-color: #F3E5AB;}
-table.manualtable thead tr td {padding: 10px 18px;}
+table.manualtable thead tr th {padding: 10px 18px;}
 table.manualtable tbody tr td {padding: 8px 10px;}
 a{text-decoration: none; color: #000000;}
 a.delete{color: #ffffff; text-decoration: none; background-color: red; padding-right: 4px; padding-left: 4px;}
@@ -26,11 +28,11 @@ legend{font-size: 10pt;}
 span.debug{color: red;}
 .loader {position: fixed;left: 0px;top: 0px;width: 100%;height: 100%;z-index: 9999;background: url('images/page-loader.gif') 50% 50% no-repeat rgb(249,249,249);}
 input.widetext{width: 95%;}
-input.large{width: 12em}
-input.medium{width: 10em}
-input.amount{width: 8em}
-input.date{width: 6em}
-input.mini{width: 1em}
+input.large{width: 12em;}
+input.medium{width: 10em;}
+input.amount{width: 8em;}
+input.date{width: 6em;}
+input.mini{width: 1em;}
 select.activity{max-width:100%;}
 select.numbers{max-width:100%;}
 label.currencyamount{padding: 0px 6px 0px 0px;}

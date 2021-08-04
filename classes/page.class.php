@@ -36,12 +36,9 @@
 			print "                $('.loader').fadeOut('slow');\n";
 			print "            })\n";
 			print "        </script>\n";
-			print "        <div class='spacer'></div>\n";
 			print "        <div class='page'>\n";
 			# menu
-			print "<table class='data'>\n";
-			print "    <tr>\n";
-			print "        <td colspan='3' class='data'>\n";
+			print "        <div class='pageTop'>\n";
 			print "<table class='menu'>\n";
 			print "    <tr>\n";
 			print "        <td class='menu'>\n";
@@ -100,9 +97,8 @@
 	
 			print "    </tr>\n";
 			print "</table>\n";
-			print "        </td>\n";
-			print "    </tr>\n";
-			print "</table>\n";
+			print "        </div>\n"; // class pageTop
+			print "        <div class='pageContent'>\n";
 		}
 		
 		
@@ -113,7 +109,8 @@
 		{
 			if ($_SESSION['debug'] == "on"){print "<span class='debug'>endPage()</span><br>\n";}
 			
-			print "        </div>\n";
+			print "        </div>\n"; // class pageContent
+			print "        </div>\n"; // class page
 			
 			# footer
 			print "        <div class='spacer'></div>\n";
