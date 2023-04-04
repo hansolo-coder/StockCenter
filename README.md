@@ -11,7 +11,7 @@ The original version could no longer fetch current prices etc. from Yahoo due to
 This is a updated version, where it again (at least for now :-) ) is possible to fetch prices from Yahoo, as
 well as with multiple other restructurings, expansions, improvements and other changes.
 
-The current version is a WORK-IN-PROGRESS (May 2021). There may be frequent changes. The current version pushed, is supposed to be bug-free (at least of serious bugs)
+The current version is a WORK-IN-PROGRESS (2021-2023). The current version pushed, is supposed to be bug-free (at least of serious bugs)
 
 IMPORTANT!
 1) REMEMBER to take regular backups of the database - it may save you tons of work one day to recreate the data.
@@ -35,7 +35,7 @@ To resolve these:
   you always have an un-modified copy of the backup.
 
 
-Some screenshots etc. can be seen on 
+Some screenshots etc. from the original version can be seen at:
 
 	https://www.onworks.net/software/windows/app-stock-center
 
