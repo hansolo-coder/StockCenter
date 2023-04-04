@@ -30,7 +30,14 @@
 		 */
 		function connect()
 		{
-			$dataFile = "sqlite:./data/" . $this->fileName . ".sqlite";
+			if (is_readable("index.php")) {
+				$dataFile = "sqlite:./data/" . $this->fileName . ".sqlite";
+			} else if (is_readable("../index.php")) {
+				$dataFile = "sqlite:../data/" . $this->fileName . ".sqlite";
+			} else {
+				echo "ERROR: Database cannot be found";
+				exit();
+			}
 
 			# create and initialize database
 			$db = new PDO($dataFile);
