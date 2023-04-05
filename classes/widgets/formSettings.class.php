@@ -31,14 +31,14 @@
     	    
     	    # display the form
     	    print "<div class='spacer'></div>";
-    	    print "<div style='width: 550px; color: black; padding: 10px; margin: auto; text-align: center;'>";
+    	    print "<div style='width: 85%; color: black; padding: 10px; margin: auto; text-align: center;'>";
     	    print "    <form action='" . $_SERVER['PHP_SELF'] . "' method='post'>";
             print "        <table class='data'>";
             print "            <tr>";
-            print "                <th class='data'>";
+            print "                <th class='data' style='width: 50%'>";
             print "                    Setting Name";
             print "                </th>";
-            print "                <th class='data'>";
+            print "                <th class='data' style='width: 50%'>";
             print "                    Setting Value";
             print "                </th>";
             print "            </tr>";
