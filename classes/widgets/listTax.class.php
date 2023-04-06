@@ -46,7 +46,7 @@
 		        }
 
 			// get accounts
-			$sql = "SELECT accountId, accountNumber, accountName, financialInstitution, isPension, accountType, accountCurrency FROM accounts ORDER BY isPension DESC, aCreated DESC";
+			$sql = "SELECT accountId, accountNumber, accountName, financialInstitution, isPension, accountType, accountCurrency AS ccurrency FROM accounts ORDER BY isPension DESC, aCreated DESC";
 			$rs = $db->prepare($sql);
 			$rs->execute();
 			$accounts = $rs->fetchAll();
@@ -62,7 +62,7 @@
 			$totalTaxAllPAccount = 0;
 			foreach($accounts as $row) {
 			  // get dividends for this account
-			  $sql = "SELECT t.tDate, t.tDateIsApprox, t.symbol, t.cost, CASE WHEN tax <> '' THEN tax ELSE 0 END AS tax, coalesce(t.currency, a.accountCurrency) AS currency, t.exchangeRate, a.accountCurrency AS ccurrency  FROM transactions t LEFT OUTER JOIN accounts a ON t.accountId = a.accountId WHERE t.activity = 'DIVIDEND' AND t.accountId = :accountId AND t.tDate BETWEEN '" . $forYear . "-01-01' AND '" . $forYear . "-12-31' ORDER BY t.symbol, t.tDate";
+			  $sql = "SELECT t.tDate, t.tDateIsApprox, t.symbol, t.cost, CASE WHEN tax <> '' THEN tax ELSE 0 END AS tax, coalesce(t.currency, a.accountCurrency) AS currency, t.exchangeRate, a.accountCurrency AS ccurrency FROM transactions t LEFT OUTER JOIN accounts a ON t.accountId = a.accountId WHERE t.activity = 'DIVIDEND' AND t.accountId = :accountId AND t.tDate BETWEEN '" . $forYear . "-01-01' AND '" . $forYear . "-12-31' ORDER BY t.symbol, t.tDate";
 			  $rs = $db->prepare($sql);
 			  $rs->bindValue(':accountId', $row['accountId']);
 			  $rs->execute();
@@ -106,18 +106,18 @@
 			      $totalCostAllOAccount += $totalCost;
 			      $totalTaxAllOAccount += $totalTax;
 			    }
-			    print "\n<u>Account total    : " . $this->formatCashWCurrLocal($totalCost, $trow['ccurrency']) . "</u>\n";
+			    print "\n<u>Account total    : " . $this->formatCashWCurrLocal($totalCost, $row['ccurrency']) . "</u>\n";
 			    if ($_SESSION['showTransactionTax'] == 'YES')
-			      print "<u>Account tax total: " . $this->formatCashWCurrLocal($totalTax, $trow['ccurrency']) . "</u>\n";
+			      print "<u>Account tax total: " . $this->formatCashWCurrLocal($totalTax, $row['ccurrency']) . "</u>\n";
 			    print "\n";
 			  }
 			}
-			print "<h3>All Ordinary Account total    : " . $this->formatCashWCurrLocal($totalCostAllOAccount, $trow['ccurrency']) . "\n";
+			print "<h3>All Ordinary Account total    : " . $this->formatCashWCurrLocal($totalCostAllOAccount, $row['ccurrency']) . "\n";
 			if ($_SESSION['showTransactionTax'] == 'YES')
-			  print "All Ordinary Account tax total: " . $this->formatCashWCurrLocal($totalTaxAllOAccount, $trow['ccurrency']) . "\n";
-			print "All Pension  Account total    : " . $this->formatCashWCurrLocal($totalCostAllPAccount, $trow['ccurrency']) . "\n";
+			  print "All Ordinary Account tax total: " . $this->formatCashWCurrLocal($totalTaxAllOAccount, $row['ccurrency']) . "\n";
+			print "All Pension  Account total    : " . $this->formatCashWCurrLocal($totalCostAllPAccount, $row['ccurrency']) . "\n";
 			if ($_SESSION['showTransactionTax'] == 'YES')
-			  print "All Pension  Account tax total: " . $this->formatCashWCurrLocal($totalTaxAllPAccount, $trow['ccurrency']) . "\n";
+			  print "All Pension  Account tax total: " . $this->formatCashWCurrLocal($totalTaxAllPAccount, $row['ccurrency']) . "\n";
 			print "</h3>\n";
 
 			print "<h2>PURCHASEs in year\n";
@@ -169,15 +169,15 @@
 			      $totalCostAllOAccount += $totalCost;
 			      $totalFeeAllOAccount += $totalFee;
 			    }
-			    print "\n<u>Account total    : " . $this->formatCashWCurrLocal($totalCost, $trow['ccurrency']) . "</u>\n";
-			    print "<u>Account fee total: " . $this->formatCashWCurrLocal($totalFee, $trow['ccurrency']) . "</u>\n";
+			    print "\n<u>Account total    : " . $this->formatCashWCurrLocal($totalCost, $row['ccurrency']) . "</u>\n";
+			    print "<u>Account fee total: " . $this->formatCashWCurrLocal($totalFee, $row['ccurrency']) . "</u>\n";
 			    print "\n";
 			  }
 			}
-			print "<h3>All Ordinary Account total    : " . $this->formatCashWCurrLocal($totalCostAllOAccount, $trow['ccurrency']) . "\n";
-			print "All Ordinary Account fee total: " . $this->formatCashWCurrLocal($totalFeeAllOAccount, $trow['ccurrency']) . "\n";
-			print "All Pension  Account total    : " . $this->formatCashWCurrLocal($totalCostAllPAccount, $trow['ccurrency']) . "\n";
-			print "All Pension  Account fee total: " . $this->formatCashWCurrLocal($totalFeeAllPAccount, $trow['ccurrency']) . "\n";
+			print "<h3>All Ordinary Account total    : " . $this->formatCashWCurrLocal($totalCostAllOAccount, $row['ccurrency']) . "\n";
+			print "All Ordinary Account fee total: " . $this->formatCashWCurrLocal($totalFeeAllOAccount, $row['ccurrency']) . "\n";
+			print "All Pension  Account total    : " . $this->formatCashWCurrLocal($totalCostAllPAccount, $row['ccurrency']) . "\n";
+			print "All Pension  Account fee total: " . $this->formatCashWCurrLocal($totalFeeAllPAccount, $row['ccurrency']) . "\n";
 			print "</h3>\n";
 
 			print "\n";
@@ -231,15 +231,15 @@
 			      $totalCostAllOAccount += $totalCost;
 			      $totalFeeAllOAccount += $totalFee;
 			    }
-			    print "\n<u>Account total    : " . $this->formatCashWCurrLocal($totalCost, $trow['ccurrency']) . "</u>\n";
-			    print "<u>Account fee total: " . $this->formatCashWCurrLocal($totalFee, $trow['ccurrency']) . "</u>\n";
+			    print "\n<u>Account total    : " . $this->formatCashWCurrLocal($totalCost, $row['ccurrency']) . "</u>\n";
+			    print "<u>Account fee total: " . $this->formatCashWCurrLocal($totalFee, $row['ccurrency']) . "</u>\n";
 			    print "\n";
 			  }
 			}
-			print "<h3>All Ordinary Account total    : " . $this->formatCashWCurrLocal($totalCostAllOAccount, $trow['ccurrency']) . "\n";
-			print "All Ordinary Account fee total: " . $this->formatCashWCurrLocal($totalFeeAllOAccount, $trow['ccurrency']) . "\n";
-			print "All Pension  Account total    : " . $this->formatCashWCurrLocal($totalCostAllPAccount, $trow['ccurrency']) . "\n";
-			print "All Pension  Account fee total: " . $this->formatCashWCurrLocal($totalFeeAllPAccount, $trow['ccurrency']) . "\n";
+			print "<h3>All Ordinary Account total    : " . $this->formatCashWCurrLocal($totalCostAllOAccount, $row['ccurrency']) . "\n";
+			print "All Ordinary Account fee total: " . $this->formatCashWCurrLocal($totalFeeAllOAccount, $row['ccurrency']) . "\n";
+			print "All Pension  Account total    : " . $this->formatCashWCurrLocal($totalCostAllPAccount, $row['ccurrency']) . "\n";
+			print "All Pension  Account fee total: " . $this->formatCashWCurrLocal($totalFeeAllPAccount, $row['ccurrency']) . "\n";
 			print "</h3>\n";
 /*
 select * from transactions where tDate between '2020-01-01' and '2021-12-31' and activity in ('SELL', 'FEE');
