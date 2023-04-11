@@ -230,9 +230,14 @@
         url = taskItemInContext.getAttribute('data-url3');
         if (url != '') openTab(decodeURIComponent(url));
     } else if (link.getAttribute("data-action") == 'manage') {
-        // https://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
-        document.getElementById('formManageStockSymbol').value = taskItemInContext.textContent;
-        document.getElementById("formManageStock").submit();
+        if (taskItemInContext.firstElementChild) { // Handle if the stock-symbol is embedded in an A element
+            // https://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
+            document.getElementById('formManageStockSymbol').value = taskItemInContext.firstElementChild.textContent;
+            document.getElementById("formManageStock").submit();
+        } else {
+            document.getElementById('formManageStockSymbol').value = taskItemInContext.textContent;
+            document.getElementById("formManageStock").submit();
+        }
     }
     
     toggleMenuOff();

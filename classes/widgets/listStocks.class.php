@@ -13,7 +13,13 @@
         function show()
         {
             if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: listStocks.php " . __LINE__ . "</span><br>";}
-    
+
+            include_once './classes/tc/setting.class.php';
+            $sett = new setting();
+            $sett->settingName = "yahooFinanceBaseUrl";
+            $sett->select();
+            $yahooFinanceBaseUrl = $sett->settingValue;
+
             include_once './classes/db.class.php';
     
             $conn = new db();
@@ -37,6 +43,12 @@
             $header->display();
 
             print "<div class='spacer'></div>\n";
+
+            require_once 'contextmenu.php';
+
+            include_once './classes/tc/stockData.class.php';
+
+            $sData = new stockData();
 
 	    if ($this->updateStock) {
 		if (!isset($_REQUEST['id'])) {
@@ -134,18 +146,27 @@
                     print "    <tr class='data even'>\n";
                 else
                     print "    <tr class='data odd'>\n";
-                print "        <td class='data'>\n";
-                print "            <a href='index.php?action=activityLog&symbol=" . $row['symbol'] ."'>" . $row['symbol'] ."</a>";
+
+                $sData->symbol = $row['symbol'];
+                $sData->select();
+                $companywebsite = $sData->companywebsite;
+
+                print "        <td class='data task' data-id='" . $row['symbolId'] . "'";
+                print            " data-url1='" . urlencode(str_replace('{}', $row['symbol'], $yahooFinanceBaseUrl)) . "'";
+                print            " data-url2='" . urlencode($row['URL']) . "'";
+		print            " data-url3='" . urlencode($companywebsite) . "'";
+                print ">\n";
+                print "            <a href='index.php?action=activityLog&symbol=" . $row['symbol'] ."'>" . $row['symbol'] ."</a>\n";
                 print "        </td>\n";
-                print "        <td class='data'>\n";
-                print "            " . $row['ISIN'];
-                print "        </td>\n";
-                print "        <td class='data'>\n";
-                print "            " . $row['name'];
-                print "        </td>\n";
-                print "        <td class='data'>\n";
-                print "            " . (string)$row['SkipLookup'];
-                print "        </td>\n";
+                print "        <td class='data'>";
+                print                  $row['ISIN'];
+                print         "</td>\n";
+                print "        <td class='data'>";
+                print                  $row['name'];
+                print         "</td>\n";
+                print "        <td class='data'>";
+                print                  (string)$row['SkipLookup'];
+                print         "</td>\n";
                 print "        <td class='data'>\n";
                 print "            <a class='delete' href='index.php?action=deleteStock2&id=" . $row['symbolId'] . "'>Delete</a>\n";
                 print "        </td>\n";
