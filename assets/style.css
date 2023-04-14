@@ -32,7 +32,7 @@ input.large{width: 12em;}
 input.medium{width: 10em;}
 input.amount{width: 8em;}
 input.date{width: 6em;}
-input.mini{width: 1em;}
+input.mini{width: 2em;}
 select.activity{max-width:100%;}
 select.numbers{max-width:100%;}
 label.currencyamount{padding: 0px 6px 0px 0px;}
