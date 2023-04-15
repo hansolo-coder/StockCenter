@@ -56,10 +56,6 @@
                 
                 $rs = NULL;
     
-                include_once './classes/pageHeader.class.php';
-                $header = new pageHeader();
-                $header->display();
-                
                 summaryBar($_REQUEST['symbol']);
     
                 print "<div class='spacer'></div>\n";

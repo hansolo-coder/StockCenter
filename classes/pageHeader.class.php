@@ -6,8 +6,9 @@
     {
         /**
          * displays the menu and action blocks
+         * $showDelete: A bool expresses a truth value. It can be either true or false (case insensitive)
          */
-        function display()
+        function display($showDelete)
         {
             if ($_SESSION['debug'] == "on"){print "<span class='debug'>pageHeader()</span><br>\n";}
     
@@ -31,15 +32,17 @@
     		$activityForm->display();
     		
     		print "        </td>\n";
-    		print "        <td width='33%' class='data'>\n";
+		if ($showDelete) {
+    		  print "        <td width='33%' class='data'>\n";
     		
-    		include_once './classes/widgets/formDeleteStock.class.php';
+    		  include_once './classes/widgets/formDeleteStock.class.php';
     		
-    		$dform = new formDeleteStock();
-    		$dform->action = 'deleteStock';
-    		$dform->display();
+    		  $dform = new formDeleteStock();
+    		  $dform->action = 'deleteStock';
+    		  $dform->display();
     
-    		print "        </td>\n";
+    		  print "        </td>\n";
+		}
     		print "    </tr>\n";
     		print "</table>\n";
         }

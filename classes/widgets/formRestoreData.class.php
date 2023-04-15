@@ -9,10 +9,6 @@
 		 */
 		function display()
 		{
-			include_once './classes/pageHeader.class.php';
-			$header = new pageHeader();
-			$header->display();
-		    
 			print "<div class='spacer'></div>\n";
 			print "<div style='width: 400px; padding: 10px; margin: auto;'>\n";
 			print "<form action='" . htmlentities($_SERVER['PHP_SELF']) . "' method='post' enctype='multipart/form-data'>\n";

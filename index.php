@@ -50,7 +50,8 @@
         include_once './classes/page.class.php';
         $page = new page();
         $page->start();
-        
+
+	$showDeleteOption = getSettingValueBool("enableDeletes");  
 
         # if we have an action to process
         if (isset($_REQUEST['action']) and $_REQUEST['action'] != '')
@@ -85,10 +86,14 @@
                 
                 $stock = new formDeleteStock();
                 $stock->deleteStock();
-                homePage();
+                homePage($showDeleteOption);
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "stocks")
             {
+                include_once './classes/pageHeader.class.php';
+                $header = new pageHeader();
+                $header->display($showDeleteOption);
+
                 include_once 'classes/widgets/listStocks.class.php';
                 $log = new listStocks();
                 $log->show();
@@ -105,6 +110,11 @@
 		} else {
             	  $form->addStock();
 		}
+
+                include_once './classes/pageHeader.class.php';
+                $header = new pageHeader();
+                $header->display($showDeleteOption);
+
 		$form->show();
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "deleteStock2")
@@ -113,14 +123,19 @@
                 
                 $stock = new listStocks();
                 $stock->action = $_REQUEST['action'];
-                $stock->deleteStock();
+                $stock->deleteStock($showDeleteOption);
+
+                include_once './classes/pageHeader.class.php';
+                $header = new pageHeader();
+                $header->display($showDeleteOption);
+
                 $stock->show();
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "overview")
             {
                 include_once './classes/pageHeader.class.php';
                 $header = new pageHeader();
-                $header->display();
+                $header->display($showDeleteOption);
 
                 $showForAccount = NULL;
                 if (isset($_REQUEST['account']))
@@ -129,6 +144,10 @@
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "activityLog")
             {
+                include_once './classes/pageHeader.class.php';
+                $header = new pageHeader();
+                $header->display($showDeleteOption);
+                
                 include_once 'classes/widgets/listTransactionLog.class.php';
                 $log = new listTransactionLog();
                 $log->symbol = $_REQUEST['symbol'];
@@ -178,7 +197,7 @@
             {
                 include_once './classes/pageHeader.class.php';
                 $header = new pageHeader();
-                $header->display();
+                $header->display($showDeleteOption);
 
                 $forYear = date('Y');
                 if (isset($_REQUEST['year']) and is_numeric($_REQUEST['year']))
@@ -189,10 +208,6 @@
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "addUserForm")
             {
-                include_once './classes/pageHeader.class.php';
-                $header = new pageHeader();
-                $header->display();
-
                 include_once 'classes/widgets/formAddUser.class.php';
                 $user = new formAddUser();
                 $user->display();
@@ -202,7 +217,7 @@
                 include_once 'classes/widgets/formAddUser.class.php';
                 $user = new formAddUser();
                 $user->process();
-                homePage();
+                homePage($showDeleteOption);
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "screener")
             {
@@ -210,10 +225,6 @@
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "changePasswordForm")
             {
-                include_once './classes/pageHeader.class.php';
-                $header = new pageHeader();
-                $header->display();
-
                 include_once 'classes/widgets/formChangePassword.class.php';
                 $form = new formChangePassword();
                 $form->display();
@@ -226,10 +237,6 @@
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "settingsForm")
             {
-                include_once './classes/pageHeader.class.php';
-                $header = new pageHeader();
-                $header->display();
-
                 include_once 'classes/widgets/formSettings.class.php';
                 $form = new formSettings();
                 $form->display();
@@ -244,7 +251,7 @@
             {
                 include_once './classes/pageHeader.class.php';
                 $header = new pageHeader();
-                $header->display();
+                $header->display($showDeleteOption);
 
                 signals();
             }
@@ -259,7 +266,7 @@
             {
                 include_once './classes/pageHeader.class.php';
                 $header = new pageHeader();
-                $header->display();
+                $header->display($showDeleteOption);
 
                 include_once 'classes/widgets/formConversionAnalysis.class.php';
                 $form = new formConversionAnalysis();
@@ -268,6 +275,10 @@
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "conversionStep2")
             {
+                include_once './classes/pageHeader.class.php';
+                $header = new pageHeader();
+                $header->display($showDeleteOption);
+            
                 include_once 'classes/widgets/formConversionAnalysis.class.php';
                 $form = new formConversionAnalysis();
                 $form->process();
@@ -276,7 +287,7 @@
             {
 		include_once './classes/pageHeader.class.php';
 		$header = new pageHeader();
-		$header->display();
+		$header->display($showDeleteOption);
 
 		include_once './classes/widgets/formCharts.class.php';
 		$charts = new formCharts();
@@ -319,7 +330,7 @@
         else
         {
             # no action passed, display the landing page
-            homePage();
+            homePage($showDeleteOption);
         }
 
         $page->end();

@@ -605,13 +605,13 @@
 
 
 	# application landing page
-    function homePage()
+    function homePage($showDeleteOption=False)
     {
         if ($_SESSION['debug'] == "on"){print "<span class='debug'>homePage()</span><br>\n";}
 
         include_once './classes/pageHeader.class.php';
         $header = new pageHeader();
-        $header->display();
+        $header->display($showDeleteOption);
         overview(NULL);
     }
 
@@ -1307,8 +1307,15 @@
           return $key;
         }
 
-        function getSettingValue($db, $key) {
-          $key = NULL;
+        function getSettingValue($key, $db=NULL) {
+	  $localdb=False;
+          if (!isset($db)) {
+            $localdb=True;
+            include_once './classes/db.class.php';
+            $conn = new db();
+            $conn->fileName = $_SESSION['userId'];
+            $db=$conn->connect();
+	  }
 
           $sql = "SELECT * FROM settings WHERE settingName=:settingName";
 	  $rs = $db->prepare($sql);
@@ -1321,7 +1328,22 @@
           $rs = NULL;
           $sql = NULL;
 
+          if ($localdb) {
+            $db = NULL;
+            $conn = NULL;
+          }
+
           return $keyValue;
+        }
+
+        function getSettingValueBool($key, $db=NULL) {
+		$tempvalue = getSettingValue($key, $db);
+		if ($tempvalue=="Yes")
+		  return True;
+		else if ($tempvalue=="No")
+		  return False;
+		else
+		  return (bool) $tempvalue; 
         }
 
 	# displays summary bar
@@ -1752,7 +1774,7 @@
 	    $conn->fileName = $_SESSION['userId'];
 	    $db = $conn->connect();
 
-	    $sqlDividend = "SELECT sum(cost) as s FROM transactions where activity='DIVIDEND' AND tDate > '" . $year . "-01-01' AND tDate < '" . $year . "-12-31'";
+	    $sqlDividend = "SELECT SUM(cost) AS s FROM transactions WHERE activity='DIVIDEND' AND tDate BETWEEN '" . $year . "-01-01' AND '" . $year . "-12-31'";
 	    $rsDividend = $db->prepare($sqlDividend);
 	    $rsDividend->execute();
 	    $rowDividend = $rsDividend->fetch();

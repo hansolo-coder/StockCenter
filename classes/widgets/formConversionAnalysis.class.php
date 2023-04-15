@@ -89,10 +89,6 @@
          */
         function process()
         {
-            include_once './classes/pageHeader.class.php';
-            $header = new pageHeader();
-            $header->display();
-            
             include_once './classes/tc/stockData.class.php';
     
             # get the data for the stock to convert

@@ -114,22 +114,21 @@
             	$set->settingName = 'chgPctMarkUnchanged';
                 $set->settingValue = trim($_REQUEST['chgPctMarkUnchanged']);
                 $set->update();
+            	$set->settingName = 'enableDeletes';
+                $set->settingValue = trim($_REQUEST['enableDeletes']);
+                $set->update();
+            	$set->settingName = 'yahooFinanceBaseUrl';
+                $set->settingValue = trim($_REQUEST['yahooFinanceBaseUrl']);
+                $set->update();
     
                 message("success", "Settings Saved");
                 
-                include_once './classes/pageHeader.class.php';
-                $header = new pageHeader();
-                $header->display();
-
                 include_once './classes/widgets/formSettings.class.php';
                 $this->display();
             }
             else
             {
                 message("error", "No value for sellTrigger provided, settings NOT saved");
-                include_once './classes/pageHeader.class.php';
-                $header = new pageHeader();
-                $header->display();
                 settingsForm();
             }
     	}	

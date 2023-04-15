@@ -29,10 +29,6 @@
             $db = NULL;
             $conn = NULL;
     
-            include_once './classes/pageHeader.class.php';
-            $header = new pageHeader();
-            $header->display();
-                
             print "<div class='spacer'></div>\n";
     
             print "<fieldset>\n";
