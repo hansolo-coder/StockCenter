@@ -87,7 +87,8 @@
         $db = $conn->connect();
     	
         # get the dividend data
-        $sql = "SELECT * FROM (SELECT t.tDate, t.symbol, t.activity, t.shares, case when t.currency = a.accountcurrency then t.cost else t.cost * t.exchangerate end as cost, t.currency, case when t.currency = a.accountcurrency then t.tax else t.tax * t.exchangerate end as tax, t.exchangerate, a.accountcurrency FROM transactions t inner join accounts a on a.accountid = t.accountid where t.activity='DIVIDEND' AND t.symbol=:symbol ORDER BY t.tdate DESC LIMIT 10) ORDER BY tdate;";
+	$sqlLimit = " LIMIT 10";
+        $sql = "SELECT * FROM (SELECT t.tDate, t.symbol, t.activity, t.shares, case when t.currency = a.accountcurrency then t.cost else t.cost * t.exchangerate end as cost, t.currency, case when t.currency = a.accountcurrency then t.tax else t.tax * t.exchangerate end as tax, t.exchangerate, a.accountcurrency FROM transactions t inner join accounts a on a.accountid = t.accountid where t.activity='DIVIDEND' AND t.symbol=:symbol ORDER BY t.tdate DESC" . $sqlLimit . ") ORDER BY tdate;";
         $rs = $db->prepare($sql);
         $rs->bindValue(':symbol', $symbol);
         $rs->execute();
@@ -111,7 +112,7 @@
         $data .= "]";
 
         # prepare the chart
-        print "<script src='javascript/chart/Chart.js'></script>";
+        print "<script src='javascript/chart/dist/Chart.bundle.js'></script>";
         print "<fieldset>";
         print "<legend>Last 10 Dividend Payments</legend>";
         print "<div style='width:100%; margins: auto;'>";
@@ -126,8 +127,8 @@
 			datasets : [
 				{
 					label: "Dividend Payments",
-					fillColor : "rgba(220,220,220,0.2)",
-					strokeColor : "rgba(220,220,220,1)",
+					backgroundColor : "rgba(220,220,220,0.2)",
+					borderColor : "rgba(220,220,220,1)",
 					pointColor : "rgba(220,220,220,1)",
 					pointStrokeColor : "#fff",
 					pointHighlightFill : "#fff",
@@ -139,8 +140,13 @@
 
         window.onload = function(){
             var ctx = document.getElementById("canvas").getContext("2d");
-            window.myLine = new Chart(ctx).Line(lineChartData, {
-                responsive: true
+            window.myLine = new Chart(ctx, {
+		type: 'line',
+		data: lineChartData,
+		options: {
+			legend: { display: false },
+			responsive: true
+		}
             });
         }
         <?php
@@ -188,7 +194,7 @@
         $data .= "]";
 
         # prepare the chart
-        print "<script src='javascript/chart/Chart.js'></script>";
+        print "<script src='javascript/chart/dist/Chart.bundle.js'></script>";
         print "<fieldset>";
         print "<legend>Annual Dividend Earnings</legend>";
         print "<div style='width:100%; margins: auto;'>";
@@ -203,8 +209,8 @@
         	datasets : [
         		{
         			label: "Dividend Payments",
-        			fillColor : "rgba(220,220,220,0.2)",
-        			strokeColor : "rgba(220,220,220,1)",
+        			backgroundColor : "rgba(220,220,220,0.2)",
+        			borderColor : "rgba(220,220,220,1)",
         			pointColor : "rgba(220,220,220,1)",
         			pointStrokeColor : "#fff",
         			pointHighlightFill : "#fff",
@@ -216,8 +222,13 @@
 
         window.onload = function(){
             var ctx = document.getElementById("canvas").getContext("2d");
-            window.myLine = new Chart(ctx).Line(lineChartData, {
-                responsive: true
+            window.myLine = new Chart(ctx, {
+		type: 'line',
+		data: lineChartData,
+		options: {
+			legend: { display: false },
+			responsive: true
+		}
             });
         }
         <?php
