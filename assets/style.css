@@ -38,6 +38,7 @@ select.numbers{max-width:100%;}
 label.currencyamount{padding: 0px 6px 0px 0px;}
 span.nobreakcenterv{white-space: nowrap;display: flex;align-items: center}
 pre { overflow: auto; }
+canvas { -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; }
 
 /* tooltip begin -------------------------------------------
    https://www.w3schools.com/howto/howto_css_tooltip.asp */

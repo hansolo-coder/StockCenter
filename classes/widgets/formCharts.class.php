@@ -1,4 +1,7 @@
 <?php
+// https://tryshchenko.com/archives/225/
+// https://www.sitepoint.com/introduction-chart-js-2-0-six-examples/
+// https://www.stanleyulili.com/javascript/beginner-guide-to-chartjs/
 	/**
 	 * form for showing charts
 	 */
@@ -193,7 +196,7 @@
 			$data .= "]";
 
 			# prepare the chart
-			print "<script src='javascript/chart/Chart.js'></script>";
+			print "<script src='javascript/chart/dist/Chart.bundle.js'></script>";
 			print "<fieldset>";
 			print "  <legend>Portfolio Value</legend>";
 			print "  <div style='width:100%; margins: auto;'>";
@@ -208,12 +211,15 @@
 				datasets : [
 					{
 					label: "Value",
-					fillColor : "#eaeaea",
-					strokeColor : "#979797",
+					backgroundColor : "#eaeaea",
+					borderColor : "#979797",
+					borderWidth : 0.5,
 					pointColor : "rgba(220,220,220,1)",
 					pointStrokeColor : "#fff",
 					pointHighlightFill : "#fff",
 					pointHighlightStroke : "rgba(220,220,220,1)",
+  barThickness: 3,
+  barPercentage: 0.5,
 					data : <?php print $data; ?>
 					}
         	        	]
@@ -221,8 +227,40 @@
 
 			function showHoldingsValueChart(){
 				var valuectx = document.getElementById("value").getContext("2d");
-				window.myValue = new Chart(valuectx).Bar(valueChartData, {
-					responsive: true
+				window.myValue = new Chart(valuectx, {
+			                type: 'bar',
+			                data: valueChartData, 
+			                options: {
+						legend: { display: false },
+						XmaintainAspectRatio: false,
+						title: {
+						    display: false,
+						    text: 'Custom Chart Title'
+						},
+						responsive: true, 
+						scales: {
+        						x: {
+						          // beginAtZero: true,
+							  max: 50
+						        },
+        						y	: {
+						          // beginAtZero: true,
+							  max: 50
+						        },
+							xAxes: [{
+								barPercentage: 0.5,
+								XXposition: "top",
+								ticks: {
+									autoSkip: false,
+								}
+							}],
+							yAxes: [{
+								ticks: {
+									beginAtZero: false,
+								}
+							}]
+						}
+					}
 				});
 			}
 			<?php
@@ -281,7 +319,7 @@
 			$data .= "]";
 
 			# prepare the chart
-			print "<script src='javascript/chart/Chart.js'></script>";
+			print "<script src='javascript/chart/dist/Chart.bundle.js'></script>";
 			print "<fieldset>";
 			print "  <legend>Share Allocation</legend>";
 			print "  <div style='width:100%; margins: auto;'>";
@@ -296,8 +334,9 @@
 				datasets : [
 					{
 					label: "Share Allocation",
-					fillColor : "#eaeaea",
-					strokeColor : "#979797",
+					backgroundColor : "#eaeaea",
+					borderColor : "#979797",
+					borderWidth : 0.5,
 					pointColor : "#cfcfcf",
 					pointStrokeColor : "#fff",
 					pointHighlightFill : "#fff",
@@ -309,8 +348,23 @@
 
 			function showSharesOwnedChart(){
 				var sharectx = document.getElementById("shares").getContext("2d");
-				window.myShare = new Chart(sharectx).Bar(shareChartData, {
-					responsive: true
+				window.myShare = new Chart(sharectx, {
+					type: 'bar',
+			                data: shareChartData, 
+					options: {
+						legend: { display: false },
+						responsive: true,
+						scales: {
+							xAxes: [{
+								barPercentage: 0.5,
+								XXposition: "top",
+								ticks: {
+									autoSkip: false,
+								}
+							}]
+						}
+
+					}
 				});
 			}
 			<?php
@@ -348,23 +402,31 @@
 
 			$rsStocks = null;
          
+			$labels = '[';
 			$data = '[';
+			$backgroundColor = '[';
 
 			$idx = 0;
 			foreach($stocks as $stock) {
-		                $data .= '{value: ' . $stock['marketValue'] . ', color:"' . $this->fcolor[$idx] . '", highlight: "' . $this->hcolor[$idx] . '", label: "' . $stock['market'] . '" }' . ',';
+				$labels .= '"' . $stock['market'] . '",';
+		                $data .= $stock['marketValue'] . ',';
+				$backgroundColor .= '"' . $this->fcolor[$idx] . '"' . ',';
 				if (++$idx >= count($this->fcolor))
 					$idx = 0;
 			}
 
 			# trim off the last comma
+			$labels = rtrim($labels, ",");
 			$data = rtrim($data, ",");
+			$backgroundColor = rtrim($backgroundColor, ",");
 
 			# cap off the dataset
+			$labels .= "]";
 			$data .= "]";
+			$backgroundColor .= "]";
 
 			# prepare the chart
-			print "<script src='javascript/chart/Chart.js'></script>";
+			print "<script src='javascript/chart/dist/Chart.bundle.js'></script>";
 			print "<fieldset>";
 			print "  <legend>" . $headerText . "</legend>";
 			print "  <div style='width:100%; margins: auto;'>";
@@ -374,11 +436,23 @@
 			print "  </div>";
 			print "  <script>";
 			?>
-			var <?php print $stockdataAttribute; ?>PieData = <?php print $data; ?>;
+			var <?php print $stockdataAttribute; ?>PieData = {
+				labels : <?php print $labels; ?>,
+				datasets : [
+					{
+					label: '<?php print $stockdataAttribute; ?>',
+					backgroundColor : <?php print $backgroundColor; ?>,
+					data : <?php print $data; ?>
+					}
+				]
+			}
 
 			function show<?php print $stockdataAttribute; ?>ValueChart(){
 				var ctx = document.getElementById("<?php print $stockdataAttribute; ?>Canvas").getContext("2d");
-				window.my<?php print $stockdataAttribute; ?>Pie = new Chart(ctx).Pie(<?php print $stockdataAttribute; ?>PieData);
+				window.my<?php print $stockdataAttribute; ?>Pie = new Chart(ctx, {
+					type: 'pie',
+					data: <?php print $stockdataAttribute; ?>PieData
+				});
 			}
 			<?php
 			print "  </script>";
@@ -425,7 +499,7 @@
 			$data2 .= "]";
 
 			# prepare the chart
-			print "<script src='javascript/chart/Chart.js'></script>";
+			print "<script src='javascript/chart/dist/Chart.bundle.js'></script>";
 			print "<fieldset>";
 			print "  <legend>" . $headerText . "</legend>";
 			print "  <div style='width:100%; margins: auto;'>";
@@ -440,8 +514,8 @@
 				datasets: [
 					{
 						label: "<?php print $stockdataAttribute1; ?>",
-						fillColor: "rgba(220,220,220,0.2)",
-						strokeColor: "rgba(220,220,220,1)",
+						backgroundColor: "rgba(220,220,220,0.2)",
+						borderColor: "rgba(220,220,220,1)",
 						pointColor: "rgba(220,220,220,1)",
 						pointStrokeColor: "#fff",
 						pointHighlightFill: "#fff",
@@ -450,8 +524,8 @@
 					},
 					{
 						label: "<?php print $stockdataAttribute2; ?>",
-						fillColor: "rgba(151,187,205,0.2)",
-						strokeColor: "rgba(151,187,205,1)",
+						backgroundColor: "rgba(151,187,205,0.2)",
+						borderColor: "rgba(151,187,205,1)",
 						pointColor: "rgba(151,187,205,1)",
 						pointStrokeColor: "#fff",
 						pointHighlightFill: "#fff",
@@ -463,8 +537,24 @@
 
 			function show<?php print $stockdataAttribute1; ?>ValueChart(){
 				var ctx = document.getElementById("<?php print $stockdataAttribute1; ?>Canvas").getContext("2d");
-				window.my<?php print $stockdataAttribute1; ?>Radar = new Chart(ctx).Radar(<?php print $stockdataAttribute1; ?>RadarChartData, {
-					responsive: true
+				window.my<?php print $stockdataAttribute1; ?>Radar = new Chart(ctx, {
+					type: 'radar',
+					data: <?php print $stockdataAttribute1; ?>RadarChartData,
+					options: {
+						legend: {
+						   position: 'top',
+						},
+						title: {
+						    display: true,
+						    text: 'Chart.js Radar Chart'
+						},
+						scale: {
+						    reverse: false,
+						    ticks: {
+							beginAtZero: true
+						    }
+						}
+					}
 				});
 			}
 			<?php
@@ -503,7 +593,7 @@
 			$data .= "]";
 
 			# prepare the chart
-			print "<script src='javascript/chart/Chart.js'></script>";
+			print "<script src='javascript/chart/dist/Chart.bundle.js'></script>";
 			print "<fieldset>";
 			print "  <legend>Stock price history</legend>";
 			print "  <div style='width:100%; margins: auto;'>";
@@ -517,9 +607,9 @@
 				labels : <?php print $labels; ?>,
 				datasets : [
 					{
-						label: "My First dataset",
-						fillColor : "rgba(220,220,220,0.2)",
-						strokeColor : "rgba(220,220,220,1)",
+						label: "Stock History Price",
+						backgroundColor : "rgba(220,220,220,0.2)",
+						borderColor : "rgba(220,220,220,1)",
 						pointColor : "rgba(220,220,220,1)",
 						pointStrokeColor : "#fff",
 						pointHighlightFill : "#fff",
@@ -531,7 +621,22 @@
 
 			function showStockPriceHistoryValueChart(){
 				var ctx = document.getElementById("stockPriceHistoryCanvas").getContext("2d");
-				window.myLine = new Chart(ctx).Line(stockHistLineChartData, {responsive: true});
+				window.myLine = new Chart(ctx, {
+					type: 'line',
+					data: stockHistLineChartData,
+					options : {
+						legend: { display: false },
+						responsive: true,
+						scales: {
+							xAxes: [{
+								XXposition: "top",
+								ticks: {
+									autoSkip: true,
+								}
+							}]
+						}
+					}
+				});
 			}
 			<?php
 			print "  </script>";
@@ -566,7 +671,7 @@
 			$data .= "]";
 
 			# prepare the chart
-			print "<script src='javascript/chart/Chart.js'></script>";
+			print "<script src='javascript/chart/dist/Chart.bundle.js'></script>";
 			print "<fieldset>";
 			print "<legend>Last 10 Dividend Payments</legend>";
 			print "<div style='width:100%; margins: auto;'>";
@@ -581,8 +686,8 @@
 				datasets : [
 					{
 						label: "Dividend Payments",
-						fillColor : "rgba(220,220,220,0.2)",
-						strokeColor : "rgba(220,220,220,1)",
+						backgroundColor : "rgba(220,220,220,0.2)",
+						borderColor : "rgba(220,220,220,1)",
 						pointColor : "rgba(220,220,220,1)",
 						pointStrokeColor : "#fff",
 						pointHighlightFill : "#fff",
@@ -593,7 +698,14 @@
 			}
 			function showDividendEarningsChart(){
 				var ctx = document.getElementById("dividendEarningsCanvas").getContext("2d");
-				 window.myLine = new Chart(ctx).Line(dividendLineChartData, {responsive: true});
+				window.myLine = new Chart(ctx, {
+					type: 'line',
+					data: dividendLineChartData,
+					options: {
+						legend: { display: false },
+						responsive: true
+					}
+				});
 			}
 			<?php
 			print "  </script>";
