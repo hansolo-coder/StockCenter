@@ -38,6 +38,7 @@ select.numbers{max-width:100%;}
 label.currencyamount{padding: 0px 6px 0px 0px;}
 span.nobreakcenterv{white-space: nowrap;display: flex;align-items: center}
 pre { overflow: auto; }
+/* The user-select property specifies whether the text of an element can be selected. */
 canvas { -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; }
 
 /* tooltip begin -------------------------------------------
