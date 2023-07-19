@@ -149,6 +149,7 @@
 			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('enableDeletes', 'No', 'Enable deletion of accounts and stocks')");
 			// base url for Yahoo finance website
 			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('yahooFinanceBaseUrl', 'https://finance.yahoo.com/quote/{}?p={}&.tsrc=fin-srch', 'Base Url for showing Yahoo finance information for stock')");
+			$this->addSetting($db, "INSERT INTO settings (settingName, settingValue, settingDesc) VALUES('yahooAPIBaseUrl', 'https://query2.finance.yahoo.com/v11/finance/quoteSummary/', 'Base Url for Yahoo finance API')");
 
 			# dailystatus table
 			$sql = "CREATE TABLE [dailystatus] (";

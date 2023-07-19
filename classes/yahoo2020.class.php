@@ -80,13 +80,16 @@
 		 [71] = t6 = trade links
 		 [72] = s6 = revenue
 		 */
+
+		public $Found1;
+		public $Found2;
 	
 		/**
 		 * @var string
-		 * @access private
+		 * @access public
 		 * @return The base url for the yahoo web service
 		 */
-		private $url;
+		public $url;
 	
 		/**
 		 * @var string
@@ -632,7 +635,8 @@
 		
 		function __construct()
 		{
-		    $this->url                                    = "https://query2.finance.yahoo.com/v11/finance/quoteSummary/";
+		    $this->Found1 = "N";
+		    $this->Found2 = "N";
 		    $this->codes1                                 = "?modules=price";
 		    $this->codes2                                 = "?modules=summaryDetail";
 		    $this->symbol                                 = NULL;
@@ -722,6 +726,7 @@
 		 */
 		function getData()
 		{
+			$this->Found1 = "N";
 			if ($this->symbol != NULL)
 			{
 
@@ -752,7 +757,7 @@
 				# currency
 				$this->currency = $sData["quoteSummary"]["result"][0]["price"]["currency"];
 
-				usleep(100000);
+				usleep(80000);
 
 				$yData = file_get_contents($this->url . $this->symbol . $this->codes2);
 				$sData = json_decode($yData, true);
@@ -964,7 +969,8 @@
 				# earnings per share
 				if (isset($this->ask) && isset($this->peTrailing) && $this->peTrailing <> 0)
 					$this->earningsPerShare = $this->ask / $this->peTrailing;
-					
+
+				$this->Found1 = "Y";
 			}
 		}
 
@@ -1008,7 +1014,7 @@
 
 		 */
 		function getStaticStockData($symbol) {
-			$url   = "https://query2.finance.yahoo.com/v11/finance/quoteSummary/";
+			$this->Found2 = "N";
 			$code  = "?modules=summaryProfile";
 
 			$result = array();
@@ -1032,6 +1038,7 @@
 			// Example: "maxAge": 86400
 			if (isset($sData["quoteSummary"]["result"][0]["summaryProfile"]["maxAge"]))
 			  $result["maxAge"]=$sData["quoteSummary"]["result"][0]["summaryProfile"]["maxAge"];
+			$this->Found2 = "Y";
 			return $result;
 		}
 	}

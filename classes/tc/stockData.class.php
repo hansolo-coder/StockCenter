@@ -193,13 +193,19 @@
 			$rowSettings = $rsSettings->fetch();
 			$stockdataclass = $rowSettings['settingValue'];
 
+			$yahooBaseAPI = getSettingValue('yahooAPIBaseUrl', $db);
+			if ($yahooBaseAPI == '') {
+				$stockdataclass = 'MOCK';
+			}
+
 			# get the stock data from yahoo
 			if (strtoupper($stockdataclass) == 'MOCK')
 				include_once './classes/yahoo.MOCK.class.php';
 			else
 				include_once './classes/yahoo2020.class.php';
-			
+
 			$stock = new stockdataapi();
+			$stock->url = $yahooBaseAPI;
 			$stock->symbol = strtoupper($this->symbol);
 			$stock->getData();
 			
