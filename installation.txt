@@ -11,8 +11,19 @@ Installation
 	"showTransactionTax" can be "No" or "Yes". Set it to "Yes" to be able to register taxes when receiving dividends.
 	"region" currently only recognizes "EUR" or "US" - it mainly controls date-formats.
 	"chgPctMarkUnchanged" is an addition to only showing wins or losses in the "Overview". Here you can register a percentage (like 0.05) and if the current value of a stock is within that percentage of the purchase price, it will be shown as yellow ("unchanged").
-6. Goto "Accounts" and add your accounts.
+	"accessKey" is the APIkey used to authorize some external calls (like daily statusupdate)
+	"enableDeletes" is "Yes" or "No". "Yes" allows you to delete accounts and stocks in the UI.
+	"yahooFinanceBaseUrl" is a template to show additional data for a stock on Yahoo website
+	"yahooAPIBaseUrl" is the first part of URL used to lookup data like current price
+
+6. Goto "Accounts" and add your accounts. 
+	Most of the information in this table is for your own reference only (not used by StockCenter)
+	"isPension" should be Y or N - indicating if it is a pension (special tax handling) account
+	"AccountCurrency" is the default currency for stocks in this account - as above, it is suggested to use 3-character codes. 
+	"UseId" is for when you have had several accounts over time, some of which are now closed. They you can use the "UseId" (redirectAccountId in accounts table) to point to the id of the account where the shares were move to and use that for SQL-queries)
+
+7. Now you can enter your purchases (and associate with an account) and its Fees, dividends etc.
 
 There are currently a -few- columns in the sqlite-database, that cannot be entered/seen using the UI. If all your stocks are in the same currency (and equal to the one you registered in "Settings"), all is probably good. Otherwise you currently have to make a few manual updates in the sqlite-database (like exchange-rates etc.) if you handle a stock in another currency.
 These updates is done by backing up the sqlite3 database (in UI) to your local pc, making manual updates using sqlite3.exe tool and then "Restore" the database again using the UI.
-This is expected to go away in later versions :-)
+This is expected to go away in later versions - no promises :-)
