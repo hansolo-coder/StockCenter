@@ -95,6 +95,7 @@
 			$sql .= "[isPension] char(1) NOT NULL DEFAULT 'N',";
 			$sql .= "[accountType] varchar(20),";
 			$sql .= "[accountCurrency] VARCHAR(3) NOT NULL,";
+			$sql .= "[redirectAccountId] INTEGER NOT NULL,";
 			$sql .= "[aCreated] DATE,";
 			$sql .= "[aClosed] DATE)";
 			$rs = $db->prepare($sql);

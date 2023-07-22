@@ -13,7 +13,7 @@
 		public $isPension;
 		public $accountType;
 		public $accountCurrency;
-		
+		public $redirectAccountId;
 		
 		function __construct()
 		{
@@ -26,6 +26,7 @@
 			$this->isPension = "N";
 			$this->accountType = "none";
 			$this->accountCurrency = "none";
+			$this->redirectAccountId = "none";
 		}
 
 		
@@ -58,6 +59,7 @@
 			$this->isPension = $row['isPension'];
 			$this->accountType = $row['accountType'];
 			$this->accountCurrency = $row['accountCurrency'];
+			$this->redirectAccountId = $row['redirectAccountId'];
 
 			if ($_SESSION['debug'] == "on"){
 				print "<span class='debug'>dbDisconnect: account.class.php " . __LINE__ . "</span><br>";
@@ -86,7 +88,7 @@
 			$conn->fileName = $_SESSION['userId'];
 			$db = $conn->connect();
 
-			$sql = "INSERT INTO accounts (accountNumber, accountName, financialInstitution, aCreated, aClosed, isPension, accountType, accountCurrency) VALUES(:accountNumber, :accountName, :financialInstitution, :created, :closed, :isPension, :accountType, :accountCurrency)";
+			$sql = "INSERT INTO accounts (accountNumber, accountName, financialInstitution, aCreated, aClosed, isPension, accountType, accountCurrency, redirectAccountId) VALUES(:accountNumber, :accountName, :financialInstitution, :created, :closed, :isPension, :accountType, :accountCurrency, :redirectAccountId)";
 			$rs = $db->prepare($sql);
 			$rs->bindValue(':accountNumber', trim($this->accountNumber));
 			$rs->bindValue(':accountName', trim($this->accountName));
@@ -96,6 +98,7 @@
 			$rs->bindValue(':isPension', $this->isPension);
 			$rs->bindValue(':accountType', $this->accountType);
 			$rs->bindValue(':accountCurrency', $this->accountCurrency);
+			$rs->bindValue(':redirectAccountId', $this->redirectAccountId);
 			$rs->execute();
 
 			if ($_SESSION['debug'] == "on"){

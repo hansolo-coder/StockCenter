@@ -56,6 +56,9 @@ border-spacing: 0;'>\n";
             print "            Closed\n";
             print "        </th>\n";
             print "        <th class='data'>\n";
+            print "            UseId\n";
+            print "        </th>\n";
+            print "        <th class='data'>\n";
             print "            &nbsp;\n";
             print "        </th>\n";
             print "    </tr>\n";
@@ -102,6 +105,9 @@ border-spacing: 0;'>\n";
             print "            </script>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
+            print "            <input type='text' name='redirectAccountId' class='mini' required>\n";
+            print "        </td>\n";
+            print "        <td class='data'>\n";
             print "            <input type='submit' value='Save'>\n";
             print "        </td>\n";
             print "    </form>\n";
@@ -132,6 +138,9 @@ border-spacing: 0;'>\n";
                 print         "</td>\n";
                 print "        <td class='data'>";
                 print              $row['aClosed'];
+                print         "</td>\n";
+                print "        <td class='data'>";
+                print              $row['redirectAccountId'];
                 print         "</td>\n";
                 print "        <td class='data'>\n";
                 print "            <a class='delete' href='index.php?action=deleteAccount&id=" . $row['accountId'] . "'>Delete</a>\n";
@@ -182,6 +191,7 @@ border-spacing: 0;'>\n";
                	  $trans->accountCurrency = trim($_REQUEST['accountCurrency']);
 		else
                	  $trans->accountCurrency = trim($_SESSION['DefaultCurrency']);
+		$trans->redirectAccountId = trim($_SESSION['redirectAccountId']);
    
                	$trans->insert();
     
