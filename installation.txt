@@ -22,7 +22,13 @@ Installation
 	"AccountCurrency" is the default currency for stocks in this account - as above, it is suggested to use 3-character codes. 
 	"UseId" is for when you have had several accounts over time, some of which are now closed. They you can use the "UseId" (redirectAccountId in accounts table) to point to the id of the account where the shares were move to and use that for SQL-queries)
 
-7. Now you can enter your purchases (and associate with an account) and its Fees, dividends etc.
+7. Now you can enter your purchases (and associate them with an account) and its Fees, dividends etc.
+
+8. If you want stockcenter to maintain a daily status of the value of your assets, you can make a daily call to an URL like this (your website-provider may provide a CRON service for this)
+
+https://<fqdn>/<stockcenter-folder>/index.php?action=dailyStatus&xuserz=<user>&access=<settings-accessKey>
+
+All texts above in "<>" must be replaced with proper values from your installation.
 
 There are currently a -few- columns in the sqlite-database, that cannot be entered/seen using the UI. If all your stocks are in the same currency (and equal to the one you registered in "Settings"), all is probably good. Otherwise you currently have to make a few manual updates in the sqlite-database (like exchange-rates etc.) if you handle a stock in another currency.
 These updates is done by backing up the sqlite3 database (in UI) to your local pc, making manual updates using sqlite3.exe tool and then "Restore" the database again using the UI.
