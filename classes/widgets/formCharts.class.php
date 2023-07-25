@@ -69,6 +69,9 @@
 			} else if ($this->action == 'dividendEarnings') {
 				$this->displayedCharts |= 128;
 				$this->dividendEarningsChart($db, $this->parm1);
+			} else if ($this->action == 'accountValueChart') {
+				$this->displayedCharts |= 256;
+				$this->accountValueChart($db);
 			} else {
 				$this->error = 'Unknown action: ' . $this->action;
 			}
@@ -106,6 +109,10 @@
 			#$this->stockdataRadarChart($db, 'dps', 'earningsPerShare', 'Stock Data');
 			$this->stockdataRadarChart($db, 'dividendYield', 'earningsPerShare', 'Stock Data');
 			print "</div>\n";
+			print "<div>\n";
+			$this->displayedCharts |= 256;
+			$this->accountValueChart($db);
+			print "</div>\n";
 
 			$db = null;
 			$conn = null;
@@ -132,6 +139,8 @@
 				print "        showStockPriceHistoryValueChart();\n";
 			if (($this->displayedCharts & 128) == 128)
 				print "        showDividendEarningsChart();\n";
+			if (($this->displayedCharts & 256) == 256)
+				print "        showAccountValueChart();\n";
 			print "    }\n";
 			print "    window.onload = start();\n";
 			print "</script>\n";
@@ -215,7 +224,7 @@
 					borderColor : "#979797",
 					borderWidth : 0.5,
 					pointColor : "rgba(220,220,220,1)",
-					pointStrokeColor : "#fff",
+					pointBorderColor : "#fff",
 					pointHighlightFill : "#fff",
 					pointHighlightStroke : "rgba(220,220,220,1)",
   barThickness: 3,
@@ -338,7 +347,7 @@
 					borderColor : "#979797",
 					borderWidth : 0.5,
 					pointColor : "#cfcfcf",
-					pointStrokeColor : "#fff",
+					pointBorderColor : "#fff",
 					pointHighlightFill : "#fff",
 					pointHighlightStroke : "rgba(220,220,220,1)",
 					data : <?php print $data; ?>
@@ -517,7 +526,7 @@
 						backgroundColor: "rgba(220,220,220,0.2)",
 						borderColor: "rgba(220,220,220,1)",
 						pointColor: "rgba(220,220,220,1)",
-						pointStrokeColor: "#fff",
+						pointBorderColor: "#fff",
 						pointHighlightFill: "#fff",
 						pointHighlightStroke: "rgba(220,220,220,1)",
 						data: <?php print $data1; ?>
@@ -527,7 +536,7 @@
 						backgroundColor: "rgba(151,187,205,0.2)",
 						borderColor: "rgba(151,187,205,1)",
 						pointColor: "rgba(151,187,205,1)",
-						pointStrokeColor: "#fff",
+						pointBorderColor: "#fff",
 						pointHighlightFill: "#fff",
 						pointHighlightStroke: "rgba(151,187,205,1)",
 						data: <?php print $data2; ?>
@@ -611,7 +620,7 @@
 						backgroundColor : "rgba(220,220,220,0.2)",
 						borderColor : "rgba(220,220,220,1)",
 						pointColor : "rgba(220,220,220,1)",
-						pointStrokeColor : "#fff",
+						pointBorderColor : "#fff",
 						pointHighlightFill : "#fff",
 						pointHighlightStroke : "rgba(220,220,220,1)",
 						data : <?php print $data; ?>
@@ -689,7 +698,7 @@
 						backgroundColor : "rgba(220,220,220,0.2)",
 						borderColor : "rgba(220,220,220,1)",
 						pointColor : "rgba(220,220,220,1)",
-						pointStrokeColor : "#fff",
+						pointBorderColor : "#fff",
 						pointHighlightFill : "#fff",
 						pointHighlightStroke : "rgba(220,220,220,1)",
 						data : <?php print $data; ?>
@@ -711,5 +720,98 @@
 			print "  </script>";
 			print "</fieldset>";
 		} // dividendEarningsChart
+
+		/*
+		 * Account Value chart
+		 */
+		function accountValueChart($db) {
+			$toCurrency = "DKK";
+			# get the account value data
+			$sql = "SELECT aout.accountName AS accountName, SUM(innerData.shares * currentValue.cost * exchrates.rate / 100) AS currentValue, MIN(currentValue.tDate) AS LastLogDate, MIN(exchrates.rate) AS exchangerate, MIN(exchrates.date) AS exchangeratedate FROM (
+ SELECT COALESCE(a.redirectAccountId, a.accountId) AS accountId, t.symbol, (CASE WHEN activity = 'SELL' THEN t.shares * -1 ELSE t.shares END) AS shares, t.currency
+ FROM transactions t 
+ INNER JOIN accounts a ON a.accountId = t.accountId
+ WHERE t.activity IN ('BUY','SELL','MOVE','BONUS','SPLIT') 
+) innerData LEFT OUTER JOIN (
+SELECT tDate, symbol, cost FROM dailystatus WHERE tDate = (SELECT MAX(tDate) FROM dailystatus)
+) currentValue ON innerData.symbol = currentValue.symbol
+LEFT OUTER JOIN (
+select date, fromCurrency, toCurrency, rate from exchangerates where toCurrency = :toCurrency AND date = (SELECT MAX(date) FROM exchangerates)
+) exchrates ON innerData.currency = exchrates.fromCurrency
+LEFT OUTER JOIN accounts aout ON aout.accountId = innerData.accountId
+GROUP BY aout.accountName
+HAVING SUM(innerData.shares) <> 0
+ORDER BY innerData.accountId;";
+			$rs = $db->prepare($sql);
+			$rs->bindValue(':toCurrency', $toCurrency);
+			$rs->execute();
+			$rows = $rs->fetchall();
+
+			$valuePerDate = "<unknown>";
+			$labels = '[';
+			$data = '[';
+
+			foreach($rows as $row) {
+				$valuePerDate = $row['LastLogDate'];
+				$labels .= '"' . $row['accountName'] . '",';
+				$data .= toCash($row['currentValue']) . ',';
+			}
+
+			# trim off the last comma
+			$labels = rtrim($labels, ",");
+			$data = rtrim($data, ",");
+
+			# cap off the dataset
+			$labels .= "]";
+			$data .= "]";
+
+			# prepare the chart
+			print "<script src='javascript/chart/dist/Chart.bundle.js'></script>";
+			print "<fieldset>";
+			print "<legend>Current Account Value per " . $valuePerDate . "</legend>";
+			print "<div style='width:100%; margins: auto;'>";
+			print "	   <div>";
+			print "		   <canvas id='accountValueCanvas' height='15' width='100%'></canvas>";
+			print "	   </div>";
+			print "</div>";
+			print "<script>";
+			?>
+			var accountValueChartData = {
+				labels : <?php print $labels; ?>,
+				datasets : [
+					{
+						label: "Account Value",
+						backgroundColor : "#eaeaea",
+						borderColor : "#979797",
+						borderWidth : 0.5,
+						pointColor : "rgba(220,220,220,1)",
+						pointBorderColor : "#fff",
+						pointHighlightFill : "#fff",
+						pointHighlightStroke : "rgba(220,220,220,1)",
+  barThickness: 3,
+  barPercentage: 0.5,
+						data : <?php print $data; ?>
+					}
+                		]
+			}
+			function showAccountValueChart(){
+				var ctx = document.getElementById("accountValueCanvas").getContext("2d");
+				window.myLine = new Chart(ctx, {
+					type: 'bar',
+					data: accountValueChartData,
+					options: {
+						legend: { display: false },
+						responsive: true,
+						scales: {
+							yAxes: [{ display: true, ticks: { suggestedMin: 0, XXbeginAtZero: true } }
+							]
+						}
+					}
+				});
+			}
+			<?php
+			print "  </script>";
+			print "</fieldset>";
+		} // accountValueChart
 	}
 ?>

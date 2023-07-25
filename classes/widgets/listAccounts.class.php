@@ -7,7 +7,7 @@
         /**
          * display the accounts
          */
-        function show()
+        function show($showDeleteOption)
         {
             if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbConnect: listAccounts.php " . __LINE__ . "</span><br>";}
     
@@ -22,12 +22,6 @@
             $rs = $db->prepare($sql);
             $rs->execute();
             $rows = $rs->fetchAll();
-    
-            if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: listAccounts.php " . __LINE__ . "</span><br>";}
-                
-            $rs = NULL;
-            $db = NULL;
-            $conn = NULL;
     
             print "<div class='spacer'></div>\n";
     
@@ -105,7 +99,7 @@ border-spacing: 0;'>\n";
             print "            </script>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
-            print "            <input type='text' name='redirectAccountId' class='mini' required>\n";
+            print "            <input type='text' name='redirectAccountId' class='mini'>\n";
             print "        </td>\n";
             print "        <td class='data'>\n";
             print "            <input type='submit' value='Save'>\n";
@@ -142,9 +136,11 @@ border-spacing: 0;'>\n";
                 print "        <td class='data'>";
                 print              $row['redirectAccountId'];
                 print         "</td>\n";
+                if ($showDeleteOption) {
                 print "        <td class='data'>\n";
                 print "            <a class='delete' href='index.php?action=deleteAccount&id=" . $row['accountId'] . "'>Delete</a>\n";
                 print "        </td>\n";
+                }
                 print "    </tr>\n";
             } // foreach
     
@@ -156,6 +152,23 @@ border-spacing: 0;'>\n";
             //print "        $('#aoverview').DataTable({'pageLength':15, 'lengthMenu':[5, 15, 30, 50], 'orderCellsTop': true, 'aaSorting': [[ 3, 'desc' ]]});\n";
             //print "    });\n";
             //print "</script>\n";
+
+            print "<div class='spacer'></div>\n";
+
+            include_once './classes/widgets/formCharts.class.php';
+            $charts = new formCharts();
+
+            $charts->action = "accountValueChart";
+            $charts->display($db);
+
+            $charts->printExecuteScripts();
+    
+            if ($_SESSION['debug'] == "on"){print "<span class='debug'>dbDisconnect: listAccounts.php " . __LINE__ . "</span><br>";}
+                
+            $rs = NULL;
+            $db = NULL;
+            $conn = NULL;
+
         } // show
         
         
@@ -163,7 +176,7 @@ border-spacing: 0;'>\n";
     /**
      * adds a new transaction to the log
      */
-    function addAccount()
+    function addAccount($showDeleteOption)
     {
         if ($_SESSION['debug'] == "on"){print "<span class='debug'>listAccounts-> addAccount()</span><br>";}
     
@@ -191,14 +204,14 @@ border-spacing: 0;'>\n";
                	  $trans->accountCurrency = trim($_REQUEST['accountCurrency']);
 		else
                	  $trans->accountCurrency = trim($_SESSION['DefaultCurrency']);
-		$trans->redirectAccountId = trim($_SESSION['redirectAccountId']);
+		$trans->redirectAccountId = trim($_REQUEST['redirectAccountId']);
    
                	$trans->insert();
     
                 message("success", "Account added");
                     
                 $log = new listAccounts();
-                $log->show();
+                $log->show($showDeleteOption);
             } // financialinstitution exists
             else
             { // financialinstitution exists
@@ -206,7 +219,7 @@ border-spacing: 0;'>\n";
                 message("error", "No Financial Institution name provided");
                     
                 $log = new listAccounts();
-                $log->show();
+                $log->show($showDeleteOption);
             } // financialinstitution exists
         } // number exists
         else

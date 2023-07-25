@@ -185,13 +185,19 @@
             {
                 include_once 'classes/widgets/listAccounts.class.php';
                 $log = new listAccounts();
-                $log->show();
+                $log->show($showDeleteOption);
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "addAccount")
             {
                 include_once 'classes/widgets/listAccounts.class.php';
                 $log = new listAccounts();
-                $log->addAccount();
+                $log->addAccount($showDeleteOption);
+            }
+            elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "deleteAccount")
+            {
+                include_once 'classes/widgets/listAccounts.class.php';
+                $log = new listAccounts();
+                $log->deleteAccount();
             }
             elseif (isset($_REQUEST['action']) and $_REQUEST['action'] == "dividendReport")
             {
